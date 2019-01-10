@@ -1,0 +1,13 @@
+#directories
+venv/
+.idea/
+
+
+#files
+*.pyc
+
+
+#latex
+*.pdf
+*.synctex.gz
+*.log

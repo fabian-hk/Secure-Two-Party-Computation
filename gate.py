@@ -1,88 +1,97 @@
 from person import Person
+import helper as h
+import hashlib
 
 
 class Gate:
-    def __init__(self, person, pre_a, pre_b, next, a, Ma, Ka, b, Mb, Kb):
-        self.a = a
-        self.Ma = Ma
-        self.Ka = Ka
-        self.b = b
-        self.Mb = Mb
-        self.Kb = Kb
-
+    def __init__(self, person, pre_a, pre_b, next):
         self.pre_a = pre_a
         self.pre_b = pre_b
         self.next = next
+        self.person = person
 
 
 class AND(Gate):
-    def __init__(self, person, pre_a, pre_b, next, a, Ma, Ka, b, Mb, Kb, y, My, Ky, o, Mo, Ko):
+    def __init__(self, person, pre_a, pre_b, next):
         """
         :param person:
         :type person Person
         :param pre_a:
+        :type pre_a Gate
         :param pre_b:
+        :type pre_b Gate
         :param next:
-        :param a:
-        :param Ma:
-        :param Ka:
-        :param b:
-        :param Mb:
-        :param Kb:
-        :param y:
-        :param My:
-        :param Ky:
-        :param o:
-        :param Mo:
-        :param Ko:
+        :type next Gate
         """
-        super().__init__(x, pre_a, pre_b, next, a, Ma, Ka, b, Mb, Kb)
+        super().__init__(person, pre_a, pre_b, next)
+        self.yi = []
+        self.Myi = []
+        self.Kyi = []
+        self.Gi = []
+        self.La0 = None
+        self.Lb0 = None
+        self.La1 = None
+        self.Lb1 = None
+        self.Ly0 = None
 
+    def compute_preprocessing(self, a, Ma, Ka, b, Mb, Kb, y, My, Ky, o, Mo, Ko, La0=None, Lb0=None, Ly0=None):
         # Protocol part 4 b) c)
-        self.y[0] = o ^ y
-        self.My[0] = Mo ^ My
-        self.Ky[0] = Ko ^ Ky
+        self.yi[0] = h.xor(o, y)
+        self.Myi[0] = h.xor(Mo, My)
+        self.Kyi[0] = h.xor(Ko, Ky)
 
-        self.y[1] = o ^ y ^ a
-        self.My[1] = Mo ^ My ^ Ma
-        self.Ky[1] = Ko ^ Ky ^ Ka
+        self.yi[1] = h.xor(o, y, a)
+        self.Myi[1] = h.xor(Mo, My, Ma)
+        self.Kyi[1] = h.xor(Ko, Ky, Ka)
 
-        self.y[2] = o ^ y ^ b
-        self.My[2] = Mo ^ My ^ Mb
-        self.Ky[2] = Ko ^ Ky ^ Kb
+        self.yi[2] = h.xor(o, y, b)
+        self.Myi[2] = h.xor(Mo, My, Mb)
+        self.Kyi[2] = h.xor(Ko, Ky, Kb)
 
-        if person.x == Person.B:
-            self.y[3] = o ^ y ^ a ^ 1
+        if self.person.x == Person.B:
+            self.yi[3] = h.xor(o, y, a, b'\x01')
         else:
-            self.y[3] = o ^ y ^ a
-        self.My[3] = Mo ^ My ^ Ma ^ Mb
-        if person.x == Person.A:
-            self.Ky[3] = Ko ^ Ky ^ Ka ^ Kb ^ person.delta
+            self.yi[3] = h.xor(o, y, a)
+        self.Myi[3] = h.xor(Mo, My, Ma, Mb)
+        if self.person.x == Person.A:
+            self.Kyi[3] = h.xor(Ko, Ky, Ka, Kb, self.person.delta)
         else:
-            self.Ky[3] = Ko ^ Ky ^ Ka ^ Kb
+            self.Kyi[3] = h.xor(Ko, Ky, Ka, Kb)
 
         # Protocol part 4 d)
-        if person.x == Person.A:
-            pass
+        if self.person.x == Person.A:
+            self.La0 = La0
+            self.Lb0 = Lb0
+            self.Ly0 = Ly0
+            self.La1 = h.xor(self.La0, self.person.delta)
+            self.Lb1 = h.xor(self.Lb0, self.person.delta)
+
+            hash_function = hashlib.sha3_256()
+            hash_function.update(self.La0+self.Lb0+y+b'\x01')
+            tmp1 = hash_function.digest()
+            tmp2 = self.yi[0]+self.Myi[0]+h.xor(self.Ly0, self.Kyi[0], self.yi[0]+self.person.delta)
+            self.Gi[0] = h.xor(tmp1, tmp2)
 
 
 class XOR(Gate):
-    def __init__(self, person, pre_a, pre_b, next, a, Ma, Ka, b, Mb, Kb):
+    def __init__(self, person, pre_a, pre_b, next):
         """
         :param person:
         :type person Person
         :param pre_a:
+        :type pre_a Gate
         :param pre_b:
+        :type pre_b Gate
         :param next:
-        :param a:
-        :param Ma:
-        :param Ka:
-        :param b:
-        :param Mb:
-        :param Kb:
+        :type next Gate
         """
-        super().__init__(person, pre_a, pre_b, next, a, Ma, Ka, b, Mb, Kb)
+        super().__init__(person, pre_a, pre_b, next)
+        self.y = None
+        self.My = None
+        self.Ky = None
+
+    def compute_preprocessing(self, a, Ma, Ka, b, Mb, Kb):
         # Protocol part 3
-        self.y = a ^ b
-        self.My = Ma ^ Mb
-        self.Ky = Ka ^ Kb
+        self.y = h.xor(a, b)
+        self.My = h.xor(Ma, Mb)
+        self.Ky = h.xor(Ka, Kb)

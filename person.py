@@ -1,6 +1,7 @@
 from random import randint
 import conf
 import math
+import os
 
 
 class Person:
@@ -8,5 +9,8 @@ class Person:
     B = 1
 
     def __init__(self, x):
+        """
+        :param x:
+        """
         self.x = x
-        self.delta = randint(0, math.pow(2, conf.k))
+        self.delta = os.urandom(int(conf.k/8))

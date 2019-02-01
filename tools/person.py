@@ -1,7 +1,4 @@
-from random import randint
-import conf
-import math
-import os
+from tools import fpre
 
 
 class Person:
@@ -13,4 +10,4 @@ class Person:
         :param x:
         """
         self.x = x
-        self.delta = os.urandom(int(conf.k/8))
+        self.delta = fpre.init()

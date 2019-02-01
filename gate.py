@@ -87,6 +87,7 @@ class AND(Gate):
             tmp1 = hash_function.digest()
             tmp2 = self.yi[0]+self.Myi[0]+h.xor(self.Ly0, self.Kyi[0], self.yi[0]+self.person.delta)
             self.Gi[0] = h.xor(tmp1, tmp2)
+            # TODO add Gi 1-3
 
 
 class XOR(Gate):

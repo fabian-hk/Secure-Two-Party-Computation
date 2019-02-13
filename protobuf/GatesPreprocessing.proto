@@ -6,6 +6,10 @@ message Gate {
     required int32 id = 1;
     optional bytes M0 = 2;
     optional bytes M1 = 3;
+    optional bytes G0 = 4;
+    optional bytes G1 = 5;
+    optional bytes G2 = 6;
+    optional bytes G3 = 7;
 }
 
 message GatesPreprocessing {

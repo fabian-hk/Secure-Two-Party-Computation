@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='project_inf_mpc',
   syntax='proto2',
   serialized_options=None,
-  serialized_pb=_b('\n!protobuf/GatesPreprocessing.proto\x12\x0fproject_inf_mpc\"*\n\x04Gate\x12\n\n\x02id\x18\x01 \x02(\x05\x12\n\n\x02M0\x18\x02 \x01(\x0c\x12\n\n\x02M1\x18\x03 \x01(\x0c\":\n\x12GatesPreprocessing\x12$\n\x05gates\x18\x01 \x03(\x0b\x32\x15.project_inf_mpc.Gate')
+  serialized_pb=_b('\n!protobuf/GatesPreprocessing.proto\x12\x0fproject_inf_mpc\"Z\n\x04Gate\x12\n\n\x02id\x18\x01 \x02(\x05\x12\n\n\x02M0\x18\x02 \x01(\x0c\x12\n\n\x02M1\x18\x03 \x01(\x0c\x12\n\n\x02G0\x18\x04 \x01(\x0c\x12\n\n\x02G1\x18\x05 \x01(\x0c\x12\n\n\x02G2\x18\x06 \x01(\x0c\x12\n\n\x02G3\x18\x07 \x01(\x0c\":\n\x12GatesPreprocessing\x12$\n\x05gates\x18\x01 \x03(\x0b\x32\x15.project_inf_mpc.Gate')
 )
 
 
@@ -53,6 +53,34 @@ _GATE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='G0', full_name='project_inf_mpc.Gate.G0', index=3,
+      number=4, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='G1', full_name='project_inf_mpc.Gate.G1', index=4,
+      number=5, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='G2', full_name='project_inf_mpc.Gate.G2', index=5,
+      number=6, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='G3', full_name='project_inf_mpc.Gate.G3', index=6,
+      number=7, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -66,7 +94,7 @@ _GATE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=54,
-  serialized_end=96,
+  serialized_end=144,
 )
 
 
@@ -96,8 +124,8 @@ _GATESPREPROCESSING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=98,
-  serialized_end=156,
+  serialized_start=146,
+  serialized_end=204,
 )
 
 _GATESPREPROCESSING.fields_by_name['gates'].message_type = _GATE

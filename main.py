@@ -1,5 +1,5 @@
 from typing import Dict
-from protobuf import GatesPreprocessing_pb2
+from protobuf import FunctionIndependentPreprocessing_pb2, FunctionDependentPreprocessing_pb2
 from tools import person, fpre
 from gate import *
 
@@ -22,7 +22,7 @@ def create_example_circuit():
 
 
 def function_independent_preprocessing():
-    ser_gates = GatesPreprocessing_pb2.GatesPreprocessing()
+    ser_gates = FunctionIndependentPreprocessing_pb2.GatesPreprocessing()
     for id in circuit.keys():
         ser_gate = ser_gates.gates.add()
         ser_gate.id = id
@@ -42,9 +42,22 @@ def function_independent_preprocessing():
     ser_gates_bytes = ser_gates.SerializeToString()
     print(ser_gates_bytes)
     for g in ser_gates.gates:
-        print("Gate ID: "+str(g.id))
-        print("M0: "+str(g.M0))
-        print("M1: "+str(g.M1))
+        print("Gate ID: " + str(g.id))
+        print("M0: " + str(g.M0))
+        print("M1: " + str(g.M1))
+
+
+def function_dependent_preprocessing():
+    ser_gates = FunctionDependentPreprocessing_pb2.GatesPreprocessing()
+    for id in circuit.keys():
+        ser_gate = ser_gates.gates.add()
+        g = circuit[id]
+        if g.type == Gate.TYPE_XOR:
+            m0, m1 = fpre.create_gate_vars()
+            ser_gate.M0 = m0
+            ser_gate.M1 = m1
+        elif g.type == Gate.TYPE_AND:
+            g.function_dependent_preprocessing(ser_gates.gates.add())
 
 
 if __name__ == "__main__":

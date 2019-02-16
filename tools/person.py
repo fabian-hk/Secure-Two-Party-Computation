@@ -1,5 +1,6 @@
 from tools import fpre
-
+import conf
+import os
 
 class Person:
     A = 0
@@ -10,4 +11,10 @@ class Person:
         :param x:
         """
         self.x = x
-        self.delta = fpre.init()
+        self.delta = None
+
+        if self.x == Person.A:
+            self.delta = os.urandom(conf.k)
+
+    def __str__(self):
+        return "Person: "+str(self.x)+" Delta: "+str(self.delta)

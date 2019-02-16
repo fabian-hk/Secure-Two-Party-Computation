@@ -10,8 +10,12 @@ class Gate:
 
     def __init__(self, id, person, pre_a, pre_b, next=None):
         self.id = id
-        self.pre_a = pre_a
-        self.pre_b = pre_b
+        self.pre_a = pre_a  # type: Gate
+        if self.pre_a:
+            self.pre_a.next = self
+        self.pre_b = pre_b  # type: Gate
+        if self.pre_b:
+            self.pre_b.next = self
         self.next = next
         self.person = person
         self.type = None
@@ -57,6 +61,19 @@ class AND(Gate):
         self.Lb1 = None
         self.Ly0 = None
 
+        self.a = None
+        self.Ma = None
+        self.Ka = None
+        self.b = None
+        self.Mb = None
+        self.Kb = None
+        self.y = None
+        self.My = None
+        self.Ky = None
+        self.o = None
+        self.Mo = None
+        self.Ko = None
+
     def compute_G(self, i, La, Lb, y):
         """
         Computes one row of the garbled table
@@ -75,37 +92,33 @@ class AND(Gate):
             tmp2 = self.yi[i] + self.Myi[i] + h.xor(self.Ly0, self.Kyi[i])
         return h.xor(tmp1, tmp2)
 
-    def function_dependent_preprocessing(self, ser_gate, a, Ma, Ka, b, Mb, Kb, y, My, Ky, o, Mo, Ko, La0=None, Lb0=None,
-                                         Ly0=None):
+    def function_dependent_preprocessing(self, ser_gate):
         ser_gate.id = self.id
         # Protocol part 4 b) c)
-        self.yi[0] = h.xor(o, y)
-        self.Myi[0] = h.xor(Mo, My)
-        self.Kyi[0] = h.xor(Ko, Ky)
+        self.yi[0] = h.xor(self.o, self.y)
+        self.Myi[0] = h.xor(self.Mo, self.My)
+        self.Kyi[0] = h.xor(self.Ko, self.Ky)
 
-        self.yi[1] = h.xor(o, y, a)
-        self.Myi[1] = h.xor(Mo, My, Ma)
-        self.Kyi[1] = h.xor(Ko, Ky, Ka)
+        self.yi[1] = h.xor(self.o, self.y, self.a)
+        self.Myi[1] = h.xor(self.Mo, self.My, self.Ma)
+        self.Kyi[1] = h.xor(self.Ko, self.Ky, self.Ka)
 
-        self.yi[2] = h.xor(o, y, b)
-        self.Myi[2] = h.xor(Mo, My, Mb)
-        self.Kyi[2] = h.xor(Ko, Ky, Kb)
+        self.yi[2] = h.xor(self.o, self.y, self.b)
+        self.Myi[2] = h.xor(self.Mo, self.My, self.Mb)
+        self.Kyi[2] = h.xor(self.Ko, self.Ky, self.Kb)
 
         if self.person.x == Person.B:
-            self.yi[3] = h.xor(o, y, a, b'\x01')
+            self.yi[3] = h.xor(self.o, self.y, self.a, b'\x01')
         else:
-            self.yi[3] = h.xor(o, y, a)
-        self.Myi[3] = h.xor(Mo, My, Ma, Mb)
+            self.yi[3] = h.xor(self.o, self.y, self.a)
+        self.Myi[3] = h.xor(self.Mo, self.My, self.Ma, self.Mb)
         if self.person.x == Person.A:
-            self.Kyi[3] = h.xor(Ko, Ky, Ka, Kb, self.person.delta)
+            self.Kyi[3] = h.xor(self.Ko, self.Ky, self.Ka, self.Kb, self.person.delta)
         else:
-            self.Kyi[3] = h.xor(Ko, Ky, Ka, Kb)
+            self.Kyi[3] = h.xor(self.Ko, self.Ky, self.Ka, self.Kb)
 
         # Protocol part 4 d)
         if self.person.x == Person.A:
-            self.La0 = La0
-            self.Lb0 = Lb0
-            self.Ly0 = Ly0
             self.La1 = h.xor(self.La0, self.person.delta)
             self.Lb1 = h.xor(self.Lb0, self.person.delta)
 
@@ -133,12 +146,18 @@ class XOR(Gate):
         """
         super().__init__(id, person, pre_a, pre_b, next)
         self.type = Gate.TYPE_XOR
+        self.a = None
+        self.Ma = None
+        self.Ka = None
+        self.b = None
+        self.Mb = None
+        self.Kb = None
         self.y = None
         self.My = None
         self.Ky = None
 
-    def function_dependent_preprocessing(self, a, Ma, Ka, b, Mb, Kb):
+    def function_dependent_preprocessing(self):
         # Protocol part 3
-        self.y = h.xor(a, b)
-        self.My = h.xor(Ma, Mb)
-        self.Ky = h.xor(Ka, Kb)
+        self.y = h.xor(self.a, self.b)
+        self.My = h.xor(self.Ma, self.Mb)
+        self.Ky = h.xor(self.Ka, self.Kb)

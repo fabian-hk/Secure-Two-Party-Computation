@@ -16,39 +16,46 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='protobuf/FunctionIndependentPreprocessing.proto',
-  package='project_inf_mpc',
+  package='project_inf_mpc.function_independent_preprocessing',
   syntax='proto2',
   serialized_options=None,
-  serialized_pb=_b('\n/protobuf/FunctionIndependentPreprocessing.proto\x12\x0fproject_inf_mpc\"*\n\x04Gate\x12\n\n\x02id\x18\x01 \x02(\x05\x12\n\n\x02M0\x18\x02 \x01(\x0c\x12\n\n\x02M1\x18\x03 \x01(\x0c\":\n\x12GatesPreprocessing\x12$\n\x05gates\x18\x01 \x03(\x0b\x32\x15.project_inf_mpc.Gate')
+  serialized_pb=_b('\n/protobuf/FunctionIndependentPreprocessing.proto\x12\x32project_inf_mpc.function_independent_preprocessing\"2\n\x03\x42it\x12\n\n\x02id\x18\x01 \x02(\x05\x12\t\n\x01r\x18\x02 \x01(\x0c\x12\t\n\x01M\x18\x03 \x01(\x0c\x12\t\n\x01K\x18\x04 \x01(\x0c\"Y\n\x10\x41uthenticatedBit\x12\x45\n\x04\x62its\x18\x01 \x03(\x0b\x32\x37.project_inf_mpc.function_independent_preprocessing.Bit')
 )
 
 
 
 
-_GATE = _descriptor.Descriptor(
-  name='Gate',
-  full_name='project_inf_mpc.Gate',
+_BIT = _descriptor.Descriptor(
+  name='Bit',
+  full_name='project_inf_mpc.function_independent_preprocessing.Bit',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id', full_name='project_inf_mpc.Gate.id', index=0,
+      name='id', full_name='project_inf_mpc.function_independent_preprocessing.Bit.id', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='M0', full_name='project_inf_mpc.Gate.M0', index=1,
+      name='r', full_name='project_inf_mpc.function_independent_preprocessing.Bit.r', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='M1', full_name='project_inf_mpc.Gate.M1', index=2,
+      name='M', full_name='project_inf_mpc.function_independent_preprocessing.Bit.M', index=2,
       number=3, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='K', full_name='project_inf_mpc.function_independent_preprocessing.Bit.K', index=3,
+      number=4, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -65,20 +72,20 @@ _GATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=68,
-  serialized_end=110,
+  serialized_start=103,
+  serialized_end=153,
 )
 
 
-_GATESPREPROCESSING = _descriptor.Descriptor(
-  name='GatesPreprocessing',
-  full_name='project_inf_mpc.GatesPreprocessing',
+_AUTHENTICATEDBIT = _descriptor.Descriptor(
+  name='AuthenticatedBit',
+  full_name='project_inf_mpc.function_independent_preprocessing.AuthenticatedBit',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='gates', full_name='project_inf_mpc.GatesPreprocessing.gates', index=0,
+      name='bits', full_name='project_inf_mpc.function_independent_preprocessing.AuthenticatedBit.bits', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -96,28 +103,28 @@ _GATESPREPROCESSING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=112,
-  serialized_end=170,
+  serialized_start=155,
+  serialized_end=244,
 )
 
-_GATESPREPROCESSING.fields_by_name['gates'].message_type = _GATE
-DESCRIPTOR.message_types_by_name['Gate'] = _GATE
-DESCRIPTOR.message_types_by_name['GatesPreprocessing'] = _GATESPREPROCESSING
+_AUTHENTICATEDBIT.fields_by_name['bits'].message_type = _BIT
+DESCRIPTOR.message_types_by_name['Bit'] = _BIT
+DESCRIPTOR.message_types_by_name['AuthenticatedBit'] = _AUTHENTICATEDBIT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-Gate = _reflection.GeneratedProtocolMessageType('Gate', (_message.Message,), dict(
-  DESCRIPTOR = _GATE,
+Bit = _reflection.GeneratedProtocolMessageType('Bit', (_message.Message,), dict(
+  DESCRIPTOR = _BIT,
   __module__ = 'protobuf.FunctionIndependentPreprocessing_pb2'
-  # @@protoc_insertion_point(class_scope:project_inf_mpc.Gate)
+  # @@protoc_insertion_point(class_scope:project_inf_mpc.function_independent_preprocessing.Bit)
   ))
-_sym_db.RegisterMessage(Gate)
+_sym_db.RegisterMessage(Bit)
 
-GatesPreprocessing = _reflection.GeneratedProtocolMessageType('GatesPreprocessing', (_message.Message,), dict(
-  DESCRIPTOR = _GATESPREPROCESSING,
+AuthenticatedBit = _reflection.GeneratedProtocolMessageType('AuthenticatedBit', (_message.Message,), dict(
+  DESCRIPTOR = _AUTHENTICATEDBIT,
   __module__ = 'protobuf.FunctionIndependentPreprocessing_pb2'
-  # @@protoc_insertion_point(class_scope:project_inf_mpc.GatesPreprocessing)
+  # @@protoc_insertion_point(class_scope:project_inf_mpc.function_independent_preprocessing.AuthenticatedBit)
   ))
-_sym_db.RegisterMessage(GatesPreprocessing)
+_sym_db.RegisterMessage(AuthenticatedBit)
 
 
 # @@protoc_insertion_point(module_scope)

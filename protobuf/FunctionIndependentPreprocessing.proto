@@ -1,13 +1,14 @@
 syntax = "proto2";
 
-package project_inf_mpc;
+package project_inf_mpc.function_independent_preprocessing;
 
-message Gate {
+message Bit {
     required int32 id = 1;
-    optional bytes M0 = 2;
-    optional bytes M1 = 3;
+    optional bytes r = 2;
+    optional bytes M = 3;
+    optional bytes K = 4;
 }
 
-message GatesPreprocessing {
-    repeated Gate gates = 1;
+message AuthenticatedBit {
+    repeated Bit bits = 1;
 }

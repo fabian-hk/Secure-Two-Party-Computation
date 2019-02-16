@@ -1,14 +1,15 @@
-def xor(a, b, c=bytearray(0), d=bytearray(0)):
+def xor(a, b, c=bytearray(0), d=bytearray(0), e=bytearray(0)):
     """
     :param a:
     :param b:
     :param c:
     :param d:
-    :return c: element wise xor of a and b
+    :param e:
+    :return f: element wise xor of a and b
     :rtype bytearray
     """
     l = max(len(a), len(b), len(c), len(d))
-    # do padding if the variables doesn't have the same length
+    # do padding with 0 if the variables doesn't have the same length
     if len(a) < l:
         a = bytearray(l - len(a)) + a
     if len(b) < l:
@@ -17,8 +18,11 @@ def xor(a, b, c=bytearray(0), d=bytearray(0)):
         c = bytearray(l - len(c)) + c
     if len(d) < l:
         d = bytearray(l - len(d)) + d
+    if len(e) < l:
+        e = bytearray(l - len(e)) + e
 
-    e = bytearray(l)
+    f = bytearray(l)
     for i in range(l):
-        e[i] = a[i] ^ b[i] ^ c[i] ^ d[i]
-    return e
+        f[i] = a[i] ^ b[i] ^ c[i] ^ d[i]
+
+    return f

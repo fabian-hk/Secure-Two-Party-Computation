@@ -5,6 +5,7 @@ from tools.person import Person
 from gate import *
 import os
 import conf
+import math
 
 
 class MPC_A:
@@ -12,6 +13,10 @@ class MPC_A:
     def __init__(self, person: Person):
         # holds all gates like {int_id : gate}
         self.circuit: Dict[int, Gate] = {}
+
+        # data structures to store the variables from the function independent preprocessing
+        self.labels = []
+        self.auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
 
         self.person = person
         self.create_example_circuit()
@@ -29,37 +34,13 @@ class MPC_A:
         fpre.init_a(self.person)
         print(person)
 
-        auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBit()
-        for id in self.circuit.keys():
-            g = self.circuit[id]
-            if g.type == Gate.TYPE_XOR and not g.pre_a and not g.pre_b:
-                auth_bit = auth_bits.bits.add()
-                auth_bit.id = id
-                g.a, g.Ma, g.Ka = fpre.authenticated_bit(auth_bit)
-                auth_bit = auth_bits.bits.add()
-                auth_bit.id = id + 1
-                g.b, g.Mb, g.Kb = fpre.authenticated_bit(auth_bit)
-            elif g.type == Gate.TYPE_AND:
-                # choose labels
-                g.La0 = os.urandom(conf.k)
-                g.Lb0 = os.urandom(conf.k)
-                g.Ly0 = os.urandom(conf.k)
-                # create authenticated bits
-                auth_bit = auth_bits.bits.add()
-                auth_bit.id = id+2
-                g.y, g.My, g.Ky = fpre.authenticated_bit(auth_bit)
+        for i in range((conf.upper_bound_gates + 2 * conf.input_size)):
+            auth_bit = self.auth_bits.bits.add()
+            fpre.authenticated_bit(auth_bit)
+            self.labels.append(os.urandom(int(conf.k / 8)))
 
-                # create authenticated bits if the gate is an input gate
-                if not g.pre_a and not g.pre_b:
-                    auth_bit = auth_bits.bits.add()
-                    auth_bit.id = id
-                    g.a, g.Ma, g.Ka = fpre.authenticated_bit(auth_bit)
-                    auth_bit = auth_bits.bits.add()
-                    auth_bit.id = id + 1
-                    g.b, g.Mb, g.Kb = fpre.authenticated_bit(auth_bit)
-
-        # Serialize the authenticated bits to the server
-        fpre.send_auth_bits(auth_bits.SerializeToString())
+        # Serialize the authenticated bits and send them to the server
+        fpre.send_auth_bits(self.auth_bits.SerializeToString())
 
     def function_dependent_preprocessing(self):
         ser_gates = FunctionDependentPreprocessing_pb2.GatesPreprocessing()

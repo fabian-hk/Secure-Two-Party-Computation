@@ -11,6 +11,9 @@ class MPC_B:
         # holds all gates like {int_id : gate}
         self.circuit: Dict[int, Gate] = {}
 
+        # data structure to save the variables from the function independent preprocessing
+        self.auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
+
         self.person = person
         self.create_example_circuit()
         self.function_independent_preprocessing()
@@ -24,10 +27,16 @@ class MPC_B:
         self.circuit[3] = xor3
 
     def function_independent_preprocessing(self):
-        person.delta = fpre.init_b()
-        print(person)
+        self.person.delta = fpre.init_b()
+        print(self.person)
 
+        ser_auth_bits = fpre.rec_auth_bits()
 
+        self.auth_bits.ParseFromString(ser_auth_bits)
+        for auth_bit in self.auth_bits.bits:
+            print("r: "+str(auth_bit.r))
+            print("M: "+str(auth_bit.M))
+            print("K: "+str(auth_bit.K))
 
     def function_dependent_preprocessing(self):
         ser_gates = FunctionDependentPreprocessing_pb2.GatesPreprocessing()

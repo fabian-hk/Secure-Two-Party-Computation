@@ -9,6 +9,13 @@ class Gate:
     TYPE_XOR = 1
 
     def __init__(self, id, person, pre_a, pre_b, next=None):
+        """
+        :param id: unique id of the gate (see README for more information)
+        :param person:
+        :param pre_a:
+        :param pre_b:
+        :param next:
+        """
         self.id = id
         self.pre_a = pre_a  # type: Gate
         if self.pre_a:
@@ -74,17 +81,17 @@ class AND(Gate):
         self.Mo = None
         self.Ko = None
 
-    def compute_G(self, i, La, Lb, y):
+    def compute_G(self, i, La, Lb):
         """
         Computes one row of the garbled table
         :param i:
         :param La:
         :param Lb:
-        :param y:
         :return:
         """
         hash_function = hashlib.sha3_256()
-        hash_function.update(La + Lb + y + b'\x01')
+        # the wire ID is encoded as a 4 byte integer for more information read the README file
+        hash_function.update(La + Lb + (self.id+2).to_bytes(4, 'big') + i.to_bytes(1, 'big'))
         tmp1 = hash_function.digest()
         if self.yi[i] == 1:
             tmp2 = self.yi[i] + self.Myi[i] + h.xor(self.Ly0, self.Kyi[i], self.yi[i] + self.person.delta)
@@ -122,10 +129,10 @@ class AND(Gate):
             self.La1 = h.xor(self.La0, self.person.delta)
             self.Lb1 = h.xor(self.Lb0, self.person.delta)
 
-            self.Gi[0] = self.compute_G(0, self.La0, self.Lb0, self.yi[0])
-            self.Gi[1] = self.compute_G(1, self.La0, self.Lb1, self.yi[1])
-            self.Gi[2] = self.compute_G(2, self.La1, self.Lb0, self.yi[2])
-            self.Gi[3] = self.compute_G(3, self.La1, self.Lb1, self.yi[3])
+            self.Gi[0] = self.compute_G(0, self.La0, self.Lb0)
+            self.Gi[1] = self.compute_G(1, self.La0, self.Lb1)
+            self.Gi[2] = self.compute_G(2, self.La1, self.Lb0)
+            self.Gi[3] = self.compute_G(3, self.La1, self.Lb1)
             ser_gate.G0 = self.Gi[0]
             ser_gate.G1 = self.Gi[1]
             ser_gate.G2 = self.Gi[2]

@@ -19,8 +19,8 @@ class SimpleGate:
                 "output-wire-id: " + str(self.next) + "   type: " + str(self.gate_type))
 
 def bristol_to_simplegatelist():
-    file_add = open('gate_files/add_bristol.txt', 'r', newline='', encoding="utf8")
-    file_eucl = open('gate_files/eucl_dist_bristol.txt', 'r', newline='', encoding="utf8")
+    file_add = open('gate_files/add_output/add_bristol.txt', 'r', newline='', encoding="utf8")
+    file_eucl = open('gate_files/eucl_dist_output/eucl_dist_bristol.txt', 'r', newline='', encoding="utf8")
     reader = csv.reader(file_eucl, delimiter=' ', quoting=csv.QUOTE_NONE)
 
     num_of_gates = 0

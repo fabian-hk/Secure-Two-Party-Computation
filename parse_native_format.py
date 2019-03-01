@@ -3,11 +3,14 @@ import csv
 
 class gate_helper:
 
-    def __init__(self, id, type, num_of_inputs, output_to):
+    def __init__(self, id, type, num_of_inputs, output_to, is_circuit_output, output_number_list):
         self.id = id
         self.type = type
         self.num_of_inputs = num_of_inputs
         self.output_to = output_to
+        self.output_value = None
+        self.is_circuit_output = is_circuit_output
+        self.output_number_list = output_number_list
 
 
 def get_nonio_gate_file(folder_name):
@@ -63,10 +66,17 @@ def get_input_gates(input_gate_file):
         gatetype = 'INPUT'
         num_of_inputs = 0
         output_to = []
+        is_circuit_output = False
+        output_id_list = []
         for output_wire in gate[1:]:
-            (_, gateid, inputid) = transform_wire_string_to_tuple(output_wire)
-            output_to.append((gateid, inputid))
-        input_gate_object = gate_helper(gateid, gatetype, num_of_inputs, output_to)
+            (_, gateid_out, inputid_out) = transform_wire_string_to_tuple(output_wire)
+            if gateid_out < 0:
+                is_circuit_output = True
+                output_id_list.append(gateid_out)
+            output_to.append((gateid_out, inputid_out))
+
+        input_gate_object = gate_helper(gateid, gatetype, num_of_inputs, output_to, is_circuit_output,
+                                        output_id_list)
         input_gate_list.append(input_gate_object)
 
     return input_gate_list
@@ -83,10 +93,17 @@ def get_nonio_gates(nonio_gate_file):
         gatetype = gate[0]
         num_of_inputs = gate[1]
         output_to = []
+        is_circuit_output = False
+        output_id_list = []
         for output_wire in gate[2:]:
-            (_, gateid, inputid) = transform_wire_string_to_tuple(output_wire)
-            output_to.append((gateid, inputid))
-        nonio_gate_object = gate_helper(gateid, gatetype, num_of_inputs, output_to)
+            (_, gateid_out, inputid_out) = transform_wire_string_to_tuple(output_wire)
+            if gateid_out < 0:
+                is_circuit_output = True
+                output_id_list.append(gateid_out)
+            output_to.append((gateid_out, inputid_out))
+
+        nonio_gate_object = gate_helper(gateid, gatetype, num_of_inputs, output_to, is_circuit_output,
+                                        output_id_list)
         nonio_gate_list.append(nonio_gate_object)
         current_id += 1
     return nonio_gate_list
@@ -107,15 +124,13 @@ def parse_native(output_file):
     :return:
     """
 
-    #get informations on the input from output files
+    # get informations on the input from output files
     input_gate_list = get_input_gates(get_input_gate_file(output_file))
     num_of_input_gates = len(input_gate_list)
     rangeA = get_inputrange_partyA(get_partyA_input_range_file(output_file), num_of_input_gates)
     rangeB = get_inputrange_partyB(get_partyB_input_range_file(output_file), num_of_input_gates)
 
-    #get information on nonio gates
+    # get information on nonio gates
     nonio_gate_list = get_nonio_gates(get_nonio_gate_file(output_file))
 
     return input_gate_list, rangeA, rangeB, nonio_gate_list
-
-

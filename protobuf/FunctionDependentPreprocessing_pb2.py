@@ -19,50 +19,50 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='project_inf_mpc.function_dependent_preprocessing',
   syntax='proto2',
   serialized_options=None,
-  serialized_pb=_b('\n-protobuf/FunctionDependentPreprocessing.proto\x12\x30project_inf_mpc.function_dependent_preprocessing\"B\n\x04Gate\x12\n\n\x02id\x18\x01 \x02(\x05\x12\n\n\x02G0\x18\x02 \x01(\x0c\x12\n\n\x02G1\x18\x03 \x01(\x0c\x12\n\n\x02G2\x18\x04 \x01(\x0c\x12\n\n\x02G3\x18\x05 \x01(\x0c\"[\n\x12GatesPreprocessing\x12\x45\n\x05gates\x18\x01 \x03(\x0b\x32\x36.project_inf_mpc.function_dependent_preprocessing.Gate')
+  serialized_pb=_b('\n-protobuf/FunctionDependentPreprocessing.proto\x12\x30project_inf_mpc.function_dependent_preprocessing\"I\n\x0bGarbledGate\x12\n\n\x02id\x18\x01 \x02(\x05\x12\n\n\x02G0\x18\x02 \x02(\x0c\x12\n\n\x02G1\x18\x03 \x02(\x0c\x12\n\n\x02G2\x18\x04 \x02(\x0c\x12\n\n\x02G3\x18\x05 \x02(\x0c\"\\\n\x0cGarbledGates\x12L\n\x05gates\x18\x01 \x03(\x0b\x32=.project_inf_mpc.function_dependent_preprocessing.GarbledGate\"\x83\x01\n\tANDTriple\x12\n\n\x02id\x18\x01 \x02(\x05\x12\n\n\x02r1\x18\x02 \x02(\x0c\x12\n\n\x02M1\x18\x03 \x02(\x0c\x12\n\n\x02K1\x18\x04 \x02(\x0c\x12\n\n\x02r2\x18\x05 \x01(\x0c\x12\n\n\x02M2\x18\x06 \x01(\x0c\x12\n\n\x02K2\x18\x07 \x01(\x0c\x12\n\n\x02r3\x18\x08 \x01(\x0c\x12\n\n\x02M3\x18\t \x01(\x0c\x12\n\n\x02K3\x18\n \x01(\x0c\"Z\n\nANDTriples\x12L\n\x07triples\x18\x01 \x03(\x0b\x32;.project_inf_mpc.function_dependent_preprocessing.ANDTriple')
 )
 
 
 
 
-_GATE = _descriptor.Descriptor(
-  name='Gate',
-  full_name='project_inf_mpc.function_dependent_preprocessing.Gate',
+_GARBLEDGATE = _descriptor.Descriptor(
+  name='GarbledGate',
+  full_name='project_inf_mpc.function_dependent_preprocessing.GarbledGate',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id', full_name='project_inf_mpc.function_dependent_preprocessing.Gate.id', index=0,
+      name='id', full_name='project_inf_mpc.function_dependent_preprocessing.GarbledGate.id', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='G0', full_name='project_inf_mpc.function_dependent_preprocessing.Gate.G0', index=1,
-      number=2, type=12, cpp_type=9, label=1,
+      name='G0', full_name='project_inf_mpc.function_dependent_preprocessing.GarbledGate.G0', index=1,
+      number=2, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='G1', full_name='project_inf_mpc.function_dependent_preprocessing.Gate.G1', index=2,
-      number=3, type=12, cpp_type=9, label=1,
+      name='G1', full_name='project_inf_mpc.function_dependent_preprocessing.GarbledGate.G1', index=2,
+      number=3, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='G2', full_name='project_inf_mpc.function_dependent_preprocessing.Gate.G2', index=3,
-      number=4, type=12, cpp_type=9, label=1,
+      name='G2', full_name='project_inf_mpc.function_dependent_preprocessing.GarbledGate.G2', index=3,
+      number=4, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='G3', full_name='project_inf_mpc.function_dependent_preprocessing.Gate.G3', index=4,
-      number=5, type=12, cpp_type=9, label=1,
+      name='G3', full_name='project_inf_mpc.function_dependent_preprocessing.GarbledGate.G3', index=4,
+      number=5, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -80,19 +80,19 @@ _GATE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=99,
-  serialized_end=165,
+  serialized_end=172,
 )
 
 
-_GATESPREPROCESSING = _descriptor.Descriptor(
-  name='GatesPreprocessing',
-  full_name='project_inf_mpc.function_dependent_preprocessing.GatesPreprocessing',
+_GARBLEDGATES = _descriptor.Descriptor(
+  name='GarbledGates',
+  full_name='project_inf_mpc.function_dependent_preprocessing.GarbledGates',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='gates', full_name='project_inf_mpc.function_dependent_preprocessing.GatesPreprocessing.gates', index=0,
+      name='gates', full_name='project_inf_mpc.function_dependent_preprocessing.GarbledGates.gates', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -110,28 +110,170 @@ _GATESPREPROCESSING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=167,
-  serialized_end=258,
+  serialized_start=174,
+  serialized_end=266,
 )
 
-_GATESPREPROCESSING.fields_by_name['gates'].message_type = _GATE
-DESCRIPTOR.message_types_by_name['Gate'] = _GATE
-DESCRIPTOR.message_types_by_name['GatesPreprocessing'] = _GATESPREPROCESSING
+
+_ANDTRIPLE = _descriptor.Descriptor(
+  name='ANDTriple',
+  full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriple',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriple.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='r1', full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriple.r1', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='M1', full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriple.M1', index=2,
+      number=3, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='K1', full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriple.K1', index=3,
+      number=4, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='r2', full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriple.r2', index=4,
+      number=5, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='M2', full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriple.M2', index=5,
+      number=6, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='K2', full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriple.K2', index=6,
+      number=7, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='r3', full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriple.r3', index=7,
+      number=8, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='M3', full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriple.M3', index=8,
+      number=9, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='K3', full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriple.K3', index=9,
+      number=10, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=269,
+  serialized_end=400,
+)
+
+
+_ANDTRIPLES = _descriptor.Descriptor(
+  name='ANDTriples',
+  full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriples',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='triples', full_name='project_inf_mpc.function_dependent_preprocessing.ANDTriples.triples', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=402,
+  serialized_end=492,
+)
+
+_GARBLEDGATES.fields_by_name['gates'].message_type = _GARBLEDGATE
+_ANDTRIPLES.fields_by_name['triples'].message_type = _ANDTRIPLE
+DESCRIPTOR.message_types_by_name['GarbledGate'] = _GARBLEDGATE
+DESCRIPTOR.message_types_by_name['GarbledGates'] = _GARBLEDGATES
+DESCRIPTOR.message_types_by_name['ANDTriple'] = _ANDTRIPLE
+DESCRIPTOR.message_types_by_name['ANDTriples'] = _ANDTRIPLES
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-Gate = _reflection.GeneratedProtocolMessageType('Gate', (_message.Message,), dict(
-  DESCRIPTOR = _GATE,
+GarbledGate = _reflection.GeneratedProtocolMessageType('GarbledGate', (_message.Message,), dict(
+  DESCRIPTOR = _GARBLEDGATE,
   __module__ = 'protobuf.FunctionDependentPreprocessing_pb2'
-  # @@protoc_insertion_point(class_scope:project_inf_mpc.function_dependent_preprocessing.Gate)
+  # @@protoc_insertion_point(class_scope:project_inf_mpc.function_dependent_preprocessing.GarbledGate)
   ))
-_sym_db.RegisterMessage(Gate)
+_sym_db.RegisterMessage(GarbledGate)
 
-GatesPreprocessing = _reflection.GeneratedProtocolMessageType('GatesPreprocessing', (_message.Message,), dict(
-  DESCRIPTOR = _GATESPREPROCESSING,
+GarbledGates = _reflection.GeneratedProtocolMessageType('GarbledGates', (_message.Message,), dict(
+  DESCRIPTOR = _GARBLEDGATES,
   __module__ = 'protobuf.FunctionDependentPreprocessing_pb2'
-  # @@protoc_insertion_point(class_scope:project_inf_mpc.function_dependent_preprocessing.GatesPreprocessing)
+  # @@protoc_insertion_point(class_scope:project_inf_mpc.function_dependent_preprocessing.GarbledGates)
   ))
-_sym_db.RegisterMessage(GatesPreprocessing)
+_sym_db.RegisterMessage(GarbledGates)
+
+ANDTriple = _reflection.GeneratedProtocolMessageType('ANDTriple', (_message.Message,), dict(
+  DESCRIPTOR = _ANDTRIPLE,
+  __module__ = 'protobuf.FunctionDependentPreprocessing_pb2'
+  # @@protoc_insertion_point(class_scope:project_inf_mpc.function_dependent_preprocessing.ANDTriple)
+  ))
+_sym_db.RegisterMessage(ANDTriple)
+
+ANDTriples = _reflection.GeneratedProtocolMessageType('ANDTriples', (_message.Message,), dict(
+  DESCRIPTOR = _ANDTRIPLES,
+  __module__ = 'protobuf.FunctionDependentPreprocessing_pb2'
+  # @@protoc_insertion_point(class_scope:project_inf_mpc.function_dependent_preprocessing.ANDTriples)
+  ))
+_sym_db.RegisterMessage(ANDTriples)
 
 
 # @@protoc_insertion_point(module_scope)

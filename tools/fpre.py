@@ -12,6 +12,7 @@ BUFFER_SIZE = 42 * (conf.upper_bound_gates + 2 * conf.input_size)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
+# *************** Initialization ******************
 def init_a(person: Person):
     s.connect((TCP_IP, TCP_PORT))
     s.send(b'\x00' + person.delta)
@@ -50,4 +51,11 @@ def rec_auth_bits():
     print("Rec auth bits: "+str(len(data[1:])))
     if data[0] == 1:
         return data[1:]
-# *************************************************
+
+
+# ***************** AND triples ********************
+def and_triples(data: bytes):
+    s.send(b'\x02'+data)
+    return_data = s.recv(BUFFER_SIZE)
+    if return_data[0] == 2:
+        return return_data[1:]

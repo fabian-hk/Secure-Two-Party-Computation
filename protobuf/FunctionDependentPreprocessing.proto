@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package project_inf_mpc.function_dependent_preprocessing;
+
+message Gate {
+    required int32 id = 1;
+    optional bytes G0 = 2;
+    optional bytes G1 = 3;
+    optional bytes G2 = 4;
+    optional bytes G3 = 5;
+}
+
+message GatesPreprocessing {
+    repeated Gate gates = 1;
+}

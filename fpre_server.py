@@ -4,11 +4,12 @@ import conf
 import tools.helper as h
 from random import randint
 from protobuf import FunctionIndependentPreprocessing_pb2, FunctionDependentPreprocessing_pb2
-from protobuf import FunctionDependentPreprocessing as fdp
+from protobuf import Wrapper
+import sys
 
 TCP_IP = 'localhost'
 TCP_PORT = 3003
-BUFFER_SIZE = 42 * (conf.upper_bound_gates + 2 * conf.input_size)
+BUFFER_SIZE = int((conf.k / 2) * (conf.upper_bound_gates * 3))
 
 delta_a = None
 delta_b = None
@@ -38,6 +39,7 @@ while True:
         auth_bits_A.ParseFromString(data_A[1:])
         for auth_bit_A in auth_bits_A.bits:
             auth_bit_B = auth_bits_B.bits.add()
+            auth_bit_B.id = auth_bit_A.id
             s = randint(0, 1)
             auth_bit_B.r = s.to_bytes(1, 'big')
             if s == 0:
@@ -50,23 +52,27 @@ while True:
         conn2.send(b'\x01' + ser_auth_bits)
         conn1.send(b'\x01')
     elif data_A[0] == 2:
-        and_triples_A = FunctionDependentPreprocessing_pb2.ANDTriples()
-        and_triples_A.ParseFromString(data_A[1:])
+        and_triple_A = FunctionDependentPreprocessing_pb2.ANDTriple()
+        and_triple_A.ParseFromString(data_A[1:])
         data_B = conn2.recv(BUFFER_SIZE)
-        and_triples_B = FunctionDependentPreprocessing_pb2.ANDTriples()
-        and_triples_B.ParseFromString(data_B[1:])
-        for and_triple_A in and_triples_A.triples:
-            and_triple_B = fdp.get_triple_by_id(and_triple_A.id, and_triples_B)
-            # TODO cheat check
-            and_triple_B.r3 = bytes(h.xor(and_triple_A.r3, h.AND(h.xor(and_triple_A.r1, and_triple_B.r1),
-                                                           h.xor(and_triple_A.r2, and_triple_B.r2))))
-            if and_triple_B.r3 == 1:
-                and_triple_B.M3 = bytes(h.xor(and_triple_A.K3, delta_a))
-            else:
-                and_triple_B.M3 = and_triple_A.K3
-            if and_triple_A.r3 == 1:
-                and_triple_B.K3 = bytes(h.xor(and_triple_A.M3, delta_b))
-            else:
-                and_triple_B.K3 = and_triple_A.M3
-        conn2.send(b'\x02'+and_triples_B.SerializeToString())
+        and_triple_B = FunctionDependentPreprocessing_pb2.ANDTriple()
+        and_triple_B.ParseFromString(data_B[1:])
+
+        if and_triple_A.id != and_triple_B.id:
+            print("Error IDs not equal!")
+            sys.exit(1)
+
+        # TODO cheat check
+        and_triple_B.r3 = bytes(h.xor(and_triple_A.r3, h.AND(h.xor(and_triple_A.r1, and_triple_B.r1),
+                                                             h.xor(and_triple_A.r2, and_triple_B.r2))))
+        if and_triple_B.r3 == 1:
+            and_triple_B.M3 = bytes(h.xor(and_triple_A.K3, delta_a))
+        else:
+            and_triple_B.M3 = and_triple_A.K3
+        if and_triple_A.r3 == 1:
+            and_triple_B.K3 = bytes(h.xor(and_triple_A.M3, delta_b))
+        else:
+            and_triple_B.K3 = and_triple_A.M3
+
+        conn2.send(b'\x02' + and_triple_B.SerializeToString())
         conn1.send(b'\x02')

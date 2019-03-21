@@ -1,8 +1,9 @@
+import hashlib
+import abc
+
 from tools.person import Person
 from tools import helper as h
 from tools import fpre
-import hashlib
-import abc
 
 
 class Gate:
@@ -38,7 +39,12 @@ class Gate:
         self.La0 = None
         self.Lb0 = None
         self.Ly0 = None
+        self.La1 = None
+        self.Lb1 = None
+        self.Ly1 = None
+        self.label = None  # label for B during evaluation
 
+        self.masked_bit = None  # masked bit for B during evaluation
         self.a = None
         self.Ma = None
         self.Ka = None
@@ -115,9 +121,6 @@ class AND(Gate):
         self.Myi = []
         self.Kyi = []
         self.Gi = []
-
-        self.La1 = None
-        self.Lb1 = None
 
         self.o = None
         self.Mo = None

@@ -44,3 +44,84 @@ def AND(a, b):
     for i in range(l):
         c[i] = a[i] & b[i]
     return c
+
+
+def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes):
+    """
+    Checks two AND triples if they are corrct
+    :param and_triple_A: first AND triple as protobuf message
+    :param and_triple_B:  second AND triple as protobuf message
+    :param delta_a: delta from person A as bytes
+    :param delta_b: delta from person B as bytes
+    """
+    # check first bit from A
+    if and_triple_A.r1 == b'\x01':
+        if and_triple_A.M1 == bytes(xor(and_triple_B.K1, delta_b)):
+            pass
+            # print("Correct bit 1 A. ID: " + str(and_triple_A.id))
+        else:
+            print(and_triple_A)
+            print(and_triple_B)
+            print("Cheat bit 1 A. ID: " + str(and_triple_A.id))
+    else:
+        if and_triple_A.M1 == and_triple_B.K1:
+            pass
+            # print("Correct bit 1 A. ID: " + str(and_triple_A.id))
+        else:
+            print(and_triple_A)
+            print(and_triple_B)
+            print("Cheat bit 1 A. ID: " + str(and_triple_A.id))
+
+    # check second bit A
+    if and_triple_A.r2 == b'\x01':
+        if and_triple_A.M2 == bytes(xor(and_triple_B.K2, delta_b)):
+            pass
+            # print("Correct bit 2 A. ID: " + str(and_triple_A.id))
+        else:
+            print(and_triple_A)
+            print(and_triple_B)
+            print("Cheat bit 2 A. ID: " + str(and_triple_A.id))
+    else:
+        if and_triple_A.M2 == and_triple_B.K2:
+            pass
+            # print("Correct bit 2 A. ID: " + str(and_triple_A.id))
+        else:
+            print(and_triple_A)
+            print(and_triple_B)
+            print("Cheat bit 2 A. ID: " + str(and_triple_A.id))
+
+    # check first bit from B
+    if and_triple_B.r1 == b'\x01':
+        if and_triple_B.M1 == bytes(xor(and_triple_A.K1, delta_a)):
+            pass
+            # print("Correct bit 1 B. ID: " + str(and_triple_B.id))
+        else:
+            print(and_triple_A)
+            print(and_triple_B)
+            print("Cheat bit 1 B. ID: " + str(and_triple_B.id))
+    else:
+        if and_triple_B.M1 == and_triple_A.K1:
+            pass
+            # print("Correct bit 1 B. ID: " + str(and_triple_B.id))
+        else:
+            print(and_triple_A)
+            print(and_triple_B)
+            print("Cheat bit 1 B. ID: " + str(and_triple_B.id))
+
+    # check second bit B
+    if and_triple_B.r2 == b'\x01':
+        if and_triple_B.M2 == bytes(xor(and_triple_A.K2, delta_a)):
+            pass
+            # print("Correct bit 2 B. ID: " + str(and_triple_B.id))
+        else:
+            print(and_triple_A)
+            print(and_triple_B)
+            print("Cheat bit 2 B. ID: " + str(and_triple_B.id))
+    else:
+        if and_triple_B.M2 == and_triple_A.K2:
+            pass
+            # print("Correct bit 2 B. ID: " + str(and_triple_B.id))
+        else:
+            print(and_triple_A)
+            print(and_triple_B)
+            print("Cheat bit 2 B. ID: " + str(and_triple_B.id))

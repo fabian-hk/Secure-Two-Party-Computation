@@ -74,3 +74,11 @@ def and_triples(data: bytes):
     return_data = s.recv(BUFFER_SIZE)
     if return_data[0] == 2:
         return return_data[1:]
+
+
+# *********** close current session ***************
+def close_session():
+    """
+    Just for the Fpre server implementation so that the server can be used for multiple sessions.
+    """
+    s.send(b'\xfe')

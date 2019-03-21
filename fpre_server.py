@@ -42,12 +42,17 @@ while True:
             auth_bit_B.id = auth_bit_A.id
             s = randint(0, 1)
             auth_bit_B.r = s.to_bytes(1, 'big')
-            if s == 0:
+
+            if auth_bit_A.r == b'\x00':
                 auth_bit_B.K = auth_bit_A.M
-                auth_bit_B.M = auth_bit_A.K
             else:
                 auth_bit_B.K = bytes(h.xor(auth_bit_A.M, delta_b))
+
+            if s == 0:
+                auth_bit_B.M = auth_bit_A.K
+            else:
                 auth_bit_B.M = bytes(h.xor(auth_bit_A.K, delta_a))
+
         ser_auth_bits = auth_bits_B.SerializeToString()
         conn2.send(b'\x01' + ser_auth_bits)
         conn1.send(b'\x01')

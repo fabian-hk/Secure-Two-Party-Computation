@@ -2,7 +2,6 @@ import os
 from random import randint
 import conf
 import socket
-from tools.person import Person
 import sys
 
 TCP_IP = 'localhost'
@@ -13,7 +12,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
 # *************** Initialization ******************
-def init_a(person: Person):
+def init_a(person):
     s.connect((TCP_IP, TCP_PORT))
     s.send(b'\x00' + person.delta)
     s.recv(BUFFER_SIZE)
@@ -50,7 +49,6 @@ def send_auth_bits(data):
     complete authenticated bits. Method for Person A.
     :param data:
     """
-    print("send data: " + str(len(data)))
     s.send(b'\x01' + data)
     s.recv(BUFFER_SIZE)
 

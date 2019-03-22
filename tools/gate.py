@@ -13,6 +13,7 @@ class Gate:
 
     WIRE_A = 0
     WIRE_B = 1
+    WIRE_Y = 2
 
     def __init__(self, id: int, person: Person, pre_a, pre_b):
         """
@@ -95,6 +96,11 @@ class Gate:
             and_triple.r2 = self.b
             and_triple.M2 = self.Mb
             and_triple.K2 = self.Kb
+
+    def get_y_auth_bit(self, auth_bit):
+        auth_bit.id = self.id
+        auth_bit.r = bytes(self.y)
+        auth_bit.M = bytes(self.My)
 
     @abc.abstractmethod
     def function_independent_preprocessing(self):

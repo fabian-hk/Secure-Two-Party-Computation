@@ -13,8 +13,8 @@ class Person:
         self.x = x
         self.delta = None
 
-        if self.x == Person.A:
-            self.delta = os.urandom(int(conf.k/8))
+        #personal key delta
+        self.delta = os.urandom(int(conf.k/8))
 
     def __str__(self):
         return "Person: "+str(self.x)+" Delta: "+str(self.delta)

@@ -4,8 +4,9 @@ import conf
 import socket
 import tools.helper as h
 from tools.person import Person
-from tools import f_la_and
+from tools import communication
 import hashlib
+
 
 
 import sys
@@ -118,6 +119,8 @@ r = 0
 def f_la_and_A(person, v_1):
     #********step 3*************
     u = h.xor(v_1, h.AND(x_1, y_1))
+    comm = communication.Com()
+    d = comm.exchange_data(1, u)
     #send u to b
     #recv d from PB
 
@@ -131,7 +134,6 @@ def f_la_and_A(person, v_1):
 
 
 def f_la_and_B(person, v_2):
-
     #******step 3*********
     #u = s.recv(BUFFER_SIZE) - get u from PA
     u = 0

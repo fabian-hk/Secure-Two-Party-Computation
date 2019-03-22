@@ -26,12 +26,16 @@ class MPC:
 
         self.inputs = []
         self.outputs = []
+        self.garbled_gates = FunctionDependentPreprocessing_pb2.GarbledGates()
+
+        self.com = None
+
+        self.in_bits = InputPreprocessing_pb2.Inputs()
+        self.rec_in_bits = InputPreprocessing_pb2.Inputs()
 
         self.create_example_circuit()
         self.function_independent_preprocessing()
         self.function_dependent_preprocessing()
-
-        fpre.close_session()
 
     def create_example_circuit(self):
         and0 = AND(10, self.person, None, None)
@@ -60,24 +64,30 @@ class MPC:
             self.auth_bits.ParseFromString(fpre.rec_auth_bits())
 
     def function_dependent_preprocessing(self):
-        garbled_gates = FunctionDependentPreprocessing_pb2.GarbledGates()
         label_iter = iter(self.labels) if self.person.x == Person.A else None
         for out in self.outputs:
-            self.gate_initialization(out, garbled_gates, label_iter)
+            self.gate_initialization(out, label_iter)
 
-        for key in self.circuit.keys():
-            print(self.circuit[key])
+        fpre.close_session()
 
-    def gate_initialization(self, gate, garbled_gates, label_iter):
+        self.com = Com(self.person)
+
+        if self.person.x == Person.A:
+            self.com.exchange_data(0, self.garbled_gates.SerializeToString())
+        else:
+            self.garbled_gates.ParseFromString(self.com.exchange_data(0))
+        print(self.garbled_gates)
+
+    def gate_initialization(self, gate, label_iter):
         """
         :param gate:
         :type gate Gate
         :param garbled_gates
         """
         if not gate.a and gate.pre_a:
-            self.gate_initialization(gate.pre_a, garbled_gates, label_iter)
+            self.gate_initialization(gate.pre_a, label_iter)
         if not gate.b and gate.pre_b:
-            self.gate_initialization(gate.pre_b, garbled_gates, label_iter)
+            self.gate_initialization(gate.pre_b, label_iter)
         if not gate.prepro:
             gate.prepro = True
             if gate.type == Gate.TYPE_XOR:
@@ -131,7 +141,7 @@ class MPC:
                 gate.initialize_auth_bit_y(Wrapper.get_auth_bit_by_id(gate.id + 2, self.auth_bits))
 
                 # do the function dependent preprocessing
-                gate.function_dependent_preprocessing(garbled_gates.gates.add())
+                gate.function_dependent_preprocessing(self.garbled_gates.gates.add())
 
                 # as A send and triple to the fpre server
                 if self.person.x == Person.A: fpre.and_triples(and_triple.SerializeToString())
@@ -179,7 +189,7 @@ class MPC:
                     return h.xor(in_g.Lb0, self.person.delta)
         return None
 
-    def input_preprocessing(self, in_vals: Dict[int, int], other_in: List[int]):
+    def input_processing(self, in_vals: Dict[int, int], other_in: List[int]):
         """
         :param other_in:
         :param in_vals: Keys are the IDs of the input wires and values are the input bits
@@ -213,9 +223,8 @@ class MPC:
                 b.r = in_gate.b
                 b.M = in_gate.Mb
 
-        com = Com(self.person)
         rec_auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
-        rec_auth_bits.ParseFromString(com.exchange_data(0, in_auth_bits_o.SerializeToString()))
+        rec_auth_bits.ParseFromString(self.com.exchange_data(1, in_auth_bits_o.SerializeToString()))
 
         # check tags
         print("------------- Input bits check -----------------")
@@ -233,26 +242,62 @@ class MPC:
                     print("Cheat. ID: " + str(bit.id))
 
         # compute the masked bit and A also computes directly the labels
-        in_bits = InputPreprocessing_pb2.Inputs()
         for in_auth_bit in in_auth_bits.bits:
-            in_bit = in_bits.inputs.add()
+            in_bit = self.in_bits.inputs.add()
             in_bit.id = in_auth_bit.id
             in_bit.masked_input = bytes(h.xor(in_auth_bit.r, in_vals[in_bit.id].to_bytes(1, 'big'),
                                               Wrapper.get_auth_bit_by_id(in_bit.id, rec_auth_bits).r))
             if self.person.x == Person.A: in_bit.label = bytes(self.label_by_wire_id(in_bit.id, in_bit.masked_input))
 
         # exchange bits
-        rec_in_bits = InputPreprocessing_pb2.Inputs()
-        rec_in_bits.ParseFromString(com.exchange_data(1, in_bits.SerializeToString()))
+        self.rec_in_bits.ParseFromString(self.com.exchange_data(2, self.in_bits.SerializeToString()))
         if self.person.x == Person.A:
             # A assembles all labels for B with the masked bits from B
-            for rec_in_bit in rec_in_bits.inputs:
+            for rec_in_bit in self.rec_in_bits.inputs:
                 rec_in_bit.label = bytes(self.label_by_wire_id(rec_in_bit.id, rec_in_bit.masked_input))
-            com.exchange_data(2, rec_in_bits.SerializeToString())
+            self.com.exchange_data(3, self.rec_in_bits.SerializeToString())
         # B receives the labels for his input from A
-        if self.person.x == Person.B: in_bits.ParseFromString(com.exchange_data(2))
+        if self.person.x == Person.B: self.in_bits.ParseFromString(self.com.exchange_data(3))
 
         print("----------- in bits --------------")
-        print(in_bits)
+        print(self.in_bits)
         print("----------- rec in bits --------------")
-        print(rec_in_bits)
+        print(self.rec_in_bits)
+
+    def get_inputs_by_id(self, id: int) -> (bytes, bytes):
+        for bit in self.in_bits.inputs:
+            if bit.id == id:
+                return bit.masked_input, bit.label
+        for bit in self.rec_in_bits.inputs:
+            if bit.id == id:
+                return bit.masked_input, bit.label
+        return None
+
+    def circuit_evaluation(self):
+        print("--------------- evaluation -----------------")
+        for out in self.outputs:
+            self.circuit_evaluation_recursive(out)
+            print(out)
+
+    def circuit_evaluation_recursive(self, gate: Gate):
+        if not gate.label_a and gate.pre_a:
+            self.circuit_evaluation_recursive(gate.pre_a)
+        if not gate.label_b and gate.pre_b:
+            self.circuit_evaluation_recursive(gate.pre_b)
+        if not gate.evaluated:
+            gate.evaluated = True
+            # if gate has inputs then retrieve the values from the input processing
+            if not gate.label_a or not gate.masked_bit_a:
+                gate.masked_bit_a, gate.label_a = self.get_inputs_by_id(gate.id)
+            if not gate.label_b or not gate.masked_bit_b:
+                gate.masked_bit_b, gate.label_b = self.get_inputs_by_id(gate.id + 1)
+
+            gate.circuit_evaluation(Wrapper.get_garbled_gate_bit_by_id(gate.id, self.garbled_gates))
+
+            for n in gate.next:  # type: tuple[Gate, int]
+                if n[1] == Gate.WIRE_A:
+                    n[0].masked_bit_a = gate.masked_bit_y
+                    n[0].label_a = gate.label_y
+                elif n[1] == Gate.WIRE_B:
+                    n[0].masked_bit_b = gate.masked_bit_y
+                    n[0].label_b = gate.label_y

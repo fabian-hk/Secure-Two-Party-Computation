@@ -4,6 +4,7 @@ import abc
 from tools.person import Person
 from tools import helper as h
 from tools import fpre
+import conf
 
 
 class Gate:
@@ -13,7 +14,7 @@ class Gate:
     WIRE_A = 0
     WIRE_B = 1
 
-    def __init__(self, id, person, pre_a, pre_b):
+    def __init__(self, id: int, person: Person, pre_a, pre_b):
         """
         :param id: unique id of the gate (see README for more information)
         :param person:
@@ -35,6 +36,7 @@ class Gate:
         self.person = person
         self.type = None
         self.prepro = False
+        self.evaluated = False
 
         self.La0 = None
         self.Lb0 = None
@@ -42,9 +44,13 @@ class Gate:
         self.La1 = None
         self.Lb1 = None
         self.Ly1 = None
-        self.label = None  # label for B during evaluation
+        self.label_a = None  # label for B during evaluation
+        self.label_b = None  # label for B during evaluation
+        self.label_y = None  # label for B during evaluation
 
-        self.masked_bit = None  # masked bit for B during evaluation
+        self.masked_bit_a = None  # masked bit for B during evaluation
+        self.masked_bit_b = None  # masked bit for B during evaluation
+        self.masked_bit_y = None  # masked bit for B during evaluation
         self.a = None
         self.Ma = None
         self.Ka = None
@@ -56,8 +62,10 @@ class Gate:
         self.Ky = None
 
     def __str__(self):
-        return "Gate ID: " + str(self.id) + " Type: " + str(self.type) + " a: " + str(self.a) + " b: " + str(
-            self.b) + " La0: " + str(self.La0) + " Lb0: " + str(self.Lb0)
+        return "\nGate ID: " + str(self.id) + " Type: " + str(self.type) + "\na: " + str(
+            self.masked_bit_a) + " b: " + str(
+            self.masked_bit_b) + " y: " + str(self.masked_bit_y) + "\nlabel_a: " + str(
+            self.label_a) + "\nlabel_b: " + str(self.label_a) + "\nlabel_y: " + str(self.label_y) + "\n"
 
     def initialize_vars(self, auth_bit_A=None, auth_bit_B=None, and_triple=None):
         if auth_bit_A:
@@ -101,6 +109,13 @@ class Gate:
         """
         Method to compute the function depending preprocessing of the gate
         :return:
+        """
+        return
+
+    @abc.abstractmethod
+    def circuit_evaluation(self, garbled_gate=None):
+        """
+        Method to evaluate a single gate
         """
         return
 
@@ -150,15 +165,16 @@ class AND(Gate):
         :param Lb:
         :return:
         """
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         # the wire ID is encoded as a 4 byte integer for more information read the README file
         hash_function.update(La + Lb + (self.id + 2).to_bytes(4, 'big') + i.to_bytes(1, 'big'))
-        tmp1 = hash_function.digest()
-        if self.yi[i] == 1:
-            tmp2 = self.yi[i] + self.Myi[i] + h.xor(self.Ly0, self.Kyi[i], self.yi[i] + self.person.delta)
+        key = hash_function.digest()
+        if self.yi[i] == b'\x01':
+            plain = self.yi[i] + self.Myi[i] + h.xor(self.Ly0, self.Kyi[i], self.person.delta)
         else:
-            tmp2 = self.yi[i] + self.Myi[i] + h.xor(self.Ly0, self.Kyi[i])
-        return h.xor(tmp1, tmp2)
+            plain = self.yi[i] + self.Myi[i] + h.xor(self.Ly0, self.Kyi[i])
+        print("Plain. ID: " + str(self.id) + " = " + str(plain))
+        return h.xor(key, plain)
 
     def function_dependent_preprocessing(self, ser_gate=None):
         # Protocol part 4 b) c)
@@ -175,9 +191,9 @@ class AND(Gate):
         self.Kyi.append(h.xor(self.Ko, self.Ky, self.Kb))
 
         if self.person.x == Person.B:
-            self.yi.append(h.xor(self.o, self.y, self.a, b'\x01'))
+            self.yi.append(h.xor(self.o, self.y, self.a, self.b, b'\x01'))
         else:
-            self.yi.append(h.xor(self.o, self.y, self.a))
+            self.yi.append(h.xor(self.o, self.y, self.a, self.b))
         self.Myi.append(h.xor(self.Mo, self.My, self.Ma, self.Mb))
         if self.person.x == Person.A:
             self.Kyi.append(h.xor(self.Ko, self.Ky, self.Ka, self.Kb, self.person.delta))
@@ -201,6 +217,46 @@ class AND(Gate):
             ser_gate.G2 = bytes(self.Gi[2])
             ser_gate.G3 = bytes(self.Gi[3])
 
+    def circuit_evaluation(self, garbled_gate=None):
+        i = 2 * int.from_bytes(self.masked_bit_a, byteorder='big') + int.from_bytes(self.masked_bit_b, byteorder='big')
+        hash_function = hashlib.sha3_512()
+        # the wire ID is encoded as a 4 byte integer for more information read the README file
+        hash_function.update(self.label_a + self.label_b + (self.id + 2).to_bytes(4, 'big') + i.to_bytes(1, 'big'))
+        key = hash_function.digest()
+        if i == 0:
+            plain = h.xor(garbled_gate.G0, key)
+        elif i == 1:
+            plain = h.xor(garbled_gate.G1, key)
+        elif i == 2:
+            plain = h.xor(garbled_gate.G2, key)
+        elif i == 3:
+            plain = h.xor(garbled_gate.G3, key)
+
+        label = plain[-int(conf.k / 8):]
+        Mr = plain[-2 * int(conf.k / 8):-int(conf.k / 8)]
+        r = plain[-2 * int(conf.k / 8) - 1:-2 * int(conf.k / 8)]
+
+        # check authenticated bit
+        if r == b'\x01':
+            if Mr == h.xor(self.Kyi[i], self.person.delta):
+                print("Correct. ID: " + str(self.id))
+            else:
+                print(r)
+                print(Mr)
+                print(self.Kyi[i])
+                print("Cheat. ID: " + str(self.id))
+        else:
+            if Mr == self.Kyi[i]:
+                print("Correct. ID: " + str(self.id))
+            else:
+                print(r)
+                print(Mr)
+                print(self.Kyi[i])
+                print("Cheat. ID: " + str(self.id))
+
+        self.masked_bit_y = h.xor(self.yi[i], r)
+        self.label_y = h.xor(label, self.Myi[i])
+
 
 class XOR(Gate):
     def __init__(self, id, person, pre_a, pre_b):
@@ -223,3 +279,7 @@ class XOR(Gate):
         self.y = h.xor(self.a, self.b)
         self.My = h.xor(self.Ma, self.Mb)
         self.Ky = h.xor(self.Ka, self.Kb)
+
+    def circuit_evaluation(self, garbled_gate=None):
+        self.masked_bit_y = h.xor(self.masked_bit_a, self.masked_bit_b)
+        self.label_y = h.xor(self.label_a, self.label_b)

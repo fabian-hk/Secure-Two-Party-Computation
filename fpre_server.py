@@ -78,14 +78,31 @@ while True:
 
             and_triple_B.r3 = bytes(h.xor(and_triple_A.r3, h.AND(h.xor(and_triple_A.r1, and_triple_B.r1),
                                                                  h.xor(and_triple_A.r2, and_triple_B.r2))))
-            if and_triple_B.r3 == 1:
+            if and_triple_B.r3 == b'\x01':
                 and_triple_B.M3 = bytes(h.xor(and_triple_A.K3, delta_a))
             else:
                 and_triple_B.M3 = and_triple_A.K3
-            if and_triple_A.r3 == 1:
+            if and_triple_A.r3 == b'\x01':
                 and_triple_B.K3 = bytes(h.xor(and_triple_A.M3, delta_b))
             else:
                 and_triple_B.K3 = and_triple_A.M3
+
+            """
+            if and_triple_B.r3 == b'\x01':
+                if and_triple_B.M3 == h.xor(and_triple_A.K3, delta_a):
+                    print("Correct. AND triple ID: "+str(and_triple_B.id))
+                else:
+                    print(and_triple_A)
+                    print(and_triple_B)
+                    print("Cheat. AND triple ID: "+str(and_triple_B.id))
+            else:
+                if and_triple_B.M3 == and_triple_A.K3:
+                    print("Correct. AND triple ID: " + str(and_triple_B.id))
+                else:
+                    print(and_triple_A)
+                    print(and_triple_B)
+                    print("Cheat. AND triple ID: " + str(and_triple_B.id))
+            """
 
             conn2.send(b'\x02' + and_triple_B.SerializeToString())
             conn1.send(b'\x02')

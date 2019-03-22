@@ -1,4 +1,4 @@
-def xor(a, b, c=bytearray(0), d=bytearray(0), e=bytearray(0)):
+def xor(a: bytearray, b: bytearray, c=bytearray(0), d=bytearray(0), e=bytearray(0)) -> bytearray:
     """
     :param a:
     :param b:

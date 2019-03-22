@@ -6,4 +6,6 @@ if __name__ == "__main__":
     mpc = MPC(person)
     in_vals = {11: 1, 21: 1}
     other_in = [10, 20]
-    mpc.input_preprocessing(in_vals, other_in)
+    mpc.input_processing(in_vals, other_in)
+
+    mpc.circuit_evaluation()

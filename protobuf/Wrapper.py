@@ -27,3 +27,15 @@ def get_auth_bit_by_id(id: int, auth_bits: FunctionIndependentPreprocessing_pb2.
         if auth_bit.id == id:
             return auth_bit
     return None
+
+
+def get_garbled_gate_bit_by_id(id: int, garbled_gates: FunctionDependentPreprocessing_pb2.GarbledGates):
+    """
+    :param id:
+    :param garbled_gates:
+    :return: garbled gate with given ID or None if ID doesn't exist
+    """
+    for garbled_gate in garbled_gates.gates:
+        if garbled_gate.id == id:
+            return garbled_gate
+    return None

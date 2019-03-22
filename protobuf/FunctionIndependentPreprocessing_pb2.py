@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='project_inf_mpc.function_independent_preprocessing',
   syntax='proto2',
   serialized_options=None,
-  serialized_pb=_b('\n/protobuf/FunctionIndependentPreprocessing.proto\x12\x32project_inf_mpc.function_independent_preprocessing\"&\n\x03\x42it\x12\t\n\x01r\x18\x01 \x01(\x0c\x12\t\n\x01M\x18\x02 \x01(\x0c\x12\t\n\x01K\x18\x03 \x01(\x0c\"Z\n\x11\x41uthenticatedBits\x12\x45\n\x04\x62its\x18\x01 \x03(\x0b\x32\x37.project_inf_mpc.function_independent_preprocessing.Bit')
+  serialized_pb=_b('\n/protobuf/FunctionIndependentPreprocessing.proto\x12\x32project_inf_mpc.function_independent_preprocessing\"2\n\x03\x42it\x12\n\n\x02id\x18\x01 \x02(\x05\x12\t\n\x01r\x18\x02 \x01(\x0c\x12\t\n\x01M\x18\x03 \x01(\x0c\x12\t\n\x01K\x18\x04 \x01(\x0c\"Z\n\x11\x41uthenticatedBits\x12\x45\n\x04\x62its\x18\x01 \x03(\x0b\x32\x37.project_inf_mpc.function_independent_preprocessing.Bit')
 )
 
 
@@ -33,22 +33,29 @@ _BIT = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='r', full_name='project_inf_mpc.function_independent_preprocessing.Bit.r', index=0,
-      number=1, type=12, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b(""),
+      name='id', full_name='project_inf_mpc.function_independent_preprocessing.Bit.id', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='M', full_name='project_inf_mpc.function_independent_preprocessing.Bit.M', index=1,
+      name='r', full_name='project_inf_mpc.function_independent_preprocessing.Bit.r', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='K', full_name='project_inf_mpc.function_independent_preprocessing.Bit.K', index=2,
+      name='M', full_name='project_inf_mpc.function_independent_preprocessing.Bit.M', index=2,
       number=3, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='K', full_name='project_inf_mpc.function_independent_preprocessing.Bit.K', index=3,
+      number=4, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -66,7 +73,7 @@ _BIT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=103,
-  serialized_end=141,
+  serialized_end=153,
 )
 
 
@@ -96,8 +103,8 @@ _AUTHENTICATEDBITS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=143,
-  serialized_end=233,
+  serialized_start=155,
+  serialized_end=245,
 )
 
 _AUTHENTICATEDBITS.fields_by_name['bits'].message_type = _BIT

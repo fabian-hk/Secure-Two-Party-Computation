@@ -1,3 +1,7 @@
+# Installation
+Dependencies:
+- ```pip install protobuf```
+
 # Instruction to run the program
 1. run fpre_server.py
 2. run user_a.py

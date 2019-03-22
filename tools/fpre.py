@@ -37,25 +37,38 @@ def init_b():
 
 
 # ********** create authenticated bits *************
-
-def authenticated_bit(auth_bit):
+def authenticated_bit(auth_bit=None):
+    """
+    Creates a single bit r, a Tag M and a Key K. These can be used to
+    send to the Fpre server so it can create a complete authenticated bit.
+    """
     r = randint(0, 1)
     M = os.urandom(int(conf.k / 8))
     K = os.urandom(int(conf.k / 8))
-    auth_bit.r = r.to_bytes(1, "big")
-    auth_bit.M = M
-    auth_bit.K = K
-    return r, M, K
+    if auth_bit:
+        auth_bit.r = r.to_bytes(1, "big")
+        auth_bit.M = M
+        auth_bit.K = K
+    return r.to_bytes(1, "big"), M, K
 
 
 def send_auth_bits(data):
-    print("send data: " + str(len(data)))
+    """
+    Sends all bits encoded as bytes to the server so it can create
+    complete authenticated bits. Method for Person A.
+    :param data:
+    """
     s.send(b'\x01' + data)
     print(data)
     s.recv(BUFFER_SIZE)
 
 
 def rec_auth_bits():
+    """
+    Function to receive the finished authenticated bits from the server.
+    Method for Person B.
+    :return:
+    """
     data = s.recv(BUFFER_SIZE)
     print("Rec auth bits: "+str(len(data[1:])))
     if data[0] == 1:
@@ -64,13 +77,22 @@ def rec_auth_bits():
 
 # ***************** AND triples ********************
 def and_triples(data: bytes):
-    s.send(b'\x02'+data)
+    """
+    Sends a single AND triple to the server. For A the server response
+    is just b'\x02' and B while receive the third authenticated bit.
+    """
+    s.send(b'\x02' + data)
     return_data = s.recv(BUFFER_SIZE)
     if return_data[0] == 2:
         return return_data[1:]
 
 
-
+# *********** close current session ***************
+def close_session():
+    """
+    Just for the Fpre server implementation so that the server can be used for multiple sessions.
+    """
+    s.send(b'\xfe')
 
 
 
@@ -90,14 +112,6 @@ z_1 = 0
 x_2 = 0
 y_2 = 0
 r = 0
-
-
-
-
-
-
-
-
 
 
 
@@ -141,9 +155,6 @@ def f_la_and_B(person, v_2):
 
 
 
-
-
-
 def f_la_and(person):
     #print(person.x == person.A)
     #print(person.delta)
@@ -158,7 +169,6 @@ def f_la_and(person):
     else:
         #not person A nor B
         raise RuntimeError
-
 
 
 def f_ha_and(y):

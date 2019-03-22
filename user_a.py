@@ -2,6 +2,7 @@ from typing import Dict
 from protobuf import FunctionIndependentPreprocessing_pb2, FunctionDependentPreprocessing_pb2
 from tools import fpre
 from tools.person import Person
+from MPC import MPC
 from gate import *
 import os
 import conf
@@ -21,7 +22,7 @@ class MPC_A:
         self.person = person
         self.create_example_circuit()
         self.function_independent_preprocessing()
-        #self.function_dependent_preprocessing()
+        self.function_dependent_preprocessing()
 
     def create_example_circuit(self):
         and0 = AND(10, self.person, None, None)
@@ -32,7 +33,7 @@ class MPC_A:
         self.circuit[30] = xor3
 
     def function_independent_preprocessing(self):
-        #fpre.init_a(self.person)
+        fpre.init_a(self.person)
         print(person)
 
         for i in range((conf.upper_bound_gates + 2 * conf.input_size)):
@@ -40,9 +41,8 @@ class MPC_A:
             fpre.authenticated_bit(auth_bit)
             self.labels.append(os.urandom(int(conf.k / 8)))
 
-        fpre.f_la_and(self.person)
         # Serialize the authenticated bits and send them to the server
-        #fpre.send_auth_bits(self.auth_bits.SerializeToString())
+        fpre.send_auth_bits(self.auth_bits.SerializeToString())
 
     def function_dependent_preprocessing(self):
         and_triples = FunctionDependentPreprocessing_pb2.ANDTriples()
@@ -54,7 +54,6 @@ class MPC_A:
                 and_triple.id = id
                 auth_bit = auth_bits.__next__()
                 and_triple.r1 = auth_bit.r
-
                 and_triple.M1 = auth_bit.M
                 and_triple.K1 = auth_bit.K
                 auth_bit = auth_bits.__next__()
@@ -71,4 +70,7 @@ class MPC_A:
 
 if __name__ == "__main__":
     person = Person(Person.A)
-    mpc = MPC_A(person)
+    mpc = MPC(person)
+    in_vals = {10: 0, 20: 1}
+    other_in = [11, 21]
+    mpc.input_processing(in_vals, other_in)

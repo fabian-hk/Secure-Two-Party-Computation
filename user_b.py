@@ -17,38 +17,42 @@ class MPC_B:
         self.person = person
         self.create_example_circuit()
         self.function_independent_preprocessing()
+        self.function_dependent_preprocessing()
 
     def create_example_circuit(self):
         and0 = AND(10, self.person, None, None)
-        self.circuit[1] = and0
+        self.circuit[10] = and0
         and1 = AND(20, self.person, None, None)
-        self.circuit[2] = and1
+        self.circuit[20] = and1
         xor3 = XOR(30, self.person, and0, and1)
-        self.circuit[3] = xor3
+        self.circuit[30] = xor3
 
     def function_independent_preprocessing(self):
         self.person.delta = fpre.init_b()
-        print(self.person)
 
         ser_auth_bits = fpre.rec_auth_bits()
 
         self.auth_bits.ParseFromString(ser_auth_bits)
-        for auth_bit in self.auth_bits.bits:
-            print("r: "+str(auth_bit.r))
-            print("M: "+str(auth_bit.M))
-            print("K: "+str(auth_bit.K))
 
     def function_dependent_preprocessing(self):
-        ser_gates = FunctionDependentPreprocessing_pb2.GatesPreprocessing()
+        and_triples_tmp = FunctionDependentPreprocessing_pb2.ANDTriples()
+        auth_bits = iter(self.auth_bits.bits)
         for id in self.circuit.keys():
-            ser_gate = ser_gates.gates.add()
             g = self.circuit[id]
-            if g.type == Gate.TYPE_XOR:
-                m0, m1 = fpre.create_gate_vars()
-                ser_gate.M0 = m0
-                ser_gate.M1 = m1
-            elif g.type == Gate.TYPE_AND:
-                g.function_dependent_preprocessing(ser_gates.gates.add())
+            if g.type == Gate.TYPE_AND:
+                and_triple = and_triples_tmp.triples.add()
+                and_triple.id = id
+                auth_bit = auth_bits.__next__()
+                and_triple.r1 = auth_bit.r
+                and_triple.M1 = auth_bit.M
+                and_triple.K1 = auth_bit.K
+                auth_bit = auth_bits.__next__()
+                and_triple.r2 = auth_bit.r
+                and_triple.M2 = auth_bit.M
+                and_triple.K2 = auth_bit.K
+        and_triples = FunctionDependentPreprocessing_pb2.ANDTriples()
+        and_triples.ParseFromString(fpre.and_triples(and_triples_tmp.SerializeToString()))
+        print(and_triples)
 
 
 if __name__ == "__main__":

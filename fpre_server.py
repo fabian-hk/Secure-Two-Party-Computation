@@ -4,6 +4,7 @@ import conf
 import tools.helper as h
 from random import randint
 from protobuf import FunctionIndependentPreprocessing_pb2, FunctionDependentPreprocessing_pb2
+from protobuf import FunctionDependentPreprocessing as fdp
 
 TCP_IP = 'localhost'
 TCP_PORT = 3003
@@ -23,18 +24,18 @@ conn2, addr2 = s.accept()
 print("Second connection. IP: " + str(addr2))
 
 while True:
-    data = conn1.recv(BUFFER_SIZE)
-    if not data:
+    data_A = conn1.recv(BUFFER_SIZE)
+    if not data_A:
         continue
-    if data[0] == 0:
-        delta_a = data[1:]
-        delta_b = os.urandom(int(conf.k/8))
+    if data_A[0] == 0:
+        delta_a = data_A[1:]
+        delta_b = os.urandom(int(conf.k / 8))
         conn2.send(b'\x00' + delta_b)
         conn1.send(b'\x00')
-    elif data[0] == 1:
+    elif data_A[0] == 1:
         auth_bits_A = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
         auth_bits_B = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
-        auth_bits_A.ParseFromString(data[1:])
+        auth_bits_A.ParseFromString(data_A[1:])
         for auth_bit_A in auth_bits_A.bits:
             auth_bit_B = auth_bits_B.bits.add()
             s = randint(0, 1)
@@ -48,3 +49,24 @@ while True:
         ser_auth_bits = auth_bits_B.SerializeToString()
         conn2.send(b'\x01' + ser_auth_bits)
         conn1.send(b'\x01')
+    elif data_A[0] == 2:
+        and_triples_A = FunctionDependentPreprocessing_pb2.ANDTriples()
+        and_triples_A.ParseFromString(data_A[1:])
+        data_B = conn2.recv(BUFFER_SIZE)
+        and_triples_B = FunctionDependentPreprocessing_pb2.ANDTriples()
+        and_triples_B.ParseFromString(data_B[1:])
+        for and_triple_A in and_triples_A.triples:
+            and_triple_B = fdp.get_triple_by_id(and_triple_A.id, and_triples_B)
+            # TODO cheat check
+            and_triple_B.r3 = bytes(h.xor(and_triple_A.r3, h.AND(h.xor(and_triple_A.r1, and_triple_B.r1),
+                                                           h.xor(and_triple_A.r2, and_triple_B.r2))))
+            if and_triple_B.r3 == 1:
+                and_triple_B.M3 = bytes(h.xor(and_triple_A.K3, delta_a))
+            else:
+                and_triple_B.M3 = and_triple_A.K3
+            if and_triple_A.r3 == 1:
+                and_triple_B.K3 = bytes(h.xor(and_triple_A.M3, delta_b))
+            else:
+                and_triple_B.K3 = and_triple_A.M3
+        conn2.send(b'\x02'+and_triples_B.SerializeToString())
+        conn1.send(b'\x02')

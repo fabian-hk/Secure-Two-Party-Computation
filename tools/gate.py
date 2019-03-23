@@ -3,7 +3,7 @@ import abc
 
 from tools.person import Person
 from tools import helper as h
-from tools import fpre
+from fpre.fpre import Fpre
 import conf
 
 
@@ -18,6 +18,7 @@ class Gate:
     def __init__(self, id: int, person: Person, pre_a, pre_b):
         """
         :param id: unique id of the gate (see README for more information)
+        :type id int
         :param person:
         :param pre_a:
         :type pre_a Gate
@@ -149,7 +150,7 @@ class AND(Gate):
 
     def initialize_auth_bit_o(self, and_triple, person: Person):
         if person.x == Person.A:
-            self.o, self.Mo, self.Ko = fpre.authenticated_bit()
+            self.o, self.Mo, self.Ko = Fpre.authenticated_bit()
             and_triple.r3 = self.o
             and_triple.M3 = self.Mo
             and_triple.K3 = self.Ko

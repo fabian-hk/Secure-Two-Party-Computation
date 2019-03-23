@@ -7,13 +7,12 @@ if __name__ == "__main__":
     mpc = MPC(person)
 
     inputs, outputs = create_example_circuit_1(person)
+    person.load_input("10")
     mpc.load_cirucit(inputs, outputs)
 
     mpc.function_dependent_preprocessing()
 
-    in_vals = {11: 1, 21: 0}
-    other_in = [10, 20]
-    mpc.input_processing(in_vals, other_in)
+    mpc.input_processing()
 
     mpc.circuit_evaluation()
 

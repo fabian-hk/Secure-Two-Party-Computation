@@ -32,6 +32,6 @@ class Person:
     def __str__(self):
         return "Person: " + str(self.x) + " Delta: " + str(self.delta)
 
-    def load_input(self, in_val: str):
+    def load_input_string(self, in_val: str):
         for id, bit in zip(self.inputs, in_val):
             self.in_vals[id] = int(bit).to_bytes(1, byteorder='big')

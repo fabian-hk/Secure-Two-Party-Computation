@@ -10,7 +10,7 @@ from tools.person import Person
 class Fpre:
     TCP_IP = 'localhost'
     TCP_PORT = 3003
-    BUFFER_SIZE = int((conf.k / 2) * (conf.upper_bound_gates * 3))
+    BUFFER_SIZE = 2048
 
     def __init__(self, person: Person):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,12 +18,21 @@ class Fpre:
         if person.x == Person.A:
             self.s.connect((self.TCP_IP, self.TCP_PORT))
             self.s.send(b'\x00' + person.delta)
-            self.s.recv(self.BUFFER_SIZE)
+            self.receive()
         else:
             self.s.connect((self.TCP_IP, self.TCP_PORT))
-            data = self.s.recv(self.BUFFER_SIZE)
+            data = self.receive()
             if data[0] == 0:
                 person.delta = data[1:]
+
+    def receive(self):
+        data = bytes(0)
+        while True:
+            part = self.s.recv(self.BUFFER_SIZE)
+            data += part
+            if len(part) < self.BUFFER_SIZE:
+                break
+        return data
 
     # ********** create authenticated bits *************
     @staticmethod
@@ -32,7 +41,7 @@ class Fpre:
         Creates a single bit r, a Tag M and a Key K. These can be used to
         send to the Fpre server so it can create a complete authenticated bit.
         """
-        r = randint(0, 1)
+        r = randint(0, 1)  # TODO change to os.urandom() for more safety??
         M = os.urandom(int(conf.k / 8))
         K = os.urandom(int(conf.k / 8))
         if auth_bit:
@@ -48,7 +57,7 @@ class Fpre:
         :param data:
         """
         self.s.send(b'\x01' + data)
-        self.s.recv(self.BUFFER_SIZE)
+        self.receive()
 
     def rec_auth_bits(self):
         """
@@ -56,7 +65,7 @@ class Fpre:
         Method for Person B.
         :return:
         """
-        data = self.s.recv(self.BUFFER_SIZE)
+        data = self.receive()
         if data[0] == 1:
             return data[1:]
 
@@ -67,9 +76,9 @@ class Fpre:
         is just b'\x02' and B while receive the third authenticated bit.
         """
         self.s.send(b'\x02' + data)
-        return_data = self.s.recv(self.BUFFER_SIZE)
-        if return_data[0] == 2:
-            return return_data[1:]
+        d = self.receive()
+        if d[0] == 2:
+            return d[1:]
 
     # *********** close current session ***************
     def close_session(self):

@@ -49,7 +49,16 @@ def plain_circuit_evaluation(output_gates: List, inputs: Dict[int, int]):
 
 
 if __name__ == "__main__":
-    person = Person(Person.A)
-    _, outputs = create_example_circuit_1(person)
-    inputs = {10: 1, 11: 1, 20: 1, 21: 1}
-    print(plain_circuit_evaluation(outputs, inputs))
+    in_vals_a = "0"
+    in_vals_b = "0"
+
+    person_a = Person(Person.A)
+    _, outputs = create_example_circuit_2(person_a)
+    person_a.load_input_string(in_vals_a)
+    person_b = Person(Person.B)
+    _, outputs = create_example_circuit_2(person_b)
+    person_b.load_input_string(in_vals_b)
+    in_vals = person_a.in_vals
+    in_vals.update(person_b.in_vals)
+
+    print(plain_circuit_evaluation(outputs, in_vals))

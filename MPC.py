@@ -51,6 +51,8 @@ class MPC:
                     self.labels.append(os.urandom(int(conf.k / 8)))
 
             # Serialize the authenticated bits and send them to the server
+            print("Serialized auth bits length: "+str(len(self.auth_bits.SerializeToString())))
+            print("Serialized auth bits: "+str(self.auth_bits.SerializeToString()))
             self.fpre.send_auth_bits(self.auth_bits.SerializeToString())
         else:
             self.fpre = Fpre(self.person)
@@ -69,7 +71,6 @@ class MPC:
             self.com.exchange_data(0, self.garbled_gates.SerializeToString())
         else:
             self.garbled_gates.ParseFromString(self.com.exchange_data(0))
-        print(self.garbled_gates)
 
     def gate_initialization(self, gate, label_iter):
         """
@@ -303,6 +304,7 @@ class MPC:
                 out.get_y_auth_bit(auth_bits.bits.add())
             self.com.exchange_data(5, auth_bits.SerializeToString())
             self.com.close_session()
+            print(out)
         else:
             auth_bits.ParseFromString(self.com.exchange_data(5))
             result = {}

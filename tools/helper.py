@@ -23,7 +23,7 @@ def xor(a: bytearray, b: bytearray, c=bytearray(0), d=bytearray(0), e=bytearray(
 
     f = bytearray(l)
     for i in range(l):
-        f[i] = a[i] ^ b[i] ^ c[i] ^ d[i]
+        f[i] = a[i] ^ b[i] ^ c[i] ^ d[i] ^ e[i]
     return f
 
 

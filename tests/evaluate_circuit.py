@@ -8,7 +8,7 @@ def user_a(create_circuit, input_a):
     mpc = MPC(person)
 
     inputs, outputs = create_circuit(person)
-    person.load_input(input_a)
+    person.load_input_string(input_a)
     mpc.load_cirucit(inputs, outputs)
 
     mpc.function_dependent_preprocessing()
@@ -23,7 +23,7 @@ def user_b(create_circuit, input_b, q: Queue):
     mpc = MPC(person)
 
     inputs, outputs = create_circuit(person)
-    person.load_input(input_b)
+    person.load_input_string(input_b)
     mpc.load_cirucit(inputs, outputs)
 
     mpc.function_dependent_preprocessing()

@@ -65,9 +65,8 @@ class Gate:
 
     def __str__(self):
         return "\nGate ID: " + str(self.id) + " Type: " + str(self.type) + "\na: " + str(
-            self.masked_bit_a) + " b: " + str(
-            self.masked_bit_b) + " y: " + str(self.masked_bit_y) + "\nlabel_a: " + str(
-            self.label_a) + "\nlabel_b: " + str(self.label_a) + "\nlabel_y: " + str(self.label_y) + "\n"
+            self.a) + " b: " + str(self.b) + " y: " + str(self.y) + "\nmasked_a: " + str(
+            self.masked_bit_a) + " masked_b: " + str(self.masked_bit_b) + " masked_y: " + str(self.masked_bit_y) + "\n"
 
     def initialize_vars(self, auth_bit_A=None, auth_bit_B=None, and_triple=None):
         if auth_bit_A:
@@ -102,14 +101,6 @@ class Gate:
         auth_bit.id = self.id
         auth_bit.r = bytes(self.y)
         auth_bit.M = bytes(self.My)
-
-    @abc.abstractmethod
-    def function_independent_preprocessing(self):
-        """
-        Method to save the variables in the function independing preprocessing
-        :return:
-        """
-        return
 
     @abc.abstractmethod
     def function_dependent_preprocessing(self):
@@ -148,6 +139,9 @@ class AND(Gate):
         self.Mo = None
         self.Ko = None
 
+    def __str__(self):
+        return super().__str__() + " o: " + str(self.o) + "\n"
+
     def initialize_auth_bit_o(self, and_triple, person: Person):
         if person.x == Person.A:
             self.o, self.Mo, self.Ko = Fpre.authenticated_bit()
@@ -180,7 +174,6 @@ class AND(Gate):
             plain = self.yi[i] + self.Myi[i] + h.xor(self.Ly0, self.Kyi[i], self.person.delta)
         else:
             plain = self.yi[i] + self.Myi[i] + h.xor(self.Ly0, self.Kyi[i])
-        print("Plain. ID: " + str(self.id) + " = " + str(plain))
         return h.xor(key, plain)
 
     def function_dependent_preprocessing(self, ser_gate=None):

@@ -53,10 +53,10 @@ if __name__ == "__main__":
     in_vals_b = "0"
 
     person_a = Person(Person.A)
-    _, outputs = create_example_circuit_2(person_a)
+    _, outputs = create_and_gate(person_a)
     person_a.load_input_string(in_vals_a)
     person_b = Person(Person.B)
-    _, outputs = create_example_circuit_2(person_b)
+    _, outputs = create_and_gate(person_b)
     person_b.load_input_string(in_vals_b)
     in_vals = person_a.in_vals
     in_vals.update(person_b.in_vals)

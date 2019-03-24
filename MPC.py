@@ -137,18 +137,20 @@ class MPC:
                 # do the function dependent preprocessing
                 gate.function_dependent_preprocessing(self.garbled_gates.gates.add())
 
+                print(gate)
+
                 # as A send and triple to the fpre server
                 if self.person.x == Person.A: self.fpre.and_triples(and_triple.SerializeToString())
 
                 # propagate variables to the successor gates
                 for n in gate.next:  # type: tuple[Gate, int]
                     if n[1] == Gate.WIRE_A:
-                        if self.person.x == Person.A: n[0].La0 = label_iter.__next__()
+                        if self.person.x == Person.A: n[0].La0 = gate.Ly0
                         n[0].a = gate.y
                         n[0].Ma = gate.My
                         n[0].Ka = gate.Ky
                     else:
-                        if self.person.x == Person.A: n[0].Lb0 = label_iter.__next__()
+                        if self.person.x == Person.A: n[0].Lb0 = gate.Ly0
                         n[0].b = gate.y
                         n[0].Mb = gate.My
                         n[0].Kb = gate.Ky

@@ -66,7 +66,9 @@ class Gate:
     def __str__(self):
         return "\nGate ID: " + str(self.id) + " Type: " + str(self.type) + "\na: " + str(
             self.a) + " b: " + str(self.b) + " y: " + str(self.y) + "\nmasked_a: " + str(
-            self.masked_bit_a) + " masked_b: " + str(self.masked_bit_b) + " masked_y: " + str(self.masked_bit_y) + "\n"
+            self.masked_bit_a) + " masked_b: " + str(self.masked_bit_b) + " masked_y: " + str(
+            self.masked_bit_y) + "\nLa0: " + str(self.La0) + "\nLa1: " + str(self.La1) + "\nLb0: " + str(
+            self.Lb0) + "\nLb1" + str(self.Lb1)
 
     def initialize_vars(self, auth_bit_A=None, auth_bit_B=None, and_triple=None):
         if auth_bit_A:
@@ -89,13 +91,13 @@ class Gate:
         :param wire: wire A or B
         """
         if wire == self.WIRE_A:
-            and_triple.r1 = self.a
-            and_triple.M1 = self.Ma
-            and_triple.K1 = self.Ka
+            and_triple.r1 = bytes(self.a)
+            and_triple.M1 = bytes(self.Ma)
+            and_triple.K1 = bytes(self.Ka)
         if wire == self.WIRE_B:
-            and_triple.r2 = self.b
-            and_triple.M2 = self.Mb
-            and_triple.K2 = self.Kb
+            and_triple.r2 = bytes(self.b)
+            and_triple.M2 = bytes(self.Mb)
+            and_triple.K2 = bytes(self.Kb)
 
     def get_y_auth_bit(self, auth_bit):
         auth_bit.id = self.id
@@ -225,12 +227,24 @@ class AND(Gate):
         key = hash_function.digest()
         if i == 0:
             plain = h.xor(garbled_gate.G0, key)
+            plain1 = h.xor(garbled_gate.G1, key)
+            plain2 = h.xor(garbled_gate.G2, key)
+            plain3 = h.xor(garbled_gate.G3, key)
         elif i == 1:
             plain = h.xor(garbled_gate.G1, key)
+            plain0 = h.xor(garbled_gate.G0, key)
+            plain2 = h.xor(garbled_gate.G2, key)
+            plain3 = h.xor(garbled_gate.G3, key)
         elif i == 2:
             plain = h.xor(garbled_gate.G2, key)
+            plain0 = h.xor(garbled_gate.G0, key)
+            plain1 = h.xor(garbled_gate.G1, key)
+            plain3 = h.xor(garbled_gate.G3, key)
         elif i == 3:
             plain = h.xor(garbled_gate.G3, key)
+            plain0 = h.xor(garbled_gate.G0, key)
+            plain1 = h.xor(garbled_gate.G1, key)
+            plain2 = h.xor(garbled_gate.G2, key)
 
         label = plain[-int(conf.k / 8):]
         Mr = plain[-2 * int(conf.k / 8):-int(conf.k / 8)]

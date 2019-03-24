@@ -54,7 +54,10 @@ while True:
         elif data_A[0] == 1:
             auth_bits_A = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
             auth_bits_B = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
-            auth_bits_A.ParseFromString(data_A[1:])
+            try:
+                auth_bits_A.ParseFromString(data_A[1:])
+            except:
+                print("parse auth bits a: " + str(data_A))
             for auth_bit_A in auth_bits_A.bits:
                 auth_bit_B = auth_bits_B.bits.add()
                 auth_bit_B.id = auth_bit_A.id

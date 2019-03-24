@@ -1,7 +1,8 @@
 import unittest
+from random import randint
 
 from tests.circuit_creater import *
-from tests.evaluate_circuit import evaluate
+from tests.evaluate_circuit import evaluate_circuit
 from tests.plain_evaluator import *
 from tools.person import Person
 
@@ -9,43 +10,68 @@ from tools.person import Person
 class TestCircuit(unittest.TestCase):
 
     def test_circuit_0(self):
-        in_vals_a = "10"
-        in_vals_b = "11"
+        for i in range(10):
+            in_vals_a = str(randint(0, 1)) + str(randint(0, 1))
+            in_vals_b = str(randint(0, 1)) + str(randint(0, 1))
 
-        # do MPC
-        res_dict_mpc = evaluate(create_example_circuit_0, in_vals_a, in_vals_b)
+            res_mpc, res_plain = evaluate_circuit(create_example_circuit_0, in_vals_a, in_vals_b)
 
-        # evaluate in plain form to check the output
-        person_a = Person(Person.A)
-        _, outputs = create_example_circuit_0(person_a)
-        person_a.load_input_string(in_vals_a)
-        person_b = Person(Person.B)
-        _, outputs = create_example_circuit_0(person_b)
-        person_b.load_input_string(in_vals_b)
-        in_vals = person_a.in_vals
-        in_vals.update(person_b.in_vals)
-        res_dict_plain = plain_circuit_evaluation(outputs, in_vals)
-
-        # check if the MPC and plain result are the same
-        self.assertEqual(res_dict_mpc, res_dict_plain)
+            # check if the MPC and plain result are the same
+            self.assertEqual(res_mpc, res_plain)
 
     def test_circuit_1(self):
-        in_vals_a = "10"
-        in_vals_b = "11"
+        for i in range(10):
+            in_vals_a = str(randint(0, 1)) + str(randint(0, 1))
+            in_vals_b = str(randint(0, 1)) + str(randint(0, 1))
 
-        # do MPC
-        res_dict_mpc = evaluate(create_example_circuit_1, in_vals_a, in_vals_b)
+            res_mpc, res_plain = evaluate_circuit(create_example_circuit_1, in_vals_a, in_vals_b)
 
-        # evaluate in plain form to check the output
-        person_a = Person(Person.A)
-        _, outputs = create_example_circuit_1(person_a)
-        person_a.load_input_string(in_vals_a)
-        person_b = Person(Person.B)
-        _, outputs = create_example_circuit_1(person_b)
-        person_b.load_input_string(in_vals_b)
-        in_vals = person_a.in_vals
-        in_vals.update(person_b.in_vals)
-        res_dict_plain = plain_circuit_evaluation(outputs, in_vals)
+            # check if the MPC and plain result are the same
+            self.assertEqual(res_mpc, res_plain)
 
-        # check if the MPC and plain result are the same
-        self.assertEqual(res_dict_mpc, res_dict_plain)
+    def test_circuit_2(self):
+        for i in range(8):
+            in_vals_a = str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1))
+            in_vals_b = str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1))
+
+            res_mpc, res_plain = evaluate_circuit(create_example_circuit_2, in_vals_a, in_vals_b)
+
+            # check if the MPC and plain result are the same
+            self.assertEqual(res_mpc, res_plain)
+
+    def test_circuit_3(self):
+        for i in range(10):
+            in_vals_a = str(randint(0, 1)) + str(randint(0, 1))
+            in_vals_b = str(randint(0, 1)) + str(randint(0, 1))
+
+            res_mpc, res_plain = evaluate_circuit(create_example_circuit_3, in_vals_a, in_vals_b)
+
+            # check if the MPC and plain result are the same
+            self.assertEqual(res_mpc, res_plain)
+
+
+class TestGates(unittest.TestCase):
+
+    def test_and_gate(self):
+        in_vals_a = ["0", "1"]
+        in_vals_b = ["0", "1"]
+
+        for i in range(4):
+            for in_val_a in in_vals_a:
+                for in_val_b in in_vals_b:
+                    res_mpc, res_plain = evaluate_circuit(create_and_gate, in_val_a, in_val_b)
+
+                    # check if the MPC and plain result are the same
+                    self.assertEqual(res_mpc, res_plain)
+
+    def test_xor_gate(self):
+        in_vals_a = ["0", "1"]
+        in_vals_b = ["0", "1"]
+
+        for i in range(4):
+            for in_val_a in in_vals_a:
+                for in_val_b in in_vals_b:
+                    res_mpc, res_plain = evaluate_circuit(create_xor_gate, in_val_a, in_val_b)
+
+                    # check if the MPC and plain result are the same
+                    self.assertEqual(res_mpc, res_plain)

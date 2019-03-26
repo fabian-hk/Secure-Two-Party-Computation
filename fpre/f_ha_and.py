@@ -8,7 +8,7 @@ import socket
 import tools.helper as h
 from tools.person import Person
 from tools import communication
-from tools import fpre
+from fpre import fpre
 import hashlib
 
 

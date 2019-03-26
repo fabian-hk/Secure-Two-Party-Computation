@@ -3,11 +3,9 @@ import os
 
 from protobuf import FunctionIndependentPreprocessing_pb2, FunctionDependentPreprocessing_pb2, InputPreprocessing_pb2, \
     Wrapper
-from tools import fpre
-from tools.person import Person
-import tools.helper as h
 from tools.communication import Com
-from gate import *
+from tools.gate import *
+from fpre.fpre import Fpre
 
 import conf
 
@@ -15,60 +13,55 @@ import conf
 class MPC:
 
     def __init__(self, person: Person):
-        # holds all gates like {int_id : gate}
-        self.circuit: Dict[int, Gate] = {}  # TODO delete variable
-
         self.person = person
 
         # data structures to store the variables from the function independent preprocessing
         if self.person.x == Person.A: self.labels = []
         self.auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
 
-        self.inputs = []
-        self.outputs = []
+        self.inputs = None
+        self.outputs = None
         self.garbled_gates = FunctionDependentPreprocessing_pb2.GarbledGates()
 
+        self.fpre = None
         self.com = None
 
         self.in_bits = InputPreprocessing_pb2.Inputs()
         self.rec_in_bits = InputPreprocessing_pb2.Inputs()
 
-        self.create_example_circuit()
         self.function_independent_preprocessing()
-        self.function_dependent_preprocessing()
 
-    def create_example_circuit(self):
-        and0 = AND(10, self.person, None, None)
-        self.circuit[10] = and0
-        and1 = AND(20, self.person, None, None)
-        self.circuit[20] = and1
-        xor3 = XOR(30, self.person, and0, and1)
-        self.circuit[30] = xor3
-        self.inputs = [and0, and1]
-        self.outputs.append(xor3)
+    def load_cirucit(self, inputs: List, outputs: List):
+        """
+        Loads the list with the input and output gates of the cirucit.
+        :param inputs:
+        :param outputs:
+        """
+        self.inputs = inputs
+        self.outputs = outputs
 
     def function_independent_preprocessing(self):
         if self.person.x == Person.A:
-            fpre.init_a(self.person)
+            self.fpre = Fpre(self.person)
             for i in range(conf.upper_bound_gates):
                 for j in range(3):
                     auth_bit = self.auth_bits.bits.add()
                     auth_bit.id = i * 10 + j
-                    fpre.authenticated_bit(auth_bit)
+                    self.fpre.authenticated_bit(auth_bit)
                     self.labels.append(os.urandom(int(conf.k / 8)))
 
             # Serialize the authenticated bits and send them to the server
-            fpre.send_auth_bits(self.auth_bits.SerializeToString())
+            self.fpre.send_auth_bits(self.auth_bits.SerializeToString())
         else:
-            self.person.delta = fpre.init_b()
-            self.auth_bits.ParseFromString(fpre.rec_auth_bits())
+            self.fpre = Fpre(self.person)
+            self.auth_bits.ParseFromString(self.fpre.rec_auth_bits())
 
     def function_dependent_preprocessing(self):
         label_iter = iter(self.labels) if self.person.x == Person.A else None
         for out in self.outputs:
             self.gate_initialization(out, label_iter)
 
-        fpre.close_session()
+        self.fpre.close_session()
 
         self.com = Com(self.person)
 
@@ -135,7 +128,7 @@ class MPC:
 
                 # as B send the and double to the fpre server to receive the missing bit
                 if self.person.x == Person.B: and_triple.ParseFromString(
-                    fpre.and_triples(and_triple.SerializeToString()))
+                    self.fpre.and_triples(and_triple.SerializeToString()))
 
                 gate.initialize_auth_bit_o(and_triple, self.person)
                 gate.initialize_auth_bit_y(Wrapper.get_auth_bit_by_id(gate.id + 2, self.auth_bits))
@@ -144,20 +137,20 @@ class MPC:
                 gate.function_dependent_preprocessing(self.garbled_gates.gates.add())
 
                 # as A send and triple to the fpre server
-                if self.person.x == Person.A: fpre.and_triples(and_triple.SerializeToString())
+                if self.person.x == Person.A: self.fpre.and_triples(and_triple.SerializeToString())
 
                 # propagate variables to the successor gates
                 for n in gate.next:  # type: tuple[Gate, int]
                     if n[1] == Gate.WIRE_A:
                         if self.person.x == Person.A: n[0].La0 = label_iter.__next__()
-                        n[0].a = gate.yi[0]
-                        n[0].Ma = gate.Myi[0]
-                        n[0].Ka = gate.Kyi[0]
+                        n[0].a = gate.y
+                        n[0].Ma = gate.My
+                        n[0].Ka = gate.Ky
                     else:
                         if self.person.x == Person.A: n[0].Lb0 = label_iter.__next__()
-                        n[0].b = gate.yi[0]
-                        n[0].Mb = gate.Myi[0]
-                        n[0].Kb = gate.Kyi[0]
+                        n[0].b = gate.y
+                        n[0].Mb = gate.My
+                        n[0].Kb = gate.Ky
 
     def key_by_wire_id(self, id: int) -> bytes:
         for in_g in self.inputs:  # type: Gate
@@ -189,7 +182,7 @@ class MPC:
                     return h.xor(in_g.Lb0, self.person.delta)
         return None
 
-    def input_processing(self, in_vals: Dict[int, int], other_in: List[int]):
+    def input_processing(self):
         """
         :param other_in:
         :param in_vals: Keys are the IDs of the input wires and values are the input bits
@@ -201,23 +194,23 @@ class MPC:
         # own input bits
         in_auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
         for in_gate in self.inputs:  # type: Gate
-            if in_gate.id in other_in:
+            if in_gate.id in self.person.other_inputs:
                 b = in_auth_bits_o.bits.add()
                 b.id = in_gate.id
                 b.r = in_gate.a
                 b.M = in_gate.Ma
-            elif in_gate.id in in_vals:
+            elif in_gate.id in self.person.inputs:
                 b = in_auth_bits.bits.add()
                 b.id = in_gate.id
                 b.r = in_gate.a
                 b.M = in_gate.Ma
 
-            if (in_gate.id + 1) in other_in:
+            if (in_gate.id + 1) in self.person.other_inputs:
                 b = in_auth_bits_o.bits.add()
                 b.id = in_gate.id + 1
                 b.r = in_gate.b
                 b.M = in_gate.Mb
-            elif (in_gate.id + 1) in in_vals:
+            elif (in_gate.id + 1) in self.person.inputs:
                 b = in_auth_bits.bits.add()
                 b.id = in_gate.id + 1
                 b.r = in_gate.b
@@ -245,7 +238,7 @@ class MPC:
         for in_auth_bit in in_auth_bits.bits:
             in_bit = self.in_bits.inputs.add()
             in_bit.id = in_auth_bit.id
-            in_bit.masked_input = bytes(h.xor(in_auth_bit.r, in_vals[in_bit.id].to_bytes(1, 'big'),
+            in_bit.masked_input = bytes(h.xor(in_auth_bit.r, self.person.in_vals[in_bit.id],
                                               Wrapper.get_auth_bit_by_id(in_bit.id, rec_auth_bits).r))
             if self.person.x == Person.A: in_bit.label = bytes(self.label_by_wire_id(in_bit.id, in_bit.masked_input))
 
@@ -301,3 +294,33 @@ class MPC:
                 elif n[1] == Gate.WIRE_B:
                     n[0].masked_bit_b = gate.masked_bit_y
                     n[0].label_b = gate.label_y
+
+    def output_determination(self) -> Dict[int, bytearray]:
+        print("------------------ output determination ---------------------")
+        auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
+        if self.person.x == Person.A:
+            for out in self.outputs:  # type: Gate
+                out.get_y_auth_bit(auth_bits.bits.add())
+            self.com.exchange_data(5, auth_bits.SerializeToString())
+            self.com.close_session()
+        else:
+            auth_bits.ParseFromString(self.com.exchange_data(5))
+            result = {}
+            for out in self.outputs:  # type: Gate
+                auth_bit = Wrapper.get_auth_bit_by_id(out.id, auth_bits)
+                if auth_bit.r == b'\x01':
+                    if auth_bit.M == h.xor(out.Ky, self.person.delta):
+                        print("Correct. ID: " + str(out.id))
+                    else:
+                        print("Cheat. ID: " + str(out.id))
+                else:
+                    if auth_bit.M == out.Ky:
+                        print("Correct. ID: " + str(out.id))
+                    else:
+                        print("Cheat. ID: " + str(out.id))
+
+                res = h.xor(out.masked_bit_y, auth_bit.r, out.y)
+                print("Result bit " + str(out.id) + ": " + str(res))
+                result[out.id] = res
+            self.com.close_session()
+            return result

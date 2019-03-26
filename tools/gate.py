@@ -3,7 +3,7 @@ import abc
 
 from tools.person import Person
 from tools import helper as h
-from tools import fpre
+from fpre.fpre import Fpre
 import conf
 
 
@@ -13,10 +13,12 @@ class Gate:
 
     WIRE_A = 0
     WIRE_B = 1
+    WIRE_Y = 2
 
     def __init__(self, id: int, person: Person, pre_a, pre_b):
         """
         :param id: unique id of the gate (see README for more information)
+        :type id int
         :param person:
         :param pre_a:
         :type pre_a Gate
@@ -96,6 +98,11 @@ class Gate:
             and_triple.M2 = self.Mb
             and_triple.K2 = self.Kb
 
+    def get_y_auth_bit(self, auth_bit):
+        auth_bit.id = self.id
+        auth_bit.r = bytes(self.y)
+        auth_bit.M = bytes(self.My)
+
     @abc.abstractmethod
     def function_independent_preprocessing(self):
         """
@@ -143,7 +150,7 @@ class AND(Gate):
 
     def initialize_auth_bit_o(self, and_triple, person: Person):
         if person.x == Person.A:
-            self.o, self.Mo, self.Ko = fpre.authenticated_bit()
+            self.o, self.Mo, self.Ko = Fpre.authenticated_bit()
             and_triple.r3 = self.o
             and_triple.M3 = self.Mo
             and_triple.K3 = self.Ko

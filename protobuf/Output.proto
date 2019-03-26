@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package project_inf_mpc.output;
+
+message Output {
+    required int32 id = 1;
+    optional bytes output = 2;
+}
+
+message Outputs {
+    repeated Output outputs = 1;
+}

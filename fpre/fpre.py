@@ -1,38 +1,30 @@
 import os
 from random import randint
+
 import conf
-import socket
-import sys
-
 from tools.person import Person
+from tools.communication import Com
 
 
-class Fpre:
-    TCP_IP = 'localhost'
-    TCP_PORT = 3003
-    BUFFER_SIZE = 2048
+class Fpre(Com):
 
-    def __init__(self, person: Person):
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def __init__(self):
+        super().__init__()
 
-        if person.x == Person.A:
-            self.s.connect((self.TCP_IP, self.TCP_PORT))
-            self.s.send(b'\x00' + person.delta)
+    def init_fpre(self):
+        print("init_fpre")
+        if self.person.x == Person.A:
+            print("A before send. "+str(self.person.x))
+            print("A send: "+str(self.s.sendall(b'\x01' + self.person.delta)))
+            print("A after send")
             self.receive()
+            print("A after receive")
         else:
-            self.s.connect((self.TCP_IP, self.TCP_PORT))
+            print("B before receive. "+str(self.person.x))
             data = self.receive()
-            if data[0] == 0:
-                person.delta = data[1:]
-
-    def receive(self):
-        data = bytes(0)
-        while True:
-            part = self.s.recv(self.BUFFER_SIZE)
-            data += part
-            if len(part) < self.BUFFER_SIZE:
-                break
-        return data
+            print("B after receive"+str(data))
+            if data[0] == 1:
+                self.person.delta = data[1:]
 
     # ********** create authenticated bits *************
     @staticmethod
@@ -56,7 +48,7 @@ class Fpre:
         complete authenticated bits. Method for Person A.
         :param data:
         """
-        self.s.send(b'\x01' + data)
+        self.s.sendall(b'\x02' + data)
         self.receive()
 
     def rec_auth_bits(self):
@@ -65,8 +57,10 @@ class Fpre:
         Method for Person B.
         :return:
         """
+        print("Before receiving auth_bits")
         data = self.receive()
-        if data[0] == 1:
+        print("After receiving auth bits: "+str(data))
+        if data[0] == 2:
             return data[1:]
 
     # ***************** AND triples ********************
@@ -75,15 +69,8 @@ class Fpre:
         Sends a single AND triple to the server. For A the server response
         is just b'\x02' and B while receive the third authenticated bit.
         """
-        self.s.send(b'\x02' + data)
+        self.s.sendall(b'\x03' + data)
         d = self.receive()
-        if d[0] == 2:
+        if d[0] == 3:
             return d[1:]
 
-    # *********** close current session ***************
-    def close_session(self):
-        """
-        Just for the Fpre server implementation so that the server can be used for multiple sessions.
-        """
-        self.s.send(b'\xfe')
-        self.s.close()

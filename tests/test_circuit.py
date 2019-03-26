@@ -1,5 +1,6 @@
 import unittest
 from random import randint
+import time
 
 from tests.circuit_creater import *
 from tests.evaluate_circuit import evaluate_circuit
@@ -10,7 +11,7 @@ from tools.person import Person
 class TestCircuit(unittest.TestCase):
 
     def test_circuit_0(self):
-        for i in range(10):
+        for i in range(32):
             in_vals_a = str(randint(0, 1)) + str(randint(0, 1))
             in_vals_b = str(randint(0, 1)) + str(randint(0, 1))
 
@@ -20,7 +21,7 @@ class TestCircuit(unittest.TestCase):
             self.assertEqual(res_mpc, res_plain)
 
     def test_circuit_1(self):
-        for i in range(10):
+        for i in range(32):
             in_vals_a = str(randint(0, 1)) + str(randint(0, 1))
             in_vals_b = str(randint(0, 1)) + str(randint(0, 1))
 
@@ -30,7 +31,7 @@ class TestCircuit(unittest.TestCase):
             self.assertEqual(res_mpc, res_plain)
 
     def test_circuit_2(self):
-        for i in range(8):
+        for i in range(64):
             in_vals_a = str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1))
             in_vals_b = str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1))
 
@@ -40,7 +41,7 @@ class TestCircuit(unittest.TestCase):
             self.assertEqual(res_mpc, res_plain)
 
     def test_circuit_3(self):
-        for i in range(10):
+        for i in range(32):
             in_vals_a = str(randint(0, 1)) + str(randint(0, 1))
             in_vals_b = str(randint(0, 1)) + str(randint(0, 1))
 

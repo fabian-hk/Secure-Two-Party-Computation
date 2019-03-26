@@ -3,46 +3,34 @@ from multiprocessing import Process, Queue
 from tools.person import Person
 from MPC import MPC
 from tests.plain_evaluator import *
+from fpre.fpre import Fpre
 
 
-def user_a(create_circuit, input_a):
-    person = Person(Person.A)
-    mpc = MPC(person)
+def user(create_circuit, input, q: Queue):
+    com = Fpre()
+    mpc = MPC(com)
 
-    inputs, outputs = create_circuit(person)
-    person.load_input_string(input_a)
+    inputs, outputs = create_circuit(com.person)
+    com.person.load_input_string(input[com.person.x])
     mpc.load_cirucit(inputs, outputs)
 
     mpc.function_dependent_preprocessing()
 
     mpc.input_processing()
 
-    mpc.output_determination()
-
-
-def user_b(create_circuit, input_b, q: Queue):
-    person = Person(Person.B)
-    mpc = MPC(person)
-
-    inputs, outputs = create_circuit(person)
-    person.load_input_string(input_b)
-    mpc.load_cirucit(inputs, outputs)
-
-    mpc.function_dependent_preprocessing()
-
-    mpc.input_processing()
-
-    mpc.circuit_evaluation()
+    if com.person.x == Person.B:
+        mpc.circuit_evaluation()
 
     result = mpc.output_determination()
 
-    q.put(result)
+    if com.person.x == Person.B:
+        q.put(result)
 
 
-def evaluate(create_circuit, input_a, input_b):
+def evaluate(create_circuit, input):
     q = Queue()
-    p_a = Process(target=user_a, args=(create_circuit, input_a))
-    p_b = Process(target=user_b, args=(create_circuit, input_b, q,))
+    p_a = Process(target=user, args=(create_circuit, input, q))
+    p_b = Process(target=user, args=(create_circuit, input, q,))
     p_a.start()
     p_b.start()
     p_a.join()
@@ -58,7 +46,7 @@ def evaluate_circuit(circuit, in_vals_a, in_vals_b):
     :return (mpc_result, plain_result)
     """
     # do MPC
-    res_dict_mpc = evaluate(circuit, in_vals_a, in_vals_b)
+    res_dict_mpc = evaluate(circuit, [in_vals_a, in_vals_b])
 
     # evaluate in plain form to check the output
     person_a = Person(Person.A)

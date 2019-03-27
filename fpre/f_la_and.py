@@ -19,9 +19,7 @@ import sys
 
 
 
-def f_la_and(person):
-
-    Communicator = communication.Com(person)
+def f_la_and(communicator, person, and_triple):
 
     #TODO set initial values
     #***_STEP__1__***
@@ -204,7 +202,10 @@ def f_la_and(person):
 
 
     #TODO return values
-
+    and_triple.r1 = None
+    and_triple.M1 = None
+    and_triple.K1 = None
+    and_triple.r2 = None
 
 
 

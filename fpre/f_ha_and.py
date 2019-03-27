@@ -8,12 +8,12 @@ import socket
 import tools.helper as h
 from tools.person import Person
 from tools import communication
-from fpre import fpre
-
+from fpre.fpre import Fpre
+from protobuf import FunctionIndependentPreprocessing_pb2
 import hashlib
 
 
-def f_ha_and(person, own_y_bit):
+def f_ha_and(person, own_y_bit, communicator: Fpre):
     '''
 
     :param person:
@@ -22,14 +22,24 @@ def f_ha_and(person, own_y_bit):
     '''
 
 
-    Communicator = communication.Com(person)
-
 
     #TODO get values from F_abit
+    auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
+    if person.x == Person.A:
+        for i in range(3):
+            auth_bit = auth_bits.bits.add()
+            auth_bit.id = i
+            communicator.authenticated_bit(auth_bit)
 
-    own_x_bit = 0
-    own_x_mac = 0
-    opp_x_key = 0
+        communicator.send_auth_bits(auth_bits.SerializeToString())
+    else:
+        auth_bits.ParseFromString(communicator.rec_auth_bits())
+        auth_bit = iter(auth_bits).__next__()
+
+
+    own_x_bit = auth_bit.r
+    own_x_mac = auth_bit.M
+    opp_x_key = auth_bit.K
 
     random_bit = randint(0,1)
 
@@ -46,8 +56,8 @@ def f_ha_and(person, own_y_bit):
     tmp_1 = abs(get_lsb(tmp_0) - random_bit)
     H_1 = abs(tmp_1 - own_y_bit)
 
-    opp_H_0 = Communicator.exchange_data(310, H_0)
-    opp_H_1 = Communicator.exchange_data(311, H_1)
+    opp_H_0 = communicator.exchange_data(310, H_0)
+    opp_H_1 = communicator.exchange_data(311, H_1)
 
     H_x = None
 
@@ -61,8 +71,10 @@ def f_ha_and(person, own_y_bit):
     hash_function.update(own_x_mac)
 
 
+
+
     tmp_result = abs(H_x - get_lsb(hash_function.digest()))
-    return abs(random_bit - tmp_result)
+    return abs(random_bit - tmp_result), auth_bit
 
 
 

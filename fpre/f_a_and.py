@@ -45,6 +45,8 @@ def f_a_and(person):
         print(all_buckets[bucket])
 
         pass
+
+    #TODO how can i ensure to have corresponding key,mac,bit??
     '''
     for bucket in range(buckets):
         for object in range(objects_per_bucket):

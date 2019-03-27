@@ -7,6 +7,8 @@ from tools.person import Person
 from tools import communication
 import hashlib
 
+from fpre import f_ha_and
+
 
 
 import sys
@@ -21,7 +23,7 @@ def f_la_and(person):
 
     Communicator = communication.Com(person)
 
-
+    #TODO set initial values
     #***_STEP__1__***
     #init
     own_x_bit = 0               #wrong
@@ -58,22 +60,25 @@ def f_la_and(person):
     #...
     #...
     #...
-    v_1 = person.delta              #wrong but correct datatype
-    v_2 = person.delta              #wrong but correct datatype
+    v = f_ha_and.f_ha_and(person, own_y_bit)
+
 
 
     # ***_STEP__3__***
-    u = None
-
     if person.x == person.A:
         if own_x_bit == 1 and own_y_bit == 1:
-            u = abs(v_1 - 1)
+            u = abs(v - 1)
         else:
-            u = v_1
+            u = v
         nothing = Communicator.exchange_data(230, u)
         d = Communicator.exchange_data(231)
-        #TODO commpute opp_z_key
 
+        if d == 0:
+            opp_d_key = int(0).to_bytes(len(person.delta), byteorder='big')
+        else:
+            opp_d_key = person.delta
+
+        opp_z_key = h.xor(opp_d_key, opp_r_key)
 
     if person.x == person.B:
         tmp = None
@@ -83,12 +88,12 @@ def f_la_and(person):
             tmp = abs(u - 1)
         else:
             tmp = u
-        own_z_bit = abs(u - v_2)
+        own_z_bit = abs(u - v)
 
         d = abs(own_r_bit - own_z_bit)
         nothing = Communicator.exchange_data(231, d)
-        #TODO compute own_z_mac
-
+        #TODO ask Julian if correct
+        own_z_mac = own_r_mac
 
     U = []
     # ***_STEP__4-5__***
@@ -189,12 +194,11 @@ def f_la_and(person):
     #TODO send R_new to FEQ
 
 
+    #TODO return values
 
 
 
 
-def f_ha_and(y):
-    return 0
 
 def f_eq(x):
     return True

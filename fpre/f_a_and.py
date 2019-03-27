@@ -1,23 +1,19 @@
-import fpre.f_la_and as flaand
-from tools.person import Person
 from random import randint
+import json
 
+from fpre.f_la_and import f_la_and
+from tools.person import Person
 from fpre.fpre import Fpre
 from protobuf import FunctionDependentPreprocessing_pb2
+import conf
 
-buckets = 10
+buckets = conf.upper_bound_gates
 objects_per_bucket = 10
 
 
-def f_a_and(person, communicator: Fpre):
-    # communicator.exchange_data(bytes)
-
+def f_a_and(person, com: Fpre):
+    # **** step_1 ****
     l_dash = buckets * objects_per_bucket
-
-    all_objects = []
-    # person = Person(Person.A)
-
-    # flaand.f_la_and(person)
 
     and_triples_out = FunctionDependentPreprocessing_pb2.ANDTriples()
 
@@ -25,52 +21,46 @@ def f_a_and(person, communicator: Fpre):
     for i in range(l_dash):
         and_triple = and_triples.triples.add()
         and_triple.id = i
-        flaand.f_la_and(communicator, person, and_triple)
+        f_la_and(com, person, and_triple)
 
-    # ****step_1****
-    for i in range(l_dash):
-        all_objects.append(i)
-
-    # ****step_2****
+    # **** step_2 ****
     # partition objects random in buckets
-    all_buckets = []
-    for bucket in range(buckets):
-        temporary_list = []
-        for object in range(objects_per_bucket):
-            temporary_list.append(all_objects.pop(randint(0, len(all_objects) - 1)))
-        all_buckets.append(temporary_list)
+    half_list = []
+    for i in range(int(l_dash / 2)):
+        n = randint(0, int(l_dash / 2)) if person.x == Person.A else randint(int(l_dash / 2) + 1, l_dash)
+        while n in half_list:
+            n = randint(0, int(l_dash / 2)) if person.x == Person.A else randint(int(l_dash / 2) + 1, l_dash)
+        half_list.append(n)
 
-    # print(all_buckets)
+    ser_half_list = json.dumps(half_list).encode('utf-8')
+    ser_other_half = com.exchange_data(ser_half_list)
+    other_half = json.load(ser_other_half.decode('utf-8'))
 
-    for bucket in range(buckets):
-        and_triple_out = and_triples_out.triples.add()
-        for object in range(1, objects_per_bucket):
-            if object == 1:
-                old = all_buckets[bucket][object - 1]
-            current = all_buckets[bucket][object]
+    full_list = []
+    iter_half_list = iter(half_list)
+    iter_other_list = iter(other_half)
+    p = next(iter_half_list, None) if person.x == Person.A else next(iter_other_list, None)
+    q = next(iter_other_list, None) if person.x == Person.A else next(iter_half_list, None)
+    while p or q:
+        full_list.append(p)
+        full_list.append(q)
+        p = next(iter_half_list, None) if person.x == Person.A else next(iter_other_list, None)
+        q = next(iter_other_list, None) if person.x == Person.A else next(iter_half_list, None)
 
-            print(old, current)
-            old = combine_two_leaky_and(old, current)
+    and_triple_dict = {}
+    for pos, and_triple in zip(full_list, and_triples.triples):
+        and_triple_dict[pos] = and_triple
 
-        print(all_buckets[bucket])
+    # **** step_3 ****
+    for i in full_list:
+        if i % buckets == 0:
+            and_triple_out = and_triples_out.triples.add()
+            and_triple_out = and_triple_dict[i]
+        else:
+            combine_two_leaky_and(and_triple_out, and_triple_dict[i])
 
-        pass
-
-    # TODO how can i ensure to have corresponding key,mac,bit??
-    '''
-    for bucket in range(buckets):
-        for object in range(objects_per_bucket):
-            #print(all_buckets[bucket][object])
-            pass
-        pass
-    '''
-
-    # ****step_3****
     return and_triples_out
 
 
-def combine_two_leaky_and(old, current):
-    return current
-
-
-f_a_and(Person(Person.A))
+def combine_two_leaky_and(and_triple_0, and_triple_1):
+    pass

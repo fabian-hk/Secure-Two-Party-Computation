@@ -61,8 +61,8 @@ class Connection(Process):
 
     def run(self):
         # initialize connection with the appropriate persons
-        self.send_data(self.conn1, b'\x00\x00')
-        self.send_data(self.conn2, b'\x00\x01')
+        self.send_data(self.conn1, b'\x00\x00' + bytes(2042))
+        self.send_data(self.conn2, b'\x00\x01' + bytes(2042))
 
         run = True
         while run:

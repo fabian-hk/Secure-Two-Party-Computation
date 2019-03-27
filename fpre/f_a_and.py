@@ -2,12 +2,16 @@ import fpre.f_la_and as flaand
 from tools.person import Person
 from random import randint
 
+from fpre.fpre import Fpre
+
+
 buckets = 10
 objects_per_bucket = 10
 
 
-def f_a_and(person):
+def f_a_and(person, communicator: Fpre):
 
+    #communicator.exchange_data(bytes)
 
     l_dash = buckets * objects_per_bucket
 

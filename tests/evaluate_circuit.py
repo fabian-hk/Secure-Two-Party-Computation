@@ -4,10 +4,11 @@ from tools.person import Person
 from MPC import MPC
 from tests.plain_evaluator import *
 from fpre.fpre import Fpre
+import conf
 
 
 def user(create_circuit, input, q: Queue):
-    com = Fpre()
+    com = Fpre(conf.test_server_ip, conf.test_server_port)
     mpc = MPC(com)
 
     inputs, outputs = create_circuit(com.person)

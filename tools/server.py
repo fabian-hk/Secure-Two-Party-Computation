@@ -5,12 +5,12 @@ from fpre.fpre_server import FpreServer
 
 
 class Server(Process):
-    TCP_IP = 'localhost'
 
     def __init__(self, port):
+        super().__init__()
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.s.bind((self.TCP_IP, port))
+        self.s.bind(('', port))
         self.s.listen(5)
 
     def start_server(self):
@@ -96,4 +96,6 @@ class Connection(Process):
                 run = False
 
 
-
+if __name__ == "__main__":
+    server = Server(8448)
+    server.start_server()

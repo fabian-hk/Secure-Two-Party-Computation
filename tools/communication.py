@@ -9,10 +9,10 @@ class Com:
     TCP_PORT = 8448
     BUFFER_SIZE = 2048
 
-    def __init__(self):
+    def __init__(self, ip, port):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.s.connect((self.TCP_IP, self.TCP_PORT))
+        self.s.connect((ip, port))
         data = self.receive()
         if data[0:1] == b'\x00':
             self.person = Person(data[1])

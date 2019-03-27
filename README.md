@@ -2,10 +2,10 @@
 Dependencies:
 - ```pip install protobuf```
 
-# Instruction to run the program
-1. ```python3 fpre/fpre_server.py```
-2. ```python3 user_a.py```
-3. ```python3 user_b.py```
+# Usage example
+1. ```python3 Server.py```
+2. ```python3 TwoPartyComputation.py and_op 42```
+3. ```python3 TwoPartyComputation.py and_op 42```
 
 # Instruction on variables
 

@@ -81,3 +81,20 @@ def create_xor_gate(person: Person):
     inputs = [xor0]
     outputs = [xor0]
     return inputs, outputs
+
+
+def and_operation(person: Person):
+    """
+    Circuit for an 8 bit and operation of two integers.
+    :param person:
+    """
+    and0 = []
+    for i in range(8):
+        and0.append(AND(i*10, person, None, None))
+
+    person.inputs = [0, 10, 20, 30, 40, 50, 60, 70] if person.x == Person.A else [1, 11, 21, 31, 41, 51, 61, 71]
+    person.other_inputs = [1, 11, 21, 31, 41, 51, 61, 71] if person.x == Person.A else [0, 10, 20, 30, 40, 50, 60, 70]
+
+    return and0, and0
+
+

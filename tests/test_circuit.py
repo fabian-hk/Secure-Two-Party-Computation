@@ -50,6 +50,18 @@ class TestCircuit(unittest.TestCase):
             # check if the MPC and plain result are the same
             self.assertEqual(res_mpc, res_plain)
 
+    def test_and_operation(self):
+        for i in range(32):
+            in_vals_a = str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(
+                randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1))
+            in_vals_b = str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(
+                randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1))
+
+            res_mpc, res_plain = evaluate_circuit(and_operation, in_vals_a, in_vals_b)
+
+            # check if the MPC and plain result are the same
+            self.assertEqual(res_mpc, res_plain)
+
 
 class TestGates(unittest.TestCase):
 

@@ -48,8 +48,6 @@ class MPC:
                     self.labels.append(os.urandom(int(conf.k / 8)))
 
             # Serialize the authenticated bits and send them to the server
-            print("Serialized auth bits length: " + str(len(self.auth_bits.SerializeToString())))
-            print("Serialized auth bits: " + str(self.auth_bits.SerializeToString()))
             self.com.send_auth_bits(self.auth_bits.SerializeToString())
         else:
             self.auth_bits.ParseFromString(self.com.rec_auth_bits())

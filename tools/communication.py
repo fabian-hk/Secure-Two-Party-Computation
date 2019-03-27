@@ -22,17 +22,20 @@ class Com:
         print("Connection successful")
 
     def receive(self):
-        data = bytes(0)
-        while True:
-            part = self.s.recv(self.BUFFER_SIZE)
-            data += part
-            if len(part) < self.BUFFER_SIZE:
-                break
+        data = self.s.recv(self.BUFFER_SIZE)
+        length = int.from_bytes(data[:4], byteorder='big')
+        print("Received length: "+str(length))
+        data = data[4:]
+        while len(data) < length:
+            data += self.s.recv(self.BUFFER_SIZE)
         return data
+
+    def send_data(self, data):
+        self.s.sendall((len(data).to_bytes(4, byteorder='big') + data))
 
     def exchange_data(self, data=bytes(1)):
         print("Com class: send data length: " + str(len(data)))
-        self.s.sendall(b'\xfd' + self.id.to_bytes(1, "big") + data)
+        self.send_data(b'\xfd' + self.id.to_bytes(1, "big") + data)
         d = self.receive()
         print("Com class: receive data length: " + str(len(d)))
         if d[0] == self.id:
@@ -42,5 +45,5 @@ class Com:
             print("Com class error ID not equal")
 
     def close_session(self):
-        self.s.sendall(b'\xfe')
+        self.send_data(b'\xfe')
         self.s.close()

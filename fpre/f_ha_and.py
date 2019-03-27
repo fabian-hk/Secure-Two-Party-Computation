@@ -9,6 +9,7 @@ import tools.helper as h
 from tools.person import Person
 from tools import communication
 from fpre import fpre
+
 import hashlib
 
 
@@ -21,7 +22,7 @@ def f_ha_and(person, own_y_bit):
     '''
 
 
-    Communicator = communication.Com()
+    Communicator = communication.Com(person)
 
 
     #TODO get values from F_abit

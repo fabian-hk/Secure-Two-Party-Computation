@@ -1,8 +1,10 @@
 import os
 from random import randint
-import conf
 import socket
+import conf
 import sys
+
+
 
 from tools.person import Person
 

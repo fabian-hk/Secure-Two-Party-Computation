@@ -19,7 +19,7 @@ import sys
 
 def f_la_and(person):
 
-    Communicator = communication.Com()
+    Communicator = communication.Com(person)
 
 
     #***_STEP__1__***

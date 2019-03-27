@@ -27,7 +27,6 @@ def f_ha_and(person, own_y_bit):
 
     #TODO get values from F_abit
 
-
     own_x_bit = 0
     own_x_mac = 0
     opp_x_key = 0
@@ -39,9 +38,12 @@ def f_ha_and(person, own_y_bit):
     hash_function = hashlib.sha3_256()
     hash_function.update(opp_x_key)
     H_0 = abs(get_lsb(hash_function.digest()) - random_bit)
+
+    hash_function = hashlib.sha3_256()
     hash_function.update(h.xor(opp_x_key, person.delta))
     tmp_0 = hash_function.digest()
-    tmp_1 = abs(tmp_0 - random_bit)
+
+    tmp_1 = abs(get_lsb(tmp_0) - random_bit)
     H_1 = abs(tmp_1 - own_y_bit)
 
     opp_H_0 = Communicator.exchange_data(310, H_0)
@@ -55,6 +57,7 @@ def f_ha_and(person, own_y_bit):
         H_x = opp_H_1
     else:
         raise TypeError
+    hash_function = hashlib.sha3_256()
     hash_function.update(own_x_mac)
 
 
@@ -70,6 +73,7 @@ def get_lsb(bytes):
     :param bytes:
     :return int: digit 0 or 1
     '''
+
     a = ["{0:b}".format(e) for e in bytes]
     least_significant_byte  = a[-1]
     result = least_significant_byte[-1]
@@ -77,3 +81,4 @@ def get_lsb(bytes):
         return int(result)
     else:
         raise TypeError
+

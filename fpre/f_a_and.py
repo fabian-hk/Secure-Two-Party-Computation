@@ -9,12 +9,12 @@ import tools.helper as h
 import conf
 from protobuf import Wrapper
 
-buckets = conf.upper_bound_gates
 objects_per_bucket = 10
 
 
 # ******* just for testing ********
-def f_la_and(com, person, and_triple):
+def f_la_and(com, person, and_triple, init=True):
+
     auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
     if person.x == Person.A:
         for i in range(3):
@@ -26,16 +26,17 @@ def f_la_and(com, person, and_triple):
         auth_bits.ParseFromString(com.rec_auth_bits())
 
     auth_bits_iter = iter(auth_bits.bits)
-    auth_bit = Wrapper.get_auth_bit_by_id(0, auth_bits)
-    and_triple.r1 = auth_bit.r
-    and_triple.M1 = auth_bit.M
-    and_triple.K1 = auth_bit.K
-    auth_bit = Wrapper.get_auth_bit_by_id(1, auth_bits)
-    and_triple.r2 = auth_bit.r
-    and_triple.M2 = auth_bit.M
-    and_triple.K2 = auth_bit.K
+    if init:
+        auth_bit = next(auth_bits_iter)
+        and_triple.r1 = auth_bit.r
+        and_triple.M1 = auth_bit.M
+        and_triple.K1 = auth_bit.K
+        auth_bit = next(auth_bits_iter)
+        and_triple.r2 = auth_bit.r
+        and_triple.M2 = auth_bit.M
+        and_triple.K2 = auth_bit.K
     if person.x == Person.A:
-        auth_bit = Wrapper.get_auth_bit_by_id(2, auth_bits)
+        auth_bit = next(auth_bits_iter)
         and_triple.r3 = auth_bit.r
         and_triple.M3 = auth_bit.M
         and_triple.K3 = auth_bit.K
@@ -48,14 +49,17 @@ def f_la_and(com, person, and_triple):
 
 # **********************************
 
-def f_a_and(person, com: Fpre):
+def f_a_and(person, com: Fpre, and_triple_in):
     # **** step_1 ****
-    l_dash = buckets * objects_per_bucket
+    l_dash = objects_per_bucket
 
-    and_triples_out = FunctionDependentPreprocessing_pb2.ANDTriples()
+    # and_triples_out = FunctionDependentPreprocessing_pb2.ANDTriples()
 
     and_triples = FunctionDependentPreprocessing_pb2.ANDTriples()
-    for i in range(l_dash):
+    and_triple = and_triples.triples.add()
+    and_triple = and_triple_in
+    f_la_and(com, person, and_triple, False)
+    for i in range(l_dash - 1):
         and_triple = and_triples.triples.add()
         and_triple.id = i
         f_la_and(com, person, and_triple)
@@ -92,13 +96,10 @@ def f_a_and(person, com: Fpre):
     j = 0
     for i in full_list:
         if j % objects_per_bucket == 0:
-            and_triple_out = and_triples_out.triples.add()
-            and_triple_out = and_triple_dict[i]
+            and_triple_in = and_triple_dict[i]
         else:
-            combine_two_leaky_and(and_triple_out, and_triple_dict[i], com, person)
+            combine_two_leaky_and(and_triple_in, and_triple_dict[i], com, person)
         j += 1
-
-    return and_triples_out
 
 
 def combine_two_leaky_and(and_triple_out, and_triple, com: Fpre, person: Person):
@@ -139,8 +140,3 @@ def combine_two_leaky_and(and_triple_out, and_triple, com: Fpre, person: Person)
         and_triple_out.r3 = bytes(h.xor(and_triple_out.r3, and_triple.r3))
         and_triple_out.M3 = bytes(h.xor(and_triple_out.M3, and_triple.M3))
         and_triple_out.K3 = bytes(h.xor(and_triple_out.K3, and_triple.K3))
-
-
-if __name__ == "__main__":
-    com = Fpre('localhost', 8448)
-    f_a_and(com.person, com)

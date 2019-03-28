@@ -12,17 +12,11 @@ class Fpre(Com):
         super().__init__(ip, port)
 
     def init_fpre(self):
-        print("init_fpre")
         if self.person.x == Person.A:
-            print("A before send. " + str(self.person.x))
             self.send_data(b'\x01' + self.person.delta)
-            print("A after send")
             self.receive()
-            print("A after receive")
         else:
-            print("B before receive. " + str(self.person.x))
             data = self.receive()
-            print("B after receive" + str(data))
             if data[0] == 1:
                 self.person.delta = data[1:]
 
@@ -48,7 +42,6 @@ class Fpre(Com):
         complete authenticated bits. Method for Person A.
         :param data:
         """
-        print("Send auth_bits length: " + str(len(data)))
         self.send_data(b'\x02' + data)
         self.receive()
 
@@ -58,9 +51,7 @@ class Fpre(Com):
         Method for Person B.
         :return:
         """
-        print("Before receiving auth_bits")
         data = self.receive()
-        print("Received auth_bits length: " + str(len(data)))
         if data[0] == 2:
             return data[1:]
 

@@ -28,7 +28,6 @@ class Com:
         data = self.receive_buffer
         data += self.s.recv(self.BUFFER_SIZE)
         length = int.from_bytes(data[:4], byteorder='big')
-        print("Received length: " + str(length))
         data = data[4:]
         while len(data) < length:
             data += self.s.recv(self.BUFFER_SIZE)
@@ -39,10 +38,8 @@ class Com:
         self.s.sendall((len(data).to_bytes(4, byteorder='big') + data))
 
     def exchange_data(self, data=bytes(1)):
-        print("Com class: send data length: " + str(len(data)))
         self.send_data(b'\xfd' + self.id.to_bytes(4, "big") + data)
         d = self.receive()
-        print("Com class: receive data length: " + str(len(d)))
         if int.from_bytes(d[:4], byteorder='big') == self.id:
             self.id += 1
             return d[4:]

@@ -12,7 +12,7 @@ class TestFpre(unittest.TestCase):
     def run_f_a_and(self, q, p):
         com = Fpre('localhost', 8448)
         com.init_fpre()
-        and_triples = f_a_and(com.person, com)
+        and_triples = f_a_and(com.person, com, 20)
         com.close_session()
         if com.person.x == Person.A:
             q.put((com.person.delta, and_triples))

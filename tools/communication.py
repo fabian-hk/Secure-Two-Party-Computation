@@ -13,6 +13,9 @@ class Com:
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.s.connect((ip, port))
+
+        self.receive_buffer = bytes(0)
+
         data = self.receive()
         if data[0:1] == b'\x00':
             self.person = Person(data[1])
@@ -22,13 +25,15 @@ class Com:
         print("Connection successful")
 
     def receive(self):
-        data = self.s.recv(self.BUFFER_SIZE)
+        data = self.receive_buffer
+        data += self.s.recv(self.BUFFER_SIZE)
         length = int.from_bytes(data[:4], byteorder='big')
-        print("Received length: "+str(length))
+        print("Received length: " + str(length))
         data = data[4:]
         while len(data) < length:
             data += self.s.recv(self.BUFFER_SIZE)
-        return data
+        self.receive_buffer = data[length:]
+        return data[:length]
 
     def send_data(self, data):
         self.s.sendall((len(data).to_bytes(4, byteorder='big') + data))

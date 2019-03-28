@@ -46,23 +46,27 @@ class Connection(Process):
         self.conn1 = conn1
         self.conn2 = conn2
 
+        self.receive_buffer = bytes(0)
+
         self.fpre_server = FpreServer()
 
     def receive(self, conn):
-        data = conn.recv(self.BUFFER_SIZE)
+        data = self.receive_buffer
+        data += conn.recv(self.BUFFER_SIZE)
         length = int.from_bytes(data[:4], byteorder='big')
         data = data[4:]
         while len(data) < length:
             data += conn.recv(self.BUFFER_SIZE)
-        return data
+        self.receive_buffer = data[length:]
+        return data[:length]
 
     def send_data(self, conn, data):
         conn.sendall((len(data).to_bytes(4, byteorder='big') + data))
 
     def run(self):
         # initialize connection with the appropriate persons
-        self.send_data(self.conn1, b'\x00\x00' + bytes(2042))
-        self.send_data(self.conn2, b'\x00\x01' + bytes(2042))
+        self.send_data(self.conn1, b'\x00\x00')
+        self.send_data(self.conn2, b'\x00\x01')
 
         run = True
         while run:

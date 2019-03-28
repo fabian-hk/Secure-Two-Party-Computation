@@ -40,12 +40,12 @@ class Com:
 
     def exchange_data(self, data=bytes(1)):
         print("Com class: send data length: " + str(len(data)))
-        self.send_data(b'\xfd' + self.id.to_bytes(1, "big") + data)
+        self.send_data(b'\xfd' + self.id.to_bytes(4, "big") + data)
         d = self.receive()
         print("Com class: receive data length: " + str(len(d)))
-        if d[0] == self.id:
+        if int.from_bytes(d[:4], byteorder='big') == self.id:
             self.id += 1
-            return d[1:]
+            return d[4:]
         else:
             print("Com class error ID not equal")
 

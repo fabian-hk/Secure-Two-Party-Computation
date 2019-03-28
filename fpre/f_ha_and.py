@@ -1,16 +1,17 @@
 from tools import communication
 from random import randint
-from tools.person import Person
 import os
 from random import randint
 import conf
 import socket
+import hashlib
+
+
+from tools.person import Person
 import tools.helper as h
 from tools.person import Person
 from tools import communication
 from fpre import fpre
-
-import hashlib
 
 
 def f_ha_and(person, own_y_bit):
@@ -35,11 +36,11 @@ def f_ha_and(person, own_y_bit):
 
 
 
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(opp_x_key)
     H_0 = abs(get_lsb(hash_function.digest()) - random_bit)
 
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(h.xor(opp_x_key, person.delta))
     tmp_0 = hash_function.digest()
 
@@ -57,7 +58,7 @@ def f_ha_and(person, own_y_bit):
         H_x = opp_H_1
     else:
         raise TypeError
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(own_x_mac)
 
 

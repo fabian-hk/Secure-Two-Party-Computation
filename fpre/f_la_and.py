@@ -99,18 +99,18 @@ def f_la_and(person):
     #check correctness
     #(a)
     if own_z_bit == 1:
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         hash_function.update(opp_x_key + h.xor(opp_z_key, person.delta))
     else:
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         hash_function.update(opp_x_key + opp_z_key)
     T_0 = hash_function.digest()
 
     if bool(own_y_bit) != bool(own_y_bit):
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         hash_function.update(h.xor(opp_x_key, person.delta) +  h.xor(opp_y_key, opp_z_key, person.delta))
     else:
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         hash_function.update(opp_x_key + h.xor(opp_y_key, opp_z_key))
     U.append(h.xor(T_0, hash_function.digest()))
 
@@ -119,15 +119,15 @@ def f_la_and(person):
     else:
         tmp_funct = h.xor(h.xor(opp_y_key, opp_z_key))
 
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(opp_x_key + tmp_funct)
     T_1 = hash_function.digest()
 
     if own_z_bit == 1:
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         hash_function.update(h.xor(opp_x_key, person.delta) + h.xor(opp_z_key, person.delta))
     else:
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         hash_function.update(h.xor(opp_x_key, person.delta) + opp_z_key)
     U.append(h.xor(T_1, hash_function.digest()))
 
@@ -144,20 +144,20 @@ def f_la_and(person):
     V = []
 
     #V0
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(own_x_mac + own_z_mac)
     V.append(hash_function.digest())
     #V1
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(own_x_mac +  h.xor(own_z_mac, own_y_mac))
     V.append(hash_function.update())
 
 
     W = []
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(opp_x_key)
     hash_key_x = hash_function.digest()
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(h.xor(opp_x_key, person.delta))
     hash_key_x_xor = hash_function.digest()
     W_0_0 = h.xor(hash_key_x,  V[0], R)
@@ -190,7 +190,7 @@ def f_la_and(person):
     else:
         raise TypeError
 
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(own_x_mac)
     R_new = None
     if own_x_bit == 0:

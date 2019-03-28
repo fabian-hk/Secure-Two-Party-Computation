@@ -6,7 +6,6 @@ import hashlib
 
 import tools.helper as h
 from tools.person import Person
-from tools import communication
 from fpre.fpre import Fpre
 
 from fpre import f_eq as f_eq
@@ -22,7 +21,7 @@ import sys
 
 
 
-def f_la_and(person, communicator: Fpre):
+def f_la_and(person: Person, communicator: Fpre):
 
     #TODO set initial values
     #***_STEP__1__***

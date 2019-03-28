@@ -1,20 +1,15 @@
-from tools import communication
 from random import randint
-import os
 from random import randint
-import conf
-import socket
 import hashlib
+import os
 
-
-from tools.person import Person
+import conf
 import tools.helper as h
 from tools.person import Person
-from tools import communication
-from fpre import fpre
+from fpre.fpre import Fpre
 
 
-def f_ha_and(person, own_y_bit):
+def f_ha_and(person: Person, communicator: Fpre,  own_y_bit):
     '''
 
     :param person:
@@ -23,7 +18,7 @@ def f_ha_and(person, own_y_bit):
     '''
 
 
-    Communicator = communication.Com(person)
+
 
 
     #TODO get values from F_abit
@@ -47,8 +42,8 @@ def f_ha_and(person, own_y_bit):
     tmp_1 = abs(get_lsb(tmp_0) - random_bit)
     H_1 = abs(tmp_1 - own_y_bit)
 
-    opp_H_0 = Communicator.exchange_data(310, H_0)
-    opp_H_1 = Communicator.exchange_data(311, H_1)
+    opp_H_0 = communicator.exchange_data(310, H_0)
+    opp_H_1 = communicator.exchange_data(311, H_1)
 
     H_x = None
 

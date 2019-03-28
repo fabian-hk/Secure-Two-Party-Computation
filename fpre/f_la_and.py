@@ -2,14 +2,17 @@ import os
 from random import randint
 import conf
 import socket
+import hashlib
+
 import tools.helper as h
 from tools.person import Person
 from tools import communication
-import hashlib
+from fpre.fpre import Fpre
 
+from fpre import f_eq as f_eq
 from fpre import f_ha_and
 
-
+from Exceptions.CheaterException import Cheater_recognized
 
 import sys
 
@@ -19,9 +22,7 @@ import sys
 
 
 
-def f_la_and(person):
-
-    Communicator = communication.Com(person)
+def f_la_and(person, communicator: Fpre):
 
     #TODO set initial values
     #***_STEP__1__***
@@ -70,8 +71,8 @@ def f_la_and(person):
             u = abs(v - 1)
         else:
             u = v
-        nothing = Communicator.exchange_data(230, u)
-        d = Communicator.exchange_data(231)
+        nothing = communicator.exchange_data(230, u)
+        d = communicator.exchange_data(231)
 
         if d == 0:
             opp_d_key = int(0).to_bytes(len(person.delta), byteorder='big')
@@ -82,7 +83,7 @@ def f_la_and(person):
 
     if person.x == person.B:
         tmp = None
-        u = Communicator.exchange_data(230)
+        u = communicator.exchange_data(230)
         own_z_bit = None
         if own_x_bit == 1 and own_y_bit == 1:
             tmp = abs(u - 1)
@@ -91,7 +92,7 @@ def f_la_and(person):
         own_z_bit = abs(u - v)
 
         d = abs(own_r_bit - own_z_bit)
-        nothing = Communicator.exchange_data(231, d)
+        nothing = communicator.exchange_data(231, d)
         own_z_mac = own_r_mac
 
     U = []
@@ -133,7 +134,7 @@ def f_la_and(person):
 
     #(b)
     if own_x_bit < 2 and own_x_bit >= 0:
-        U_solid = Communicator.exchange_data(240, U[own_x_bit])
+        U_solid = communicator.exchange_data(240, U[own_x_bit])
     else:
         raise TypeError
 
@@ -170,15 +171,15 @@ def f_la_and(person):
     W_opp_x_0 = None
     W_opp_x_1 = None
     if own_x_bit == 0:
-        W_opp_x_0 = Communicator.exchange_data(241, W_0_0)
-        W_opp_x_1 = Communicator.exchange_data(242, W_0_1)
+        W_opp_x_0 = communicator.exchange_data(241, W_0_0)
+        W_opp_x_1 = communicator.exchange_data(242, W_0_1)
     elif own_x_bit == 1:
-        W_opp_x_0 = Communicator.exchange_data(241, W_1_0)
-        W_opp_x_1 = Communicator.exchange_data(242, W_1_1)
+        W_opp_x_0 = communicator.exchange_data(241, W_1_0)
+        W_opp_x_1 = communicator.exchange_data(242, W_1_1)
     else:
         raise TypeError
 
-    #TODO send R to FEQ
+    r_eq = f_eq(person, communicator, R)
 
     #(e)
 
@@ -200,7 +201,11 @@ def f_la_and(person):
     else:
         raise TypeError
 
-    #TODO send R_new to FEQ
+    r_new_eq =  f_eq(person, communicator, R_new)
+
+    if not(r_eq and r_new_eq):
+        raise Cheater_recognized
+
 
 
     #TODO return values

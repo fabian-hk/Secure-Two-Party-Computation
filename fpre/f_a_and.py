@@ -1,20 +1,18 @@
 from random import randint
 import json
 
-# from fpre.f_la_and import f_la_and
+import fpre.f_la_and as flaand
 from tools.person import Person
 from fpre.fpre import Fpre
 from protobuf import FunctionDependentPreprocessing_pb2, FunctionIndependentPreprocessing_pb2
 import tools.helper as h
-import conf
-from protobuf import Wrapper
+from exceptions.CheaterException import CheaterRecognized
 
-objects_per_bucket = 10
+objects_per_bucket = 4
 
 
 # ******* just for testing ********
-def f_la_and(com, person, and_triple, init=True):
-
+def f_la_and(com, person, and_triple):
     auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
     if person.x == Person.A:
         for i in range(3):
@@ -26,7 +24,7 @@ def f_la_and(com, person, and_triple, init=True):
         auth_bits.ParseFromString(com.rec_auth_bits())
 
     auth_bits_iter = iter(auth_bits.bits)
-    if init:
+    if and_triple.r1 == bytes(0):
         auth_bit = next(auth_bits_iter)
         and_triple.r1 = auth_bit.r
         and_triple.M1 = auth_bit.M
@@ -49,17 +47,15 @@ def f_la_and(com, person, and_triple, init=True):
 
 # **********************************
 
-def f_a_and(person, com: Fpre, and_triple_in):
+def f_a_and(person: Person, com: Fpre, count: int):
     # **** step_1 ****
-    l_dash = objects_per_bucket
+    l_dash = count * objects_per_bucket
 
     # and_triples_out = FunctionDependentPreprocessing_pb2.ANDTriples()
 
     and_triples = FunctionDependentPreprocessing_pb2.ANDTriples()
-    and_triple = and_triples.triples.add()
-    and_triple = and_triple_in
-    f_la_and(com, person, and_triple, False)
-    for i in range(l_dash - 1):
+    and_triples_out = FunctionDependentPreprocessing_pb2.ANDTriples()
+    for i in range(l_dash):
         and_triple = and_triples.triples.add()
         and_triple.id = i
         f_la_and(com, person, and_triple)
@@ -96,10 +92,18 @@ def f_a_and(person, com: Fpre, and_triple_in):
     j = 0
     for i in full_list:
         if j % objects_per_bucket == 0:
-            and_triple_in = and_triple_dict[i]
+            and_triple_out = and_triples_out.triples.add()
+            and_triple_out = and_triple_dict[i]
         else:
-            combine_two_leaky_and(and_triple_in, and_triple_dict[i], com, person)
+            combine_two_leaky_and(and_triple_out, and_triple_dict[i], com, person)
         j += 1
+
+    return and_triples_out
+
+
+def compute_and_triple(and_triple_0, and_triple_1, com: Fpre, person: Person):
+    f_la_and(com, person, and_triple_0)
+    combine_two_leaky_and(and_triple_0, and_triple_1, com, person)
 
 
 def combine_two_leaky_and(and_triple_out, and_triple, com: Fpre, person: Person):
@@ -114,14 +118,14 @@ def combine_two_leaky_and(and_triple_out, and_triple, com: Fpre, person: Person)
     # check the MAC
     if d_dash_2 == b'\x01':
         if auth_bit.M == bytes(h.xor(and_triple_out.K2, and_triple.K2, person.delta)):
-            print("Combine leaky and: Check correct.")
+            pass
         else:
-            print("Combine leaky and: Check cheat.")
+            raise CheaterRecognized()
     else:
         if auth_bit.M == bytes(h.xor(and_triple_out.K2, and_triple.K2)):
-            print("Combine leaky and: Check correct.")
+            pass
         else:
-            print("Combine leaky and: Check cheat.")
+            raise CheaterRecognized()
 
     d = h.xor(d_dash, d_dash_2)
 

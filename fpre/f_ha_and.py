@@ -63,13 +63,13 @@ def f_ha_and(person: Person, communicator: Fpre,  own_y_bit):
 
     return result_bit, auth_bit
 
-def get_lsb(bytes):
+def get_lsb(input_bytes):
     '''
     returns least significant bit of bytes input
-    :param bytes:
+    :param input_bytes:
     :return int: digit 0 or 1
     '''
-    a = ["{0:b}".format(e) for e in bytes]
+    a = ["{0:b}".format(e) for e in input_bytes]
     least_significant_byte  = a[-1]
     result = least_significant_byte[-1]
     if result.isdigit():

@@ -11,7 +11,7 @@ from tools.person import Person
 class TestCircuit(unittest.TestCase):
 
     def test_circuit_0(self):
-        for i in range(32):
+        for i in range(4):
             in_vals_a = str(randint(0, 1)) + str(randint(0, 1))
             in_vals_b = str(randint(0, 1)) + str(randint(0, 1))
 
@@ -21,7 +21,7 @@ class TestCircuit(unittest.TestCase):
             self.assertEqual(res_mpc, res_plain)
 
     def test_circuit_1(self):
-        for i in range(32):
+        for i in range(4):
             in_vals_a = str(randint(0, 1)) + str(randint(0, 1))
             in_vals_b = str(randint(0, 1)) + str(randint(0, 1))
 
@@ -31,7 +31,7 @@ class TestCircuit(unittest.TestCase):
             self.assertEqual(res_mpc, res_plain)
 
     def test_circuit_2(self):
-        for i in range(64):
+        for i in range(4):
             in_vals_a = str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1))
             in_vals_b = str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1))
 
@@ -41,7 +41,7 @@ class TestCircuit(unittest.TestCase):
             self.assertEqual(res_mpc, res_plain)
 
     def test_circuit_3(self):
-        for i in range(32):
+        for i in range(4):
             in_vals_a = str(randint(0, 1)) + str(randint(0, 1))
             in_vals_b = str(randint(0, 1)) + str(randint(0, 1))
 
@@ -50,8 +50,28 @@ class TestCircuit(unittest.TestCase):
             # check if the MPC and plain result are the same
             self.assertEqual(res_mpc, res_plain)
 
+    def test_circuit_4(self):
+        for i in range(4):
+            in_vals_a = str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1))
+            in_vals_b = str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1))
+
+            res_mpc, res_plain = evaluate_circuit(create_example_circuit_4, in_vals_a, in_vals_b)
+
+            # check if the MPC and plain result are the same
+            self.assertEqual(res_mpc, res_plain)
+
+    def test_circuit_5(self):
+        for i in range(4):
+            in_vals_a = str(randint(0, 1)) + str(randint(0, 1))
+            in_vals_b = str(randint(0, 1)) + str(randint(0, 1))
+
+            res_mpc, res_plain = evaluate_circuit(create_example_circuit_5, in_vals_a, in_vals_b)
+
+            # check if the MPC and plain result are the same
+            self.assertEqual(res_mpc, res_plain)
+
     def test_and_operation(self):
-        for i in range(32):
+        for i in range(4):
             in_vals_a = str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(
                 randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1))
             in_vals_b = str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(randint(0, 1)) + str(
@@ -85,6 +105,18 @@ class TestGates(unittest.TestCase):
             for in_val_a in in_vals_a:
                 for in_val_b in in_vals_b:
                     res_mpc, res_plain = evaluate_circuit(create_xor_gate, in_val_a, in_val_b)
+
+                    # check if the MPC and plain result are the same
+                    self.assertEqual(res_mpc, res_plain)
+
+    def test_nand_gate(self):
+        in_vals_a = ["0", "1"]
+        in_vals_b = ["0", "1"]
+
+        for i in range(4):
+            for in_val_a in in_vals_a:
+                for in_val_b in in_vals_b:
+                    res_mpc, res_plain = evaluate_circuit(create_nand_gate, in_val_a, in_val_b)
 
                     # check if the MPC and plain result are the same
                     self.assertEqual(res_mpc, res_plain)

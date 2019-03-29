@@ -25,7 +25,7 @@ def f_eq(person: Person, communiator: Fpre, R):
     else:
         y = R
         c = communiator.exchange_data()
-        nothing = communiator.exchange_data()
+        nothing = communiator.exchange_data(y)
         x = communiator.exchange_data()
         r = communiator.exchange_data()
         hash_function = hashlib.sha3_512()

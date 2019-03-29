@@ -23,7 +23,6 @@ import sys
 
 
 def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependentPreprocessing_pb2.AuthenticatedBits):
-
     if and_triple.r1 == bytes(0):
         auth_bits = get_authbits(person, communicator, 3)
         auth_bits_iter = iter(auth_bits.bits)

@@ -27,7 +27,6 @@ def f_ha_and(person: Person, communicator: Fpre, own_y_bit, auth_bit = None):
                 auth_bit = auth_bits.bits.add()
                 auth_bit.id = i
                 communicator.authenticated_bit(auth_bit)
-
             communicator.send_auth_bits(auth_bits.SerializeToString())
         else:
             auth_bits.ParseFromString(communicator.rec_auth_bits())
@@ -71,13 +70,16 @@ def get_lsb(input_bytes):
     '''
     returns least significant bit of bytes input
     :param input_bytes:
-    :return int: digit 0 or 1
+    :return byte: b'\x00' or b'\x01'
     '''
     a = ["{0:b}".format(e) for e in input_bytes]
     least_significant_byte  = a[-1]
     result = least_significant_byte[-1]
     byteArray = bytearray()
     if result.isdigit():
-        return int.from_bytes(int(result), "big")
+        if int(result) == 0:
+            return b'\x00'
+        else:
+            return b'\x01'
     else:
         raise TypeError

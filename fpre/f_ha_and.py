@@ -12,33 +12,37 @@ from tools.person import Person
 from fpre.fpre import Fpre
 from protobuf import FunctionIndependentPreprocessing_pb2
 
-def f_ha_and(person: Person, communicator: Fpre,  own_y_bit):
+def f_ha_and(person: Person, communicator: Fpre, own_y_bit, auth_bit = None):
     '''
-    :param person:
-    :param own_y_bit:
+    :param person: Person
+    :param communicato: Fpre
+    :param own_y_bit: Byte
+    :param auth_bit: FunctionIndependentPreprocessing_pb2.Bit
     :return:
     '''
-    auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
-    if person.x == Person.A:
-        for i in range(3):
-            auth_bit = auth_bits.bits.add()
-            auth_bit.id = i
-            communicator.authenticated_bit(auth_bit)
+    if auth_bit == None:
+        auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
+        if person.x == Person.A:
+            for i in range(3):
+                auth_bit = auth_bits.bits.add()
+                auth_bit.id = i
+                communicator.authenticated_bit(auth_bit)
 
-        communicator.send_auth_bits(auth_bits.SerializeToString())
-    else:
-        auth_bits.ParseFromString(communicator.rec_auth_bits())
+            communicator.send_auth_bits(auth_bits.SerializeToString())
+        else:
+            auth_bits.ParseFromString(communicator.rec_auth_bits())
+
         auth_bit = iter(auth_bits).__next__()
 
     own_x_bit = auth_bit.r
     own_x_mac = auth_bit.M
     opp_x_key = auth_bit.K
 
-    random_bit = randint(0,1)
+    random_bit = randint(0,1).to_bytes(1, "big")
 
     hash_function = hashlib.sha3_512()
     hash_function.update(opp_x_key)
-    H_0 = h.xor(get_lsb(hash_function.digest(), random_bit))
+    H_0 = h.xor(get_lsb(hash_function.digest()), random_bit)
 
     hash_function = hashlib.sha3_512()
     hash_function.update(h.xor(opp_x_key, person.delta))
@@ -72,7 +76,8 @@ def get_lsb(input_bytes):
     a = ["{0:b}".format(e) for e in input_bytes]
     least_significant_byte  = a[-1]
     result = least_significant_byte[-1]
+    byteArray = bytearray()
     if result.isdigit():
-        return int(result)
+        return int.from_bytes(int(result), "big")
     else:
         raise TypeError

@@ -12,17 +12,11 @@ class Fpre(Com):
         super().__init__(ip, port)
 
     def init_fpre(self):
-        print("init_fpre")
         if self.person.x == Person.A:
-            print("A before send. "+str(self.person.x))
-            print("A send: "+str(self.s.sendall(b'\x01' + self.person.delta)))
-            print("A after send")
+            self.send_data(b'\x01' + self.person.delta)
             self.receive()
-            print("A after receive")
         else:
-            print("B before receive. "+str(self.person.x))
             data = self.receive()
-            print("B after receive"+str(data))
             if data[0] == 1:
                 self.person.delta = data[1:]
 
@@ -48,7 +42,7 @@ class Fpre(Com):
         complete authenticated bits. Method for Person A.
         :param data:
         """
-        self.s.sendall(b'\x02' + data)
+        self.send_data(b'\x02' + data)
         self.receive()
 
     def rec_auth_bits(self):
@@ -57,9 +51,7 @@ class Fpre(Com):
         Method for Person B.
         :return:
         """
-        print("Before receiving auth_bits")
         data = self.receive()
-        print("After receiving auth bits: "+str(data))
         if data[0] == 2:
             return data[1:]
 
@@ -67,10 +59,9 @@ class Fpre(Com):
     def and_triples(self, data: bytes):
         """
         Sends a single AND triple to the server. For A the server response
-        is just b'\x02' and B while receive the third authenticated bit.
+        is just b'\x03' and B while receive the third authenticated bit.
         """
-        self.s.sendall(b'\x03' + data)
+        self.send_data(b'\x03' + data)
         d = self.receive()
         if d[0] == 3:
             return d[1:]
-

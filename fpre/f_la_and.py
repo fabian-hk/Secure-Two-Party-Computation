@@ -11,7 +11,7 @@ from fpre.fpre import Fpre
 from fpre import f_eq as f_eq
 from fpre import f_ha_and
 
-from Exceptions.CheaterException import Cheater_recognized
+
 
 import sys
 
@@ -21,7 +21,7 @@ import sys
 
 
 
-def f_la_and(person: Person, communicator: Fpre):
+def f_la_and(communicator, person, and_triple):
 
     #TODO set initial values
     #***_STEP__1__***
@@ -190,7 +190,7 @@ def f_la_and(person: Person, communicator: Fpre):
     else:
         raise TypeError
 
-    hash_function = hashlib.sha3_512()
+    hash_function = hashlib.sha3_256()
     hash_function.update(own_x_mac)
     R_new = None
     if own_x_bit == 0:
@@ -200,11 +200,7 @@ def f_la_and(person: Person, communicator: Fpre):
     else:
         raise TypeError
 
-    r_new_eq =  f_eq(person, communicator, R_new)
-
-    if not(r_eq and r_new_eq):
-        raise Cheater_recognized
-
+    #TODO send R_new to FEQ
 
 
     #TODO return values

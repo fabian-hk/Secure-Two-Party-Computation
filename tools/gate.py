@@ -144,16 +144,10 @@ class AND(Gate):
     def __str__(self):
         return super().__str__() + " o: " + str(self.o) + "\n"
 
-    def initialize_auth_bit_o(self, and_triple, person: Person):
-        if person.x == Person.A:
-            self.o, self.Mo, self.Ko = Fpre.authenticated_bit()
-            and_triple.r3 = self.o
-            and_triple.M3 = self.Mo
-            and_triple.K3 = self.Ko
-        else:
-            self.o = and_triple.r3
-            self.Mo = and_triple.M3
-            self.Ko = and_triple.K3
+    def initialize_auth_bit_o(self, and_triple):
+        self.o = and_triple.r3
+        self.Mo = and_triple.M3
+        self.Ko = and_triple.K3
 
     def initialize_auth_bit_y(self, auth_bit):
         self.y = auth_bit.r

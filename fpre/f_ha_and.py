@@ -1,9 +1,10 @@
+from tools import communication
 from random import randint
-from random import randint
-import hashlib
+from tools.person import Person
 import os
-
+from random import randint
 import conf
+import socket
 import tools.helper as h
 from tools.person import Person
 from fpre.fpre import Fpre
@@ -22,10 +23,22 @@ def f_ha_and(person: Person, communicator: Fpre,  own_y_bit):
 
 
     #TODO get values from F_abit
+    auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
+    if person.x == Person.A:
+        for i in range(3):
+            auth_bit = auth_bits.bits.add()
+            auth_bit.id = i
+            communicator.authenticated_bit(auth_bit)
 
-    own_x_bit = 0
-    own_x_mac = 0
-    opp_x_key = 0
+        communicator.send_auth_bits(auth_bits.SerializeToString())
+    else:
+        auth_bits.ParseFromString(communicator.rec_auth_bits())
+        auth_bit = iter(auth_bits).__next__()
+
+
+    own_x_bit = auth_bit.r
+    own_x_mac = auth_bit.M
+    opp_x_key = auth_bit.K
 
     random_bit = randint(0,1)
 
@@ -57,8 +70,10 @@ def f_ha_and(person: Person, communicator: Fpre,  own_y_bit):
     hash_function.update(own_x_mac)
 
 
+
+
     tmp_result = abs(H_x - get_lsb(hash_function.digest()))
-    return abs(random_bit - tmp_result)
+    return abs(random_bit - tmp_result), auth_bit
 
 
 

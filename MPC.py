@@ -5,6 +5,7 @@ from protobuf import FunctionIndependentPreprocessing_pb2, FunctionDependentPrep
     Output_pb2, Wrapper
 from tools.gate import *
 from fpre.fpre import Fpre
+from fpre.f_a_and import f_a_and
 
 import conf
 
@@ -48,8 +49,6 @@ class MPC:
                     self.labels.append(os.urandom(int(conf.k / 8)))
 
             # Serialize the authenticated bits and send them to the server
-            print("Serialized auth bits length: " + str(len(self.auth_bits.SerializeToString())))
-            print("Serialized auth bits: " + str(self.auth_bits.SerializeToString()))
             self.com.send_auth_bits(self.auth_bits.SerializeToString())
         else:
             self.auth_bits.ParseFromString(self.com.rec_auth_bits())
@@ -119,20 +118,14 @@ class MPC:
 
                 if self.person.x == Person.A: gate.Ly0 = label_iter.__next__()
 
-                # as B send the and double to the fpre server to receive the missing bit
-                if self.person.x == Person.B: and_triple.ParseFromString(
-                    self.com.and_triples(and_triple.SerializeToString()))
+                # compute the complete AND triple
+                f_a_and(self.person, self.com, and_triple)
 
-                gate.initialize_auth_bit_o(and_triple, self.person)
+                gate.initialize_auth_bit_o(and_triple)
                 gate.initialize_auth_bit_y(Wrapper.get_auth_bit_by_id(gate.id + 2, self.auth_bits))
 
                 # do the function dependent preprocessing
                 gate.function_dependent_preprocessing(self.garbled_gates.gates.add())
-
-                print(gate)
-
-                # as A send and triple to the fpre server
-                if self.person.x == Person.A: self.com.and_triples(and_triple.SerializeToString())
 
                 # propagate variables to the successor gates
                 for n in gate.next:  # type: tuple[Gate, int]

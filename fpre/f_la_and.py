@@ -12,7 +12,7 @@ from protobuf import FunctionDependentPreprocessing_pb2, FunctionIndependentPrep
 from fpre.f_eq import f_eq as f_eq
 from fpre import f_ha_and
 
-from exceptions.CheaterException import Cheater_recognized
+from exceptions.CheaterException import CheaterRecognized
 
 import sys
 
@@ -201,7 +201,7 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
     if r_eq and r_new_eq:
         pass
     else:
-        raise Cheater_recognized()
+        raise CheaterRecognized()
 
     and_triple.r1 = own_x_bit
     and_triple.r2 = own_y_bit

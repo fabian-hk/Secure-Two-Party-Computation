@@ -1,7 +1,7 @@
 from tools.gate import *
 from tools.person import Person
-import parser.parse_native_format as pnf
-from parser.gate_helper import GateHelper
+import parse_native_format as pnf
+from gate_helper import GateHelper
 
 
 def replace_not_by_nand(nonio_gate_list):

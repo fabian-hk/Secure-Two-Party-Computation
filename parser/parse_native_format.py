@@ -1,30 +1,5 @@
 import csv
-
-
-class gate_helper:
-
-    def __init__(self, id, type, num_of_inputs, output_to, is_circuit_output, output_number_list):
-        #self.id, together with the self.type forms a unique identifier (since Input Gates have ids 1 to size-of-input)
-        self.id = id
-        #types used are strings: INPUT, AND, OR, XOR, NOT
-        #TODO: replace - A OR B - with - NOT A AND NOT B -
-        self.type = type
-
-        #number of inputs that a gate has - all except NOT have 2
-        self.num_of_inputs = num_of_inputs
-
-        #ids of gates which this gate outputs to
-        self.output_to = output_to
-
-        # boolean flag set if gate output is circuit output
-        self.is_circuit_output = is_circuit_output
-
-        #output of this gate used for evaluation of circuit
-        self.output_value = None
-
-        #the id of the output bits whose value is the same as this gates output value
-        #should be empty if is_circuit_output = False
-        self.output_number_list = output_number_list
+from parser.gate_helper import GateHelper
 
 
 def get_nonio_gate_file(folder_name):
@@ -89,7 +64,7 @@ def get_input_gates(input_gate_file):
                 output_id_list.append(gateid_out)
             output_to.append((gateid_out, inputid_out))
 
-        input_gate_object = gate_helper(gateid, gatetype, num_of_inputs, output_to, is_circuit_output,
+        input_gate_object = GateHelper(gateid, gatetype, num_of_inputs, output_to, is_circuit_output,
                                         output_id_list)
         input_gate_list.append(input_gate_object)
 
@@ -116,7 +91,7 @@ def get_nonio_gates(nonio_gate_file):
                 output_id_list.append(gateid_out)
             output_to.append((gateid_out, inputid_out))
 
-        nonio_gate_object = gate_helper(gateid, gatetype, num_of_inputs, output_to, is_circuit_output,
+        nonio_gate_object = GateHelper(gateid, gatetype, num_of_inputs, output_to, is_circuit_output,
                                         output_id_list)
         nonio_gate_list.append(nonio_gate_object)
         current_id += 1
@@ -133,7 +108,7 @@ def parse_native(output_file):
 
     :param output_file: string with path to folder that contains output files of cmbc
     :return following
-        input_gate_list: list of input gates(of class gate_helper with self.type = INPUT):
+        input_gate_list: list of input gates(of class GateHelper with self.type = INPUT):
             they output a constant value specified by the input of the circuit
         rangeA: the range of input-gate-ids which correspond to input of A
         rangeB: the range of input-gate-ids which correspond to input of B

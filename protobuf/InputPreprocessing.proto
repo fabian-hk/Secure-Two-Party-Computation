@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+package project_inf_mpc.input_preprocessing;
+
+message Input {
+    required int32 id = 1;
+    optional bytes masked_input = 2;
+    optional bytes label = 3;
+}
+
+message Inputs {
+    repeated Input inputs = 1;
+}

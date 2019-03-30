@@ -11,3 +11,4 @@ venv/
 *.pdf
 *.synctex.gz
 *.log
+__pycache__/

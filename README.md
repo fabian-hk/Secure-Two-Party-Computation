@@ -1,23 +1,19 @@
-# This parses output files of CMBC-GC ANSI-C to Logic Gate compiler
-CMBC-GC Websites:
-* https://forsyte.at/software/cbmc-gc/
-* https://www.seceng.informatik.tu-darmstadt.de/research_seceng/software_seceng/cbmc_gc/index.en.jsp
+# Installation
+Dependencies:
+- ```pip install protobuf```
 
-Link PDF containing installation information and description of native circuit format:
-* http://forsyte.at/wp-content/uploads/cbmc-gc-v0.9.3_upd1.pdf
+# Usage example
+1. ```python3 Server.py```
+2. ```python3 TwoPartyComputation.py and_op 42```
+3. ```python3 TwoPartyComputation.py and_op 42```
 
-CMBC-GC Repository:
-* https://gitlab.com/securityengineering/CBMC-GC-2
+# Instruction on variables
 
-The compiler can output different formats:
-1. Bristol Format
-2. Native Format
-3. Fairplay Format (another such compiler which is based on Java and outputs Logic Gates as Logic Tables)
+Every variable like (r, M[r], K[s]) and (s, M[s], K[r]) should be of
+type 'bytearray'. To perform an bit wise xor operation you can use the
+xor or function in the helper.py file where you can xor 2 to 4 variables.
 
-# On parse_bristol.py
-Will not be used
-
-# On parse_native.py
-Contains gate_helper class that is used to store the information which is parsed 
-
-Main function: parse_native 
+# Information about the gate IDs
+The gate IDs must always end with a zero so that the gate wires can have 
+unique IDs. The input A has the id xxx0 the input B has the id xxx1 and
+the output Y has the id xxx2

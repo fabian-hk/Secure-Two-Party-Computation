@@ -1,5 +1,5 @@
 import csv
-from parser.gate_helper import GateHelper
+from gate_helper import GateHelper
 
 
 def get_nonio_gate_file(folder_name):

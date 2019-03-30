@@ -1,17 +1,22 @@
 import socket
 from multiprocessing import Process
+import ssl
 
 from fpre.fpre_server import FpreServer
+import conf
 
 
 class Server(Process):
 
     def __init__(self, port):
         super().__init__()
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.s.bind(('', port))
-        self.s.listen(5)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        context.load_cert_chain(conf.crt_storage+'certificate-pub.pem', conf.crt_storage+'certificate-key.pem')
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.bind(('', port))
+        s.listen(5)
+        self.s = context.wrap_socket(s, server_side=True)
 
     def start_server(self):
         """

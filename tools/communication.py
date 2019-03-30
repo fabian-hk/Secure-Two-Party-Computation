@@ -1,17 +1,22 @@
 import socket
 import sys
+import ssl
 
 from tools.person import Person
+import conf
 
 
 class Com:
-    TCP_IP = 'localhost'
-    TCP_PORT = 8448
     BUFFER_SIZE = 2048
 
     def __init__(self, ip, port):
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        context.verify_mode = ssl.CERT_REQUIRED
+        context.check_hostname = True
+        context.load_verify_locations(conf.crt_storage+'ca-root.pem')
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.s = context.wrap_socket(s, server_hostname='127.0.0.1')
         self.s.connect((ip, port))
 
         self.receive_buffer = bytes(0)
@@ -22,7 +27,7 @@ class Com:
         else:
             sys.exit(1)
         self.id = 0
-        print("Connection successful")
+        print("Connection successful "+str(self.s.version()))
 
     def receive(self):
         data = self.receive_buffer

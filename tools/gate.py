@@ -248,20 +248,10 @@ class AND(Gate):
 
         # check authenticated bit
         if r == b'\x01':
-            if Mr == h.xor(self.Kyi[i], self.person.delta):
-                print("Correct. ID: " + str(self.id))
-            else:
-                print(r)
-                print(Mr)
-                print(self.Kyi[i])
+            if Mr != h.xor(self.Kyi[i], self.person.delta):
                 raise CheaterRecognized()
         else:
-            if Mr == self.Kyi[i]:
-                print("Correct. ID: " + str(self.id))
-            else:
-                print(r)
-                print(Mr)
-                print(self.Kyi[i])
+            if Mr != self.Kyi[i]:
                 raise CheaterRecognized()
 
         self.masked_bit_y = h.xor(self.yi[i], r) if not self.is_nand else h.xor(self.yi[i], r, b'\x01')

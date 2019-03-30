@@ -22,7 +22,7 @@ if __name__ == "__main__":
     mpc = MPC(com)
 
     if args.circuit == "and_op":
-        inputs, outputs, num_and = create_example_circuit_4(com.person)
+        inputs, outputs, num_and = and_operation(com.person)
         com.person.load_input_integer(args.input)
     mpc.load_cirucit(inputs, outputs, num_and)
 

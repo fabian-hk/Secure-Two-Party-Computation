@@ -57,6 +57,9 @@ class MPC:
         else:
             self.auth_bits.ParseFromString(self.com.rec_auth_bits())
 
+        # create iterator over auth_bits
+        self.auth_bits = iter(self.auth_bits.bits)
+
     def function_dependent_preprocessing(self):
         label_iter = iter(self.labels) if self.person.x == Person.A else None
         self.and_triples = iter(faand.f_a_and(self.person, self.com, self.num_and).triples)
@@ -83,10 +86,10 @@ class MPC:
             if gate.type == Gate.TYPE_XOR:
                 # initialize variables if they are not already initialized
                 if not gate.pre_a:
-                    gate.initialize_vars(auth_bit_A=Wrapper.get_auth_bit_by_id(gate.id, self.auth_bits))
+                    gate.initialize_vars(auth_bit_A=next(self.auth_bits))
                     if self.person.x == Person.A: gate.La0 = label_iter.__next__()
                 if not gate.pre_b:
-                    gate.initialize_vars(auth_bit_B=Wrapper.get_auth_bit_by_id(gate.id + 1, self.auth_bits))
+                    gate.initialize_vars(auth_bit_B=next(self.auth_bits))
                     if self.person.x == Person.A: gate.Lb0 = label_iter.__next__()
 
                 # do the function dependent preprocessing
@@ -109,13 +112,13 @@ class MPC:
                 and_triple.id = gate.id
                 # initialize all variables and create the and triple
                 if not gate.pre_a:
-                    gate.initialize_vars(auth_bit_A=Wrapper.get_auth_bit_by_id(gate.id, self.auth_bits),
+                    gate.initialize_vars(auth_bit_A=next(self.auth_bits),
                                          and_triple=and_triple)
                     if self.person.x == Person.A: gate.La0 = label_iter.__next__()
                 else:
                     gate.get_auth_bit(and_triple, Gate.WIRE_A)
                 if not gate.pre_b:
-                    gate.initialize_vars(auth_bit_B=Wrapper.get_auth_bit_by_id(gate.id + 1, self.auth_bits),
+                    gate.initialize_vars(auth_bit_B=next(self.auth_bits),
                                          and_triple=and_triple)
                     if self.person.x == Person.A: gate.Lb0 = label_iter.__next__()
                 else:
@@ -127,7 +130,7 @@ class MPC:
                 faand.compute_and_triple(and_triple, next(self.and_triples), self.com, self.person)
 
                 gate.initialize_auth_bit_o(and_triple)
-                gate.initialize_auth_bit_y(Wrapper.get_auth_bit_by_id(gate.id + 2, self.auth_bits))
+                gate.initialize_auth_bit_y(next(self.auth_bits))
 
                 # do the function dependent preprocessing
                 gate.function_dependent_preprocessing(self.garbled_gates.gates.add())
@@ -216,15 +219,12 @@ class MPC:
         for bit in rec_auth_bits.bits:
             key = self.key_by_wire_id(bit.id)
             if bit.r == b'\x01':
-                if bit.M == bytes(h.xor(key, self.person.delta)):
-                    print("Correct. ID: " + str(bit.id))
-                else:
-                    print("Cheat. ID: " + str(bit.id))
+                if bit.M != bytes(h.xor(key, self.person.delta)):
+                    raise CheaterRecognized()
             else:
-                if bit.M == key:
-                    print("Correct. ID: " + str(bit.id))
-                else:
-                    print("Cheat. ID: " + str(bit.id))
+                if bit.M != key:
+                    raise CheaterRecognized()
+        print("Auth bits verification passed")
 
         # compute the masked bit and A also computes directly the labels
         for in_auth_bit in in_auth_bits.bits:
@@ -244,11 +244,6 @@ class MPC:
         # B receives the labels for his input from A
         if self.person.x == Person.B: self.in_bits.ParseFromString(self.com.exchange_data())
 
-        print("----------- in bits --------------")
-        print(self.in_bits)
-        print("----------- rec in bits --------------")
-        print(self.rec_in_bits)
-
     def get_inputs_by_id(self, id: int) -> (bytes, bytes):
         for bit in self.in_bits.inputs:
             if bit.id == id:
@@ -262,7 +257,7 @@ class MPC:
         print("--------------- evaluation -----------------")
         for out in self.outputs:
             self.circuit_evaluation_recursive(out)
-            print(out)
+        print("Auth bits verification passed")
 
     def circuit_evaluation_recursive(self, gate: Gate):
         if not gate.label_a and gate.pre_a:
@@ -301,18 +296,15 @@ class MPC:
             print(outputs)
         else:
             auth_bits.ParseFromString(self.com.exchange_data())
+            auth_bits = iter(auth_bits.bits)
             result = {}
             for out in self.outputs:  # type: Gate
-                auth_bit = Wrapper.get_auth_bit_by_id(out.id, auth_bits)
+                auth_bit = next(auth_bits)
                 if auth_bit.r == b'\x01':
-                    if auth_bit.M == h.xor(out.Ky, self.person.delta):
-                        print("Correct. ID: " + str(out.id))
-                    else:
+                    if auth_bit.M != h.xor(out.Ky, self.person.delta):
                         raise CheaterRecognized()
                 else:
-                    if auth_bit.M == out.Ky:
-                        print("Correct. ID: " + str(out.id))
-                    else:
+                    if auth_bit.M != out.Ky:
                         raise CheaterRecognized()
 
                 res = h.xor(out.masked_bit_y, auth_bit.r, out.y)
@@ -320,6 +312,7 @@ class MPC:
                 output = outputs.outputs.add()
                 output.id = out.id + 2
                 output.output = bytes(res)
+            print("Auth bits verification passed")
 
             self.com.exchange_data(outputs.SerializeToString())
             self.com.close_session()

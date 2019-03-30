@@ -2,7 +2,7 @@ import argparse
 
 from tools.person import Person
 from MPC import MPC
-from tests.circuit_creater import *
+from tests.test_circuit_creater import *
 from fpre.fpre import Fpre
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ import unittest
 from random import randint
 import time
 
-from tests.circuit_creater import *
+from tests.test_circuit_creater import *
 from tests.evaluate_circuit import evaluate_circuit
 from tests.plain_evaluator import *
 from tools.person import Person

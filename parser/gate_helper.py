@@ -10,7 +10,7 @@ class GateHelper:
         #number of inputs that a gate has - all except NOT have 2
         self.num_of_inputs = num_of_inputs
 
-        #ids of gates which this gate outputs to
+        #ids of gates which this gate outputs to as a tuple with the input on the gate
         self.output_to = output_to
 
         # boolean flag set if gate output is circuit output

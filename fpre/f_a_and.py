@@ -1,7 +1,7 @@
 from random import randint
 import json
 
-import fpre.f_la_and as f_la_and
+import fpre.f_la_and as flaand
 from tools.person import Person
 from fpre.fpre import Fpre
 from protobuf import FunctionDependentPreprocessing_pb2, FunctionIndependentPreprocessing_pb2
@@ -58,7 +58,7 @@ def f_a_and(person: Person, com: Fpre, count: int):
     for i in range(l_dash):
         and_triple = and_triples.triples.add()
         and_triple.id = i
-        f_la_and(com, person, and_triple)
+        flaand.f_la_and(com, person, and_triple)
 
     # **** step_2 ****
     # partition objects random in buckets

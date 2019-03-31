@@ -31,7 +31,7 @@ def f_ha_and(person: Person, communicator: Fpre, own_y_bit, auth_bit = None):
         else:
             auth_bits.ParseFromString(communicator.rec_auth_bits())
 
-        auth_bit = iter(auth_bits).__next__()
+        auth_bit = iter(auth_bits.bits).__next__()
 
     own_x_bit = auth_bit.r
     own_x_mac = auth_bit.M
@@ -64,7 +64,7 @@ def f_ha_and(person: Person, communicator: Fpre, own_y_bit, auth_bit = None):
 
     result_bit = h.xor(H_x, get_lsb(hash_function.digest()), random_bit)
 
-    return result_bit, auth_bit
+    return get_lsb(result_bit), auth_bit
 
 def get_lsb(input_bytes):
     '''
@@ -83,3 +83,7 @@ def get_lsb(input_bytes):
             return b'\x01'
     else:
         raise TypeError
+
+def get_least_byte(input_bytes):
+    a = ["{0:b}".format(e) for e in input_bytes]
+    return a[-1]

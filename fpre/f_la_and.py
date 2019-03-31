@@ -36,7 +36,7 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
         own_y_mac = auth_bit.M
         opp_y_key = auth_bit.K
 
-        if person.x == person.A:
+        if person.x == Person.A:
             auth_bit = next(auth_bits_iter)
             own_z_bit = auth_bit.r
             own_z_mac = auth_bit.M
@@ -57,7 +57,7 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
         auth_bits = get_authbits(person, communicator, 1)
         auth_bits_iter = iter(auth_bits.bits)
 
-        if person.x == person.A:
+        if person.x == Person.A:
             auth_bit = next(auth_bits_iter)
             own_z_bit = auth_bit.r
             own_z_mac = auth_bit.M
@@ -68,10 +68,20 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
             own_r_mac = auth_bit.M
             opp_z_key = auth_bit.K
 
-    v = f_ha_and.f_ha_and(person, own_y_bit)
+    if person.x == Person.A:
+        print("person: ", person.x, "\n", person.x, "x: ", own_x_bit, len(own_x_mac), own_x_mac, "\n", person.x, "y: ",
+              own_y_bit, len(own_y_mac), own_y_mac, "\n", person.x, "z: ", own_z_bit, len(own_z_mac), own_z_mac)
+
+    else:
+        print("person: ", person.x, "\n", person.x, "x: ", own_x_bit, len(own_x_mac), own_x_mac, "\n", person.x, "y: ",
+              own_y_bit, len(own_y_mac), own_y_mac, "\n", person.x, "r: ", own_r_bit, len(own_r_mac), own_r_mac)
+
+    v, _ = f_ha_and.f_ha_and(person, communicator, own_y_bit)
+    print("v: ", v)
+    return
 
     # ***_STEP__3__***
-    if person.x == person.A:
+    if person.x == Person.A:
         u = h.xor(v, h.AND(own_x_bit, own_y_bit))
         nothing = communicator.exchange_data(u)
         d = communicator.exchange_data()
@@ -128,8 +138,8 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
     U.append(h.xor(T_1, hash_function.digest()))
 
     #(b)
-    if own_x_bit < 2 and own_x_bit >= 0:
-        U_solid = communicator.exchange_data(U[own_x_bit])
+    if own_x_bit == b'\x01' or own_x_bit == b'\x00':
+        U_solid = communicator.exchange_data(U[int.from_bytes(own_x_bit, byteorder='big')])
     else:
         raise TypeError()
 
@@ -146,7 +156,7 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
     #V1
     hash_function = hashlib.sha3_512()
     hash_function.update(own_x_mac +  h.xor(own_z_mac, own_y_mac))
-    V.append(hash_function.update())
+    V.append(hash_function.digest())
 
     W = []
     hash_function = hashlib.sha3_512()
@@ -164,10 +174,10 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
 
     W_opp_x_0 = None
     W_opp_x_1 = None
-    if own_x_bit == 0:
+    if own_x_bit == b'\x00':
         W_opp_x_0 = communicator.exchange_data(W_0_0)
         W_opp_x_1 = communicator.exchange_data(W_0_1)
-    elif own_x_bit == 1:
+    elif own_x_bit == b'\x01':
         W_opp_x_0 = communicator.exchange_data(W_1_0)
         W_opp_x_1 = communicator.exchange_data( W_1_1)
     else:
@@ -178,9 +188,9 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
     #(e)
 
     W_x_x = None
-    if own_x_bit == 0:
+    if own_x_bit == b'\x00':
         W_x_x = W_opp_x_0
-    elif own_x_bit == 1:
+    elif own_x_bit == b'\x01':
         W_x_x = W_opp_x_1
     else:
         raise TypeError()
@@ -188,9 +198,9 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
     hash_function = hashlib.sha3_256()
     hash_function.update(own_x_mac)
     R_new = None
-    if own_x_bit == 0:
+    if own_x_bit == b'\x00':
         R_new = h.xor(W_x_x, hash_function.digest(), T_0)
-    elif own_x_bit == 1:
+    elif own_x_bit == b'\x01':
         R_new = h.xor(W_x_x, hash_function.digest(), T_1)
     else:
         raise TypeError()
@@ -199,7 +209,7 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
 
     r_new_eq = f_eq(person, communicator, R_new)
     if r_eq and r_new_eq:
-        pass
+        print("r_eq equals r_new_eq")
     else:
         raise CheaterRecognized()
 

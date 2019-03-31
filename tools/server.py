@@ -1,6 +1,7 @@
 import socket
 from multiprocessing import Process
 import ssl
+import select
 
 from fpre.fpre_server import FpreServer
 import conf
@@ -10,13 +11,19 @@ class Server(Process):
 
     def __init__(self, port):
         super().__init__()
-        context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-        context.load_cert_chain(conf.crt_storage+'certificate-pub.pem', conf.crt_storage+'certificate-key.pem')
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(conf.crt_storage + 'certificate-localhost-pub.pem',
+                                conf.crt_storage + 'certificate-localhost-key.pem')
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind(('', port))
         s.listen(5)
         self.s = context.wrap_socket(s, server_side=True)
+
+        self.ex_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+        self.ex_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.ex_s.bind(('', port + 10))
+        self.ex_s.listen(5)
 
     def start_server(self):
         """
@@ -31,16 +38,58 @@ class Server(Process):
             conn2, addr2 = self.s.accept()
             print("Second connection. IP: " + str(addr2))
 
-            print()
-
             conn = Connection(conn1, conn2)
             conn.start()
+
+            conn3, addr3 = self.ex_s.accept()
+            print("Third connection. IP: " + str(addr3))
+
+            conn4, addr4 = self.ex_s.accept()
+            print("Fourth connection. IP: " + str(addr4))
+
+            print()
+
+            ex = Exchange(conn3, conn4)
+            ex.start()
 
     def run(self):
         """
         Runs server in a new process.
         """
         self.start_server()
+
+
+class Exchange(Process):
+    BUFFER_SIZE = 4096
+
+    def __init__(self, conn1, conn2):
+        super().__init__()
+        self.conn1 = conn1
+        self.conn2 = conn2
+        self.conn1.setblocking(0)
+        self.conn2.setblocking(0)
+
+        self.receive_buffer = bytes(0)
+
+    def run(self):
+        run = True
+        while run:
+            readable_s, _, _ = select.select([self.conn1, self.conn2], [], [])
+
+            for sock in readable_s:
+                data = sock.recv(self.BUFFER_SIZE)
+                if data != b'\xfe':
+                    if sock == self.conn1:
+                        self.conn2.sendall(data)
+                    elif sock == self.conn2:
+                        self.conn1.sendall(data)
+                else:
+                    run = False
+
+        self.conn1.shutdown(socket.SHUT_RDWR)
+        self.conn1.close()
+        self.conn2.shutdown(socket.SHUT_RDWR)
+        self.conn2.close()
 
 
 class Connection(Process):

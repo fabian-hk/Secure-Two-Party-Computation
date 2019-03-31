@@ -7,8 +7,11 @@ from fpre.fpre import Fpre
 import conf
 
 
-def user(create_circuit, input, q: Queue):
-    com = Fpre(conf.test_server_ip, conf.test_server_port)
+def user(id: int, create_circuit, input, q: Queue):
+    certificate = "certificate-alice" if id == 0 else "certificate-bob"
+    partner = "bob.mpc" if id == 0 else "alice.mpc"
+
+    com = Fpre(conf.test_server_ip, conf.test_server_port, certificate, partner)
     mpc = MPC(com)
 
     inputs, outputs, num_and = create_circuit(com.person)
@@ -30,8 +33,8 @@ def user(create_circuit, input, q: Queue):
 
 def evaluate(create_circuit, input):
     q = Queue()
-    p_a = Process(target=user, args=(create_circuit, input, q))
-    p_b = Process(target=user, args=(create_circuit, input, q,))
+    p_a = Process(target=user, args=(0, create_circuit, input, q))
+    p_b = Process(target=user, args=(1, create_circuit, input, q,))
     p_a.start()
     p_b.start()
     p_a.join()

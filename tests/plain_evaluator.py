@@ -3,7 +3,7 @@ from typing import List, Dict
 from tools import helper as h
 from tools.gate import *
 from tools.person import Person
-from tests.circuit_creater import *
+from tests.test_circuit_creater import *
 
 
 def plain_circuit_evaluation(output_gates: List, inputs: Dict[int, int]):

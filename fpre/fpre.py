@@ -8,8 +8,8 @@ from tools.communication import Com
 
 class Fpre(Com):
 
-    def __init__(self, ip, port):
-        super().__init__(ip, port)
+    def __init__(self, ip, port, certificate, partner):
+        super().__init__(ip, port, certificate, partner)
 
     def init_fpre(self):
         if self.person.x == Person.A:

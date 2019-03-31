@@ -1,3 +1,7 @@
+from exceptions.CheaterException import CheaterRecognized
+from exceptions.ANDTripleConditionException import ANDTripleConditionFalse
+
+
 def xor(a: bytearray, b: bytearray, c=bytearray(0), d=bytearray(0), e=bytearray(0)) -> bytearray:
     """
     :param a:
@@ -46,9 +50,10 @@ def AND(a, b):
     return c
 
 
-def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes):
+def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes, full_check=False):
     """
     Checks two AND triples if they are corrct
+    :param full_check:
     :param and_triple_A: first AND triple as protobuf message
     :param and_triple_B:  second AND triple as protobuf message
     :param delta_a: delta from person A as bytes
@@ -63,6 +68,7 @@ def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes)
             print(and_triple_A)
             print(and_triple_B)
             print("Cheat bit 1 A. ID: " + str(and_triple_A.id))
+            raise CheaterRecognized()
     else:
         if and_triple_A.M1 == and_triple_B.K1:
             pass
@@ -71,6 +77,7 @@ def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes)
             print(and_triple_A)
             print(and_triple_B)
             print("Cheat bit 1 A. ID: " + str(and_triple_A.id))
+            raise CheaterRecognized()
 
     # check second bit A
     if and_triple_A.r2 == b'\x01':
@@ -81,6 +88,7 @@ def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes)
             print(and_triple_A)
             print(and_triple_B)
             print("Cheat bit 2 A. ID: " + str(and_triple_A.id))
+            raise CheaterRecognized()
     else:
         if and_triple_A.M2 == and_triple_B.K2:
             pass
@@ -89,6 +97,7 @@ def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes)
             print(and_triple_A)
             print(and_triple_B)
             print("Cheat bit 2 A. ID: " + str(and_triple_A.id))
+            raise CheaterRecognized()
 
     # check first bit from B
     if and_triple_B.r1 == b'\x01':
@@ -99,6 +108,7 @@ def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes)
             print(and_triple_A)
             print(and_triple_B)
             print("Cheat bit 1 B. ID: " + str(and_triple_B.id))
+            raise CheaterRecognized()
     else:
         if and_triple_B.M1 == and_triple_A.K1:
             pass
@@ -107,6 +117,7 @@ def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes)
             print(and_triple_A)
             print(and_triple_B)
             print("Cheat bit 1 B. ID: " + str(and_triple_B.id))
+            raise CheaterRecognized()
 
     # check second bit B
     if and_triple_B.r2 == b'\x01':
@@ -117,6 +128,7 @@ def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes)
             print(and_triple_A)
             print(and_triple_B)
             print("Cheat bit 2 B. ID: " + str(and_triple_B.id))
+            raise CheaterRecognized()
     else:
         if and_triple_B.M2 == and_triple_A.K2:
             pass
@@ -125,3 +137,54 @@ def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes)
             print(and_triple_A)
             print(and_triple_B)
             print("Cheat bit 2 B. ID: " + str(and_triple_B.id))
+            raise CheaterRecognized()
+
+    if full_check:
+        # check third bit A
+        if and_triple_A.r3 == b'\x01':
+            if and_triple_A.M3 == bytes(xor(and_triple_B.K3, delta_b)):
+                pass
+                # print("Correct bit 2 A. ID: " + str(and_triple_A.id))
+            else:
+                print(and_triple_A)
+                print(and_triple_B)
+                print("Cheat bit 3 A. ID: " + str(and_triple_A.id))
+                raise CheaterRecognized()
+        else:
+            if and_triple_A.M3 == and_triple_B.K3:
+                pass
+                # print("Correct bit 2 A. ID: " + str(and_triple_A.id))
+            else:
+                print(and_triple_A)
+                print(and_triple_B)
+                print("Cheat bit 3 A. ID: " + str(and_triple_A.id))
+                raise CheaterRecognized()
+
+        # check third bit B
+        if and_triple_B.r3 == b'\x01':
+            if and_triple_B.M3 == bytes(xor(and_triple_A.K3, delta_a)):
+                pass
+                # print("Correct bit 2 B. ID: " + str(and_triple_B.id))
+            else:
+                print(and_triple_A)
+                print(and_triple_B)
+                print("Cheat bit 3 B. ID: " + str(and_triple_B.id))
+                raise CheaterRecognized()
+        else:
+            if and_triple_B.M3 == and_triple_A.K3:
+                pass
+                # print("Correct bit 2 B. ID: " + str(and_triple_B.id))
+            else:
+                print(and_triple_A)
+                print(and_triple_B)
+                print("Cheat bit 3 B. ID: " + str(and_triple_B.id))
+                raise CheaterRecognized()
+
+        # check and triple condition
+        if xor(and_triple_A.r3, and_triple_B.r3) == xor(AND(and_triple_A.r1, and_triple_B.r2),
+                                                        AND(and_triple_B.r1, and_triple_A.r2)):
+            pass
+        else:
+            raise ANDTripleConditionFalse()
+
+    return True

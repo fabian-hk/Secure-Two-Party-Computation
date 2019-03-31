@@ -5,6 +5,7 @@ from tools.person import Person
 from tools import helper as h
 from fpre.fpre import Fpre
 import conf
+from exceptions.CheaterException import CheaterRecognized
 
 
 class Gate:
@@ -121,7 +122,7 @@ class Gate:
 
 
 class AND(Gate):
-    def __init__(self, id, person, pre_a, pre_b):
+    def __init__(self, id, person, pre_a, pre_b, is_nand=False):
         """
         :param person:
         :type person Person
@@ -132,6 +133,7 @@ class AND(Gate):
         """
         super().__init__(id, person, pre_a, pre_b)
         self.type = Gate.TYPE_AND
+        self.is_nand = is_nand
         self.yi = []
         self.Myi = []
         self.Kyi = []
@@ -144,16 +146,10 @@ class AND(Gate):
     def __str__(self):
         return super().__str__() + " o: " + str(self.o) + "\n"
 
-    def initialize_auth_bit_o(self, and_triple, person: Person):
-        if person.x == Person.A:
-            self.o, self.Mo, self.Ko = Fpre.authenticated_bit()
-            and_triple.r3 = self.o
-            and_triple.M3 = self.Mo
-            and_triple.K3 = self.Ko
-        else:
-            self.o = and_triple.r3
-            self.Mo = and_triple.M3
-            self.Ko = and_triple.K3
+    def initialize_auth_bit_o(self, and_triple):
+        self.o = and_triple.r3
+        self.Mo = and_triple.M3
+        self.Ko = and_triple.K3
 
     def initialize_auth_bit_y(self, auth_bit):
         self.y = auth_bit.r
@@ -252,23 +248,13 @@ class AND(Gate):
 
         # check authenticated bit
         if r == b'\x01':
-            if Mr == h.xor(self.Kyi[i], self.person.delta):
-                print("Correct. ID: " + str(self.id))
-            else:
-                print(r)
-                print(Mr)
-                print(self.Kyi[i])
-                print("Cheat. ID: " + str(self.id))
+            if Mr != h.xor(self.Kyi[i], self.person.delta):
+                raise CheaterRecognized()
         else:
-            if Mr == self.Kyi[i]:
-                print("Correct. ID: " + str(self.id))
-            else:
-                print(r)
-                print(Mr)
-                print(self.Kyi[i])
-                print("Cheat. ID: " + str(self.id))
+            if Mr != self.Kyi[i]:
+                raise CheaterRecognized()
 
-        self.masked_bit_y = h.xor(self.yi[i], r)
+        self.masked_bit_y = h.xor(self.yi[i], r) if not self.is_nand else h.xor(self.yi[i], r, b'\x01')
         self.label_y = h.xor(label, self.Myi[i])
 
 

@@ -1,4 +1,5 @@
 from typing import List, Dict
+
 from tools import helper as h
 from tools.gate import *
 from tools.person import Person
@@ -35,6 +36,8 @@ def plain_circuit_evaluation(output_gates: List, inputs: Dict[int, int]):
                     gate.y = h.xor(gate.a, gate.b)
                 if gate.type == Gate.TYPE_AND:
                     gate.y = h.AND(gate.a, gate.b)
+                    if gate.is_nand:
+                        gate.y = h.xor(gate.y, b'\x01')
 
                 for n in gate.next:  # type: tuple[Gate, int]
                     if n[1] == Gate.WIRE_A:
@@ -49,14 +52,14 @@ def plain_circuit_evaluation(output_gates: List, inputs: Dict[int, int]):
 
 
 if __name__ == "__main__":
-    in_vals_a = "0"
-    in_vals_b = "0"
+    in_vals_a = "10"
+    in_vals_b = "01"
 
     person_a = Person(Person.A)
-    _, outputs = create_and_gate(person_a)
+    _, outputs, _ = create_example_circuit_5(person_a)
     person_a.load_input_string(in_vals_a)
     person_b = Person(Person.B)
-    _, outputs = create_and_gate(person_b)
+    _, outputs, _ = create_example_circuit_5(person_b)
     person_b.load_input_string(in_vals_b)
     in_vals = person_a.in_vals
     in_vals.update(person_b.in_vals)

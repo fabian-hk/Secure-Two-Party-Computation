@@ -2,11 +2,13 @@ import os
 from random import randint
 import conf
 import socket
-import tools.helper as h
-from tools.person import Person
-from tools import communication
 import hashlib
 
+import tools.helper as h
+from tools.person import Person
+from fpre.fpre import Fpre
+
+from fpre import f_eq as f_eq
 from fpre import f_ha_and
 
 
@@ -68,8 +70,8 @@ def f_la_and(communicator, person, and_triple):
             u = abs(v - 1)
         else:
             u = v
-        nothing = Communicator.exchange_data(230, u)
-        d = Communicator.exchange_data(231)
+        nothing = communicator.exchange_data(230, u)
+        d = communicator.exchange_data(231)
 
         if d == 0:
             opp_d_key = int(0).to_bytes(len(person.delta), byteorder='big')
@@ -80,7 +82,7 @@ def f_la_and(communicator, person, and_triple):
 
     if person.x == person.B:
         tmp = None
-        u = Communicator.exchange_data(230)
+        u = communicator.exchange_data(230)
         own_z_bit = None
         if own_x_bit == 1 and own_y_bit == 1:
             tmp = abs(u - 1)
@@ -89,7 +91,7 @@ def f_la_and(communicator, person, and_triple):
         own_z_bit = abs(u - v)
 
         d = abs(own_r_bit - own_z_bit)
-        nothing = Communicator.exchange_data(231, d)
+        nothing = communicator.exchange_data(231, d)
         own_z_mac = own_r_mac
 
     U = []
@@ -97,18 +99,18 @@ def f_la_and(communicator, person, and_triple):
     #check correctness
     #(a)
     if own_z_bit == 1:
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         hash_function.update(opp_x_key + h.xor(opp_z_key, person.delta))
     else:
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         hash_function.update(opp_x_key + opp_z_key)
     T_0 = hash_function.digest()
 
     if bool(own_y_bit) != bool(own_y_bit):
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         hash_function.update(h.xor(opp_x_key, person.delta) +  h.xor(opp_y_key, opp_z_key, person.delta))
     else:
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         hash_function.update(opp_x_key + h.xor(opp_y_key, opp_z_key))
     U.append(h.xor(T_0, hash_function.digest()))
 
@@ -117,21 +119,21 @@ def f_la_and(communicator, person, and_triple):
     else:
         tmp_funct = h.xor(h.xor(opp_y_key, opp_z_key))
 
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(opp_x_key + tmp_funct)
     T_1 = hash_function.digest()
 
     if own_z_bit == 1:
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         hash_function.update(h.xor(opp_x_key, person.delta) + h.xor(opp_z_key, person.delta))
     else:
-        hash_function = hashlib.sha3_256()
+        hash_function = hashlib.sha3_512()
         hash_function.update(h.xor(opp_x_key, person.delta) + opp_z_key)
     U.append(h.xor(T_1, hash_function.digest()))
 
     #(b)
     if own_x_bit < 2 and own_x_bit >= 0:
-        U_solid = Communicator.exchange_data(240, U[own_x_bit])
+        U_solid = communicator.exchange_data(240, U[own_x_bit])
     else:
         raise TypeError
 
@@ -142,20 +144,20 @@ def f_la_and(communicator, person, and_triple):
     V = []
 
     #V0
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(own_x_mac + own_z_mac)
     V.append(hash_function.digest())
     #V1
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(own_x_mac +  h.xor(own_z_mac, own_y_mac))
     V.append(hash_function.update())
 
 
     W = []
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(opp_x_key)
     hash_key_x = hash_function.digest()
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(h.xor(opp_x_key, person.delta))
     hash_key_x_xor = hash_function.digest()
     W_0_0 = h.xor(hash_key_x,  V[0], R)
@@ -168,15 +170,15 @@ def f_la_and(communicator, person, and_triple):
     W_opp_x_0 = None
     W_opp_x_1 = None
     if own_x_bit == 0:
-        W_opp_x_0 = Communicator.exchange_data(241, W_0_0)
-        W_opp_x_1 = Communicator.exchange_data(242, W_0_1)
+        W_opp_x_0 = communicator.exchange_data(241, W_0_0)
+        W_opp_x_1 = communicator.exchange_data(242, W_0_1)
     elif own_x_bit == 1:
-        W_opp_x_0 = Communicator.exchange_data(241, W_1_0)
-        W_opp_x_1 = Communicator.exchange_data(242, W_1_1)
+        W_opp_x_0 = communicator.exchange_data(241, W_1_0)
+        W_opp_x_1 = communicator.exchange_data(242, W_1_1)
     else:
         raise TypeError
 
-    #TODO send R to FEQ
+    r_eq = f_eq(person, communicator, R)
 
     #(e)
 
@@ -202,10 +204,7 @@ def f_la_and(communicator, person, and_triple):
 
 
     #TODO return values
-    and_triple.r1 = None
-    and_triple.M1 = None
-    and_triple.K1 = None
-    and_triple.r2 = None
+
 
 
 

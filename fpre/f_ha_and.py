@@ -7,19 +7,18 @@ import conf
 import socket
 import tools.helper as h
 from tools.person import Person
-from tools import communication
 from fpre.fpre import Fpre
-from protobuf import FunctionIndependentPreprocessing_pb2
-import hashlib
 
 
-def f_ha_and(person, own_y_bit, communicator: Fpre):
+def f_ha_and(person: Person, communicator: Fpre,  own_y_bit):
     '''
 
     :param person:
     :param own_y_bit:
     :return:
     '''
+
+
 
 
 
@@ -45,11 +44,11 @@ def f_ha_and(person, own_y_bit, communicator: Fpre):
 
 
 
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(opp_x_key)
     H_0 = abs(get_lsb(hash_function.digest()) - random_bit)
 
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(h.xor(opp_x_key, person.delta))
     tmp_0 = hash_function.digest()
 
@@ -67,7 +66,7 @@ def f_ha_and(person, own_y_bit, communicator: Fpre):
         H_x = opp_H_1
     else:
         raise TypeError
-    hash_function = hashlib.sha3_256()
+    hash_function = hashlib.sha3_512()
     hash_function.update(own_x_mac)
 
 

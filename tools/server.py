@@ -11,14 +11,12 @@ class Server(Process):
 
     def __init__(self, port):
         super().__init__()
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        context.load_cert_chain(conf.crt_storage + 'certificate-localhost-pub.pem',
-                                conf.crt_storage + 'certificate-localhost-key.pem')
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.bind(('', port))
-        s.listen(5)
-        self.s = context.wrap_socket(s, server_side=True)
+
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+        self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.s.bind(('', port))
+        self.s.listen(5)
+        # TODO wrap socket at this point already
 
         self.ex_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         self.ex_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -97,8 +95,13 @@ class Connection(Process):
 
     def __init__(self, conn1: socket, conn2: socket):
         super().__init__()
-        self.conn1 = conn1
-        self.conn2 = conn2
+
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(conf.crt_storage + 'certificate-localhost-pub.pem',
+                                conf.crt_storage + 'certificate-localhost-key.pem')
+
+        self.conn1 = context.wrap_socket(conn1, server_side=True)
+        self.conn2 = context.wrap_socket(conn2, server_side=True)
 
         self.receive_buffer = bytes(0)
 

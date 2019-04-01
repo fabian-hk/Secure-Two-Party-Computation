@@ -33,7 +33,7 @@ class Com:
 
         ex_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         ex_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        ex_s.connect(('localhost', port + 10))
+        ex_s.connect((ip, port + 10))
         if self.person.x == Person.A:
             context_s = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             context_s.verify_mode = ssl.CERT_REQUIRED

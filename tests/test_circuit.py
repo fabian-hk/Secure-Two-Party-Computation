@@ -1,6 +1,5 @@
 import unittest
 from random import randint
-import time
 
 from tests.test_circuit_creater import *
 from tests.evaluate_circuit import evaluate_circuit

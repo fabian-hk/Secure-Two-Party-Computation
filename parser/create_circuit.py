@@ -105,8 +105,8 @@ def create_circuit_from_output_data(output_file, person: Person):
                     inputsA[gate_from.id - rangeA[0]].append(gate_to_update.id)
                     inputsA[gate_from.id - rangeA[0]].append(gate_to_update.id + 1)
                 else:
-                    inputsA[gate_from.id - rangeB[0]].append(gate_to_update.id)
-                    inputsA[gate_from.id - rangeB[0]].append(gate_to_update.id + 1)
+                    inputsB[gate_from.id - rangeB[0]].append(gate_to_update.id)
+                    inputsB[gate_from.id - rangeB[0]].append(gate_to_update.id + 1)
 
             elif gate_to[1] == 0:
                 if gate_to_update.pre_a == mark_as_or:
@@ -119,7 +119,7 @@ def create_circuit_from_output_data(output_file, person: Person):
                     if gate_from.id in range(rangeA[0], rangeA[1] + 1):
                         inputsA[gate_from.id - rangeA[0]].append(new_not.id)
                     else:
-                        inputsA[gate_from.id - rangeB[0]].append(new_not.id)
+                        inputsB[gate_from.id - rangeB[0]].append(new_not.id)
                 else:
                     gate_to_update.pre_a = None
 
@@ -127,7 +127,7 @@ def create_circuit_from_output_data(output_file, person: Person):
                     if gate_from.id in range(rangeA[0], rangeA[1] + 1):
                         inputsA[gate_from.id - rangeA[0]].append(gate_to_update.id)
                     else:
-                        inputsA[gate_from.id - rangeB[0]].append(gate_to_update.id)
+                        inputsB[gate_from.id - rangeB[0]].append(gate_to_update.id)
 
             elif gate_to[1] == 1:
                 if gate_to_update.pre_b == mark_as_or:
@@ -140,7 +140,7 @@ def create_circuit_from_output_data(output_file, person: Person):
                     if gate_from.id in range(rangeA[0], rangeA[1] + 1):
                         inputsA[gate_from.id - rangeA[0]].append(new_not.id + 1)
                     else:
-                        inputsA[gate_from.id - rangeB[0]].append(new_not.id + 1)
+                        inputsB[gate_from.id - rangeB[0]].append(new_not.id + 1)
 
                 else:
                     gate_to_update.pre_b = None
@@ -149,7 +149,7 @@ def create_circuit_from_output_data(output_file, person: Person):
                     if gate_from.id in range(rangeA[0], rangeA[1] + 1):
                         inputsA[gate_from.id - rangeA[0]].append(gate_to_update.id + 1)
                     else:
-                        inputsA[gate_from.id - rangeB[0]].append(gate_to_update.id + 1)
+                        inputsB[gate_from.id - rangeB[0]].append(gate_to_update.id + 1)
 
     # turn output mapping into list for mapping
     outputs = []
@@ -157,6 +157,8 @@ def create_circuit_from_output_data(output_file, person: Person):
         outputs.append(gatelist[output_mapping[i] - 1])
 
     # reverse input lists and assign them to the person
+    print(inputsA)
+    print(inputsB)
     inputsA = reversed(inputsA)
     inputsB = reversed(inputsB)
     person.inputs = inputsA if person.x == Person.A else inputsB
@@ -171,4 +173,4 @@ def create_circuit_from_output_data(output_file, person: Person):
 
 
 
-
+create_circuit_from_output_data("add_output",Person(Person.A))

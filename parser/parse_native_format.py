@@ -72,12 +72,12 @@ def get_input_gates(input_gate_file):
 
 
 def get_nonio_gates(nonio_gate_file):
-    reader_input_gates = csv.reader(nonio_gate_file, delimiter=' ', quoting=csv.QUOTE_NONE)
+    reader_nonio_gates = csv.reader(nonio_gate_file, delimiter=' ', quoting=csv.QUOTE_NONE)
 
     nonio_gate_list = []
     current_id = 1
 
-    for gate in reader_input_gates:
+    for gate in reader_nonio_gates:
         gateid = current_id
         gatetype = gate[0]
         num_of_inputs = gate[1]

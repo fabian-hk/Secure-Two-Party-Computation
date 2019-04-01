@@ -21,4 +21,4 @@ Handles parsing of native cbmc output files by calling parse_native()
 For parsing and circuit creation of output-files from cbmc call create_circuit_from_output_data()
 
 example: 
-create_circuit_from_output_data("eucl_dist_output", Person(Person.A))
+create_circuit_from_output_data("add_output", Person(Person.A))

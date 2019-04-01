@@ -157,10 +157,8 @@ def create_circuit_from_output_data(output_file, person: Person):
         outputs.append(gatelist[output_mapping[i] - 1])
 
     # reverse input lists and assign them to the person
-    print(inputsA)
-    print(inputsB)
-    inputsA = reversed(inputsA)
-    inputsB = reversed(inputsB)
+    inputsA = [i for i in reversed(inputsA)]
+    inputsB = [i for i in reversed(inputsB)]
     person.inputs = inputsA if person.x == Person.A else inputsB
     person.other_inputs = inputsB if person.x == Person.A else inputsA
 

@@ -106,7 +106,7 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
     # ***_STEP__4-5__***
     # check correctness
     # (a)
-    if own_z_bit == 1:
+    if own_z_bit == b'\x01':
         hash_function = hashlib.sha3_256()
         hash_function.update(opp_x_key + h.xor(opp_z_key, person.delta))
         T_0 = hash_function.digest()

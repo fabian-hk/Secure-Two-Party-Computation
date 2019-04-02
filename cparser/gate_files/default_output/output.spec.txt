@@ -1,3 +1,0 @@
-return_value: int32;
-INPUT_A: int32;
-INPUT_B: int32;

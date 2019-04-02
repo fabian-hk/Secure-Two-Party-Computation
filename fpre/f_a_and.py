@@ -1,6 +1,5 @@
 from random import randint
 import json
-from collections import deque
 
 import fpre.f_la_and as flaand
 from tools.person import Person
@@ -49,18 +48,16 @@ def f_la_and(com, person, and_triple):
 # **********************************
 
 
-def f_a_and(person: Person, com: Fpre, count: int):
+def f_a_and(person: Person, com: Fpre, and_triple_in):
     # **** step_1 ****
-    l_dash = count * objects_per_bucket
-
-    # and_triples_out = FunctionDependentPreprocessing_pb2.ANDTriples()
+    l_dash = objects_per_bucket
 
     and_triples = FunctionDependentPreprocessing_pb2.ANDTriples()
-    and_triples_out = FunctionDependentPreprocessing_pb2.ANDTriples()
+    # and_triples_out = FunctionDependentPreprocessing_pb2.ANDTriples()
     for i in range(l_dash):
-        and_triple = and_triples.triples.add()
-        and_triple.id = i
-        flaand.f_la_and(com, person, and_triple)
+        flaand.f_la_and(com, person, and_triple_in)
+        and_triples.triples.extend([and_triple_in])
+    flaand.f_la_and(com, person, and_triple_in)
 
     # **** step_2 ****
     # partition objects random in buckets
@@ -91,6 +88,10 @@ def f_a_and(person: Person, com: Fpre, count: int):
         and_triple_dict[pos] = and_triple
 
     # **** step_3 ****
+    for and_triple in and_triples.triples:
+        combine_two_leaky_and(and_triple_in, and_triple, com, person)
+
+    """
     j = 1
     and_triple_out = and_triple_dict[full_list[0]]
     for i in full_list[1:]:
@@ -102,10 +103,11 @@ def f_a_and(person: Person, com: Fpre, count: int):
     and_triples_out.triples.extend([and_triple_out])
 
     return and_triples_out
+    """
 
 
 def compute_and_triple(and_triple_0, and_triple_1, com: Fpre, person: Person):
-    f_la_and(com, person, and_triple_0)
+    flaand.f_la_and(com, person, and_triple_0)
     combine_two_leaky_and(and_triple_0, and_triple_1, com, person)
 
 

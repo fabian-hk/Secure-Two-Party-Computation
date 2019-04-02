@@ -1,7 +1,7 @@
 from tools.gate import *
 from tools.person import Person
-import parser_a.parse_native_format as pnf
-from parser_a.gate_helper import GateHelper
+import cparser.parse_native_format as pnf
+from cparser.gate_helper import GateHelper
 
 
 def create_circuit_from_output_data(output_file, person: Person):

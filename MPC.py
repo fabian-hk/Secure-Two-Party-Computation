@@ -62,7 +62,8 @@ class MPC:
 
     def function_dependent_preprocessing(self):
         label_iter = iter(self.labels) if self.person.x == Person.A else None
-        self.and_triples = iter(faand.f_a_and(self.person, self.com, self.num_and).triples)
+        and_triples = faand.f_a_and(self.person, self.com, self.num_and)
+        self.and_triples = iter(and_triples.triples)
         for out in self.outputs:
             self.gate_initialization(out, label_iter)
 
@@ -127,7 +128,7 @@ class MPC:
                 if self.person.x == Person.A: gate.Ly0 = label_iter.__next__()
 
                 # compute the complete AND triple
-                faand.compute_and_triple(and_triple, next(self.and_triples), self.com, self.person)
+                faand.compute_and_triple(and_triple, next(self.and_triples, None), self.com, self.person)
 
                 gate.initialize_auth_bit_o(and_triple)
                 gate.initialize_auth_bit_y(next(self.auth_bits))

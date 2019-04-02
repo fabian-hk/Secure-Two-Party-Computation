@@ -1,25 +1,25 @@
 import csv
-from parser_a.gate_helper import GateHelper
+from cparser.gate_helper import GateHelper
 
 
 def get_nonio_gate_file(folder_name):
-    return open('parser_a/gate_files/' + folder_name + '/output.gate.txt', 'r', newline='', encoding="utf8")
+    return open('cparser/gate_files/' + folder_name + '/output.gate.txt', 'r', newline='', encoding="utf8")
 
 
 def get_input_gate_file(folder_name):
-    return open('parser_a/gate_files/' + folder_name + '/output.inputs.txt', 'r', newline='', encoding="utf8")
+    return open('cparser/gate_files/' + folder_name + '/output.inputs.txt', 'r', newline='', encoding="utf8")
 
 
 def get_partyA_input_range_file(folder_name):
-    return open('parser_a/gate_files/' + folder_name + '/output.inputs.partyA.txt', 'r', newline='', encoding="utf8")
+    return open('cparser/gate_files/' + folder_name + '/output.inputs.partyA.txt', 'r', newline='', encoding="utf8")
 
 
 def get_partyB_input_range_file(folder_name):
-    return open('parser_a/gate_files/' + folder_name + '/output.inputs.partyB.txt', 'r', newline='', encoding="utf8")
+    return open('cparser/gate_files/' + folder_name + '/output.inputs.partyB.txt', 'r', newline='', encoding="utf8")
 
 
 def get_input_mapping_file(folder_name):
-    return open('parser_a/gate_files/' + folder_name + '/output.mapping.txt', 'r', newline='', encoding="utf8")
+    return open('cparser/gate_files/' + folder_name + '/output.mapping.txt', 'r', newline='', encoding="utf8")
 
 
 def get_inputrange_partyA(partyA_inputrange_file, max_input_id):

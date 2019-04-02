@@ -140,6 +140,7 @@ class Connection(Process):
                 self.send_data(self.conn2, b'\x02' + ser_auth_bits_b)
                 self.send_data(self.conn1, b'\x02')
             elif data_A[0:1] == b'\x03':
+                print("Created AND triple")
                 data_B = self.receive(self.conn2)
                 if data_B[0:1] == b'\x03':
                     ser_and_triple_b = self.fpre_server.create_and_triple(data_A[1:], data_B[1:])

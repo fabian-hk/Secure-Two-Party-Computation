@@ -1,5 +1,6 @@
 from random import randint
 import json
+from collections import deque
 
 import fpre.f_la_and as flaand
 from tools.person import Person
@@ -90,14 +91,15 @@ def f_a_and(person: Person, com: Fpre, count: int):
         and_triple_dict[pos] = and_triple
 
     # **** step_3 ****
-    j = 0
-    for i in full_list:
+    j = 1
+    and_triple_out = and_triple_dict[full_list[0]]
+    for i in full_list[1:]:
         if j % objects_per_bucket == 0:
-            and_triple_out = and_triples_out.triples.add()
-            and_triple_out = and_triple_dict[i]
+            and_triples_out.triples.extend([and_triple_out])
         else:
             combine_two_leaky_and(and_triple_out, and_triple_dict[i], com, person)
         j += 1
+    and_triples_out.triples.extend([and_triple_out])
 
     return and_triples_out
 

@@ -10,7 +10,7 @@ from exceptions.CheaterException import CheaterRecognized
 
 objects_per_bucket = 4
 
-
+'''
 # ******* just for testing ********
 def f_la_and(com, person, and_triple):
     auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
@@ -46,7 +46,7 @@ def f_la_and(com, person, and_triple):
 
 
 # **********************************
-
+'''
 def f_a_and(person: Person, com: Fpre, count: int):
     # **** step_1 ****
     l_dash = count * objects_per_bucket
@@ -58,7 +58,7 @@ def f_a_and(person: Person, com: Fpre, count: int):
     for i in range(l_dash):
         and_triple = and_triples.triples.add()
         and_triple.id = i
-        f_la_and(com, person, and_triple)
+        flaand.f_la_and(com, person, and_triple)
 
     # **** step_2 ****
     # partition objects random in buckets

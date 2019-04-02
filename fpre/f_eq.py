@@ -9,7 +9,7 @@ from fpre.fpre  import Fpre
 def f_eq(person: Person, communiator: Fpre, R):
     if person.x == person.A:
         x = R
-        r = os.urandom(conf.k/8)
+        r = os.urandom(int(conf.k/8))
         hash_function = hashlib.sha3_512()
         hash_function.update(x + r)
         c = hash_function.digest()

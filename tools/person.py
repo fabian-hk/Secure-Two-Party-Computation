@@ -38,9 +38,11 @@ class Person:
 
     def load_input_integer(self, in_val: int):
         n = in_val
-        for id in reversed(self.inputs):
+        for i in range(len(self.inputs)-1, -1, -1):
             if n > 0:
-                self.in_vals[id] = int(n & 1).to_bytes(1, byteorder='big')
+                for id in self.inputs[i]:
+                    self.in_vals[id] = int(n & 1).to_bytes(1, byteorder='big')
                 n = n >> 1
             else:
-                self.in_vals[id] = b'\x00'
+                for id in self.inputs[i]:
+                    self.in_vals[id] = b'\x00'

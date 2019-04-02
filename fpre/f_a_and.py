@@ -10,7 +10,7 @@ from exceptions.CheaterException import CheaterRecognized
 
 objects_per_bucket = 4
 
-'''
+
 # ******* just for testing ********
 def f_la_and(com, person, and_triple):
     auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
@@ -46,7 +46,8 @@ def f_la_and(com, person, and_triple):
 
 
 # **********************************
-'''
+
+
 def f_a_and(person: Person, com: Fpre, count: int):
     # **** step_1 ****
     l_dash = count * objects_per_bucket

@@ -12,32 +12,18 @@ from tools.person import Person
 from fpre.fpre import Fpre
 from protobuf import FunctionIndependentPreprocessing_pb2
 
-def f_ha_and(person: Person, communicator: Fpre, own_y_bit, auth_bit = None):
-    '''
-    :param person: Person
-    :param communicato: Fpre
-    :param own_y_bit: Byte
-    :param auth_bit: FunctionIndependentPreprocessing_pb2.Bit
+
+def f_ha_and(person: Person, communicator: Fpre, own_y_bit, own_x_bit, own_x_mac, opp_x_key):
+    """
+    :param person:
+    :param communicator:
+    :param own_y_bit:
+    :param own_x_bit:
+    :param own_x_mac:
+    :param own_x_key:
     :return:
-    '''
-    if auth_bit == None:
-        auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
-        if person.x == Person.A:
-            for i in range(3):
-                auth_bit = auth_bits.bits.add()
-                auth_bit.id = i
-                communicator.authenticated_bit(auth_bit)
-            communicator.send_auth_bits(auth_bits.SerializeToString())
-        else:
-            auth_bits.ParseFromString(communicator.rec_auth_bits())
-
-        auth_bit = iter(auth_bits.bits).__next__()
-
-    own_x_bit = auth_bit.r
-    own_x_mac = auth_bit.M
-    opp_x_key = auth_bit.K
-
-    random_bit = randint(0,1).to_bytes(1, "big")
+    """
+    random_bit = randint(0, 1).to_bytes(1, "big")
 
     hash_function = hashlib.sha3_512()
     hash_function.update(opp_x_key)
@@ -64,7 +50,8 @@ def f_ha_and(person: Person, communicator: Fpre, own_y_bit, auth_bit = None):
 
     result_bit = h.xor(H_x, get_lsb(hash_function.digest()), random_bit)
 
-    return get_lsb(result_bit), auth_bit
+    return get_lsb(result_bit)
+
 
 def get_lsb(input_bytes):
     '''
@@ -73,7 +60,7 @@ def get_lsb(input_bytes):
     :return byte: b'\x00' or b'\x01'
     '''
     a = ["{0:b}".format(e) for e in input_bytes]
-    least_significant_byte  = a[-1]
+    least_significant_byte = a[-1]
     result = least_significant_byte[-1]
     byteArray = bytearray()
     if result.isdigit():
@@ -83,6 +70,7 @@ def get_lsb(input_bytes):
             return b'\x01'
     else:
         raise TypeError
+
 
 def get_least_byte(input_bytes):
     a = ["{0:b}".format(e) for e in input_bytes]

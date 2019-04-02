@@ -72,7 +72,9 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
 
     # ***_STEP__3__***
     if person.x == Person.A:
+        #u = h.xor(v, h.AND(own_x_bit, own_y_bit), own_z_bit)
         u = h.xor(v, h.AND(own_x_bit, own_y_bit))
+
         nothing = communicator.exchange_data(u)
         d = communicator.exchange_data()
 

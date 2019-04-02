@@ -42,6 +42,7 @@ def f_ha_and(person: Person, communicator: Fpre, own_y_bit, own_x_bit, own_x_mac
         H_x = opp_H_1
     else:
         raise TypeError
+
     hash_function = hashlib.sha3_256()
     hash_function.update(own_x_mac)
 

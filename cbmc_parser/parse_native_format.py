@@ -1,25 +1,36 @@
 import csv
+import os
 from cbmc_parser.gate_helper import GateHelper
 
 
 def get_nonio_gate_file(folder_name):
-    return open('gate_files/' + folder_name + '/output.gate.txt', 'r', newline='', encoding="utf8")
+    script_dir = os.path.dirname(__file__)
+    abs_file_path = os.path.join(script_dir, 'gate_files', folder_name, 'output.gate.txt')
+    return open(abs_file_path, 'r', newline='', encoding="utf8")
 
 
 def get_input_gate_file(folder_name):
-    return open('gate_files/' + folder_name + '/output.inputs.txt', 'r', newline='', encoding="utf8")
+    script_dir = os.path.dirname(__file__)
+    abs_file_path = os.path.join(script_dir, 'gate_files', folder_name, 'output.inputs.txt')
+    return open(abs_file_path, 'r', newline='', encoding="utf8")
 
 
 def get_partyA_input_range_file(folder_name):
-    return open('gate_files/' + folder_name + '/output.inputs.partyA.txt', 'r', newline='', encoding="utf8")
+    script_dir = os.path.dirname(__file__)
+    abs_file_path = os.path.join(script_dir, 'gate_files', folder_name, 'output.inputs.partyA.txt')
+    return open(abs_file_path, 'r', newline='', encoding="utf8")
 
 
 def get_partyB_input_range_file(folder_name):
-    return open('gate_files/' + folder_name + '/output.inputs.partyB.txt', 'r', newline='', encoding="utf8")
+    script_dir = os.path.dirname(__file__)
+    abs_file_path = os.path.join(script_dir, 'gate_files', folder_name, 'output.inputs.partyB.txt')
+    return open(abs_file_path, 'r', newline='', encoding="utf8")
 
 
 def get_input_mapping_file(folder_name):
-    return open('gate_files/' + folder_name + '/output.mapping.txt', 'r', newline='', encoding="utf8")
+    script_dir = os.path.dirname(__file__)
+    abs_file_path = os.path.join(script_dir, 'gate_files', folder_name, 'output.mapping.txt')
+    return open(abs_file_path, 'r', newline='', encoding="utf8")
 
 
 def get_inputrange_partyA(partyA_inputrange_file, max_input_id):
@@ -65,7 +76,7 @@ def get_input_gates(input_gate_file):
             output_to.append((gateid_out, inputid_out))
 
         input_gate_object = GateHelper(gateid, gatetype, num_of_inputs, output_to, is_circuit_output,
-                                        output_id_list)
+                                       output_id_list)
         input_gate_list.append(input_gate_object)
 
     return input_gate_list
@@ -92,7 +103,7 @@ def get_nonio_gates(nonio_gate_file):
             output_to.append((gateid_out, inputid_out))
 
         nonio_gate_object = GateHelper(gateid, gatetype, num_of_inputs, output_to, is_circuit_output,
-                                        output_id_list)
+                                       output_id_list)
         nonio_gate_list.append(nonio_gate_object)
         current_id += 1
     return nonio_gate_list

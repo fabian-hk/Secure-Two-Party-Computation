@@ -169,6 +169,4 @@ def create_circuit_from_output_data(output_file, person: Person):
 
     return inputs, outputs, num_and
 
-
-
-create_circuit_from_output_data("add_output",Person(Person.A))
+create_circuit_from_output_data("add_output", Person(Person.A))

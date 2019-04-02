@@ -125,7 +125,6 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
         hash_function.update(h.xor(opp_x_key, person.delta) + h.xor(opp_y_key, opp_z_key))
         U_0 = bytes(h.xor(T_0, hash_function.digest()))
 
-
     if h.xor(own_y_bit, own_z_bit) == b'\x01':
         tmp_funct = h.xor(opp_y_key, opp_z_key, person.delta)
     else:

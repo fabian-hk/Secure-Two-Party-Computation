@@ -12,7 +12,6 @@ from tools.person import Person
 from fpre.fpre import Fpre
 from protobuf import FunctionIndependentPreprocessing_pb2
 
-
 def f_ha_and(person: Person, communicator: Fpre, own_y_bit, own_x_bit, own_x_mac, opp_x_key):
     """
     :param person:
@@ -37,8 +36,6 @@ def f_ha_and(person: Person, communicator: Fpre, own_y_bit, own_x_bit, own_x_mac
     opp_H_0 = communicator.exchange_data(H_0)
     opp_H_1 = communicator.exchange_data(H_1)
 
-    H_x = None
-
     if own_x_bit == b'\00':
         H_x = opp_H_0
     elif own_x_bit == b'\x01':
@@ -51,7 +48,6 @@ def f_ha_and(person: Person, communicator: Fpre, own_y_bit, own_x_bit, own_x_mac
     result_bit = h.xor(H_x, get_lsb(hash_function.digest()), random_bit)
 
     return get_lsb(result_bit)
-
 
 def get_lsb(input_bytes):
     '''
@@ -70,7 +66,6 @@ def get_lsb(input_bytes):
             return b'\x01'
     else:
         raise TypeError
-
 
 def get_least_byte(input_bytes):
     a = ["{0:b}".format(e) for e in input_bytes]

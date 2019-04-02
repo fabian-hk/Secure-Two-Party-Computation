@@ -101,7 +101,7 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
     and_triple.M3 = bytes(own_z_mac)
     and_triple.K3 = bytes(opp_z_key)
 
-    return
+    #return
 
     # ***_STEP__4-5__***
     # check correctness
@@ -134,7 +134,7 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
     hash_function.update(opp_x_key + tmp_funct)
     T_1 = hash_function.digest()
 
-    if own_z_bit == 1:
+    if own_z_bit == b'\x01':
         hash_function = hashlib.sha3_256()
         hash_function.update(h.xor(opp_x_key, person.delta) + h.xor(opp_z_key, person.delta))
         U_1 = bytes(h.xor(T_1, hash_function.digest()))

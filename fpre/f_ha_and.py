@@ -25,11 +25,11 @@ def f_ha_and(person: Person, communicator: Fpre, own_y_bit, own_x_bit, own_x_mac
     """
     random_bit = randint(0, 1).to_bytes(1, "big")
 
-    hash_function = hashlib.sha3_512()
+    hash_function = hashlib.sha3_256()
     hash_function.update(opp_x_key)
     H_0 = h.xor(get_lsb(hash_function.digest()), random_bit)
 
-    hash_function = hashlib.sha3_512()
+    hash_function = hashlib.sha3_256()
     hash_function.update(h.xor(opp_x_key, person.delta))
 
     H_1 = h.xor(get_lsb(hash_function.digest()), own_y_bit, random_bit)

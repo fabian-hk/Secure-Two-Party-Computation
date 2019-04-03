@@ -37,17 +37,19 @@ def get_inputrange_partyA(partyA_inputrange_file, max_input_id):
     reader_inputrange_partyA = csv.reader(partyA_inputrange_file, delimiter=' ', quoting=csv.QUOTE_NONE)
     # TODO check if there are more lines when more variables are used as input
     line1 = next(reader_inputrange_partyA)
+    partyA_inputrange_file.close()
     return (int(line1[1]), int(line1[2]))
 
 
 def get_inputrange_partyB(partyB_inputrange_file, max_input_id):
-    reader_inputrange_partyA = csv.reader(partyB_inputrange_file, delimiter=' ', quoting=csv.QUOTE_NONE)
+    reader_inputrange_partyB = csv.reader(partyB_inputrange_file, delimiter=' ', quoting=csv.QUOTE_NONE)
     # TODO check if there are more lines when more variables are used as input
-    line1 = next(reader_inputrange_partyA)
+    line1 = next(reader_inputrange_partyB)
     startid = int(line1[1])
     endid = int(line1[2])
     if endid < startid:
         endid = max_input_id
+    partyB_inputrange_file.close()
     return (startid, endid)
 
 
@@ -79,6 +81,7 @@ def get_input_gates(input_gate_file):
                                        output_id_list)
         input_gate_list.append(input_gate_object)
 
+    input_gate_file.close()
     return input_gate_list
 
 
@@ -106,6 +109,8 @@ def get_nonio_gates(nonio_gate_file):
                                        output_id_list)
         nonio_gate_list.append(nonio_gate_object)
         current_id += 1
+
+    nonio_gate_file.close()
     return nonio_gate_list
 
 

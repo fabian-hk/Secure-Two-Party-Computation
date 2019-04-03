@@ -4,7 +4,7 @@ import cbmc_parser.parse_native_format as pnf
 from cbmc_parser.gate_helper import GateHelper
 
 
-def create_circuit_from_output_data(output_file, person: Person):
+def create_circuit_from_output_data(output_file, person: Person, test=False):
     """
 
     :param output_file: file that contains cbmc outputs
@@ -30,12 +30,12 @@ def create_circuit_from_output_data(output_file, person: Person):
             gatelist.append(AND(gate.id * 10, person, None, None))
         elif gate.type == "XOR":
             gatelist.append(XOR(gate.id * 10, person, None, None))
-        elif gate.type == "NAND":
-            gatelist.append(AND(gate.id * 10, person, None, None, True))
         elif gate.type == "NOT":
             gatelist.append(AND(gate.id * 10, person, mark_as_not, None, True))
+            print("NOT")
         elif gate.type == "OR":
             gatelist.append(AND(gate.id * 10, person, mark_as_or, mark_as_or, True))
+            print("OR")
 
     # fill output_mapping with outputs from nonio gates
     for gate in nonio_gate_list:
@@ -49,9 +49,12 @@ def create_circuit_from_output_data(output_file, person: Person):
             for bit_number in gate.output_number_list:
                 output_mapping[-bit_number] = gate.id
 
-    # connect all nonio Gate objects
+    # connect all nonio Gate objects, expand gates marked as or and not to nands
     for gate_from in nonio_gate_list:
         for gate_to in gate_from.output_to:
+
+            if gate_to[0] < 1:
+                continue
 
             gate_to_update = gatelist[gate_to[0] - 1]
             gate_to_fill_in = gatelist[gate_from.id - 1]
@@ -64,7 +67,7 @@ def create_circuit_from_output_data(output_file, person: Person):
 
             elif gate_to[1] == 0:
                 if gate_to_update.pre_a == mark_as_or:
-                    new_not = AND(len(gatelist) * 10, person, gate_to_fill_in, gate_to_fill_in, True)
+                    new_not = AND((len(gatelist)+1) * 10, person, gate_to_fill_in, gate_to_fill_in, True)
                     new_not.next.append((gate_to_update, Gate.WIRE_A))
                     gatelist.append(new_not)
                     gate_to_update.pre_a = new_not
@@ -74,7 +77,7 @@ def create_circuit_from_output_data(output_file, person: Person):
 
             elif gate_to[1] == 1:
                 if gate_to_update.pre_b == mark_as_or:
-                    new_not = AND(len(gatelist) * 10, person, gate_to_fill_in, gate_to_fill_in, True)
+                    new_not = AND((len(gatelist)+1) * 10, person, gate_to_fill_in, gate_to_fill_in, True)
                     new_not.next.append((gate_to_update, Gate.WIRE_B))
                     gatelist.append(new_not)
                     gate_to_update.pre_b = new_not
@@ -82,7 +85,7 @@ def create_circuit_from_output_data(output_file, person: Person):
                     gate_to_update.pre_b = gate_to_fill_in
                     gate_to_fill_in.next.append((gate_to_update, Gate.WIRE_B))
 
-    # fill inputs lists for both persons
+    # fill inputs lists for both persons, expand gates marked as or and not to nands
     inputsA = []
     inputsB = []
     for i in range(rangeA[0], rangeA[1] + 1):
@@ -110,7 +113,7 @@ def create_circuit_from_output_data(output_file, person: Person):
 
             elif gate_to[1] == 0:
                 if gate_to_update.pre_a == mark_as_or:
-                    new_not = AND(len(gatelist) * 10, person, None, None, True)
+                    new_not = AND((len(gatelist)+1) * 10, person, None, None, True)
                     new_not.next.append((gate_to_update, Gate.WIRE_A))
                     gatelist.append(new_not)
                     gate_to_update.pre_a = new_not
@@ -131,7 +134,7 @@ def create_circuit_from_output_data(output_file, person: Person):
 
             elif gate_to[1] == 1:
                 if gate_to_update.pre_b == mark_as_or:
-                    new_not = AND(len(gatelist) * 10, person, None, None, True)
+                    new_not = AND((len(gatelist)+1) * 10, person, None, None, True)
                     new_not.next.append((gate_to_update, Gate.WIRE_B))
                     gatelist.append(new_not)
                     gate_to_update.pre_b = new_not
@@ -167,6 +170,9 @@ def create_circuit_from_output_data(output_file, person: Person):
         if gate.type == Gate.TYPE_AND:
             num_and += 1
 
-    return inputs, outputs, num_and
+    if test:
+        return inputs, outputs, num_and, gatelist
+    else:
+        return inputs, outputs, num_and
 
-create_circuit_from_output_data("add_output", Person(Person.A))
+create_circuit_from_output_data("test_output_1",Person(Person.A),True)

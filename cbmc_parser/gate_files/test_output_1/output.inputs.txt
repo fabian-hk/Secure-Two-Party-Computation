@@ -1,0 +1,4 @@
+InWire:#1 0:1:0
+InWire:#2 0:2:0
+InWire:#3 0:1:1
+InWire:#4 0:2:1 0:4:1

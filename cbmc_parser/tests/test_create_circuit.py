@@ -114,7 +114,6 @@ class TestCreateCircuit1(unittest.TestCase):
         in_vals.update(person_b.in_vals)
 
         print(plain_circuit_evaluation(outputs, in_vals))
-        self.assertTrue(1 == 1)
 
 
 class TestCreateCircuit2(unittest.TestCase):
@@ -192,7 +191,22 @@ class TestCreateCircuit2(unittest.TestCase):
         self.assertEqual(0, num_type_nand)
         self.assertEqual(0, num_type_xor)
 
+class TestCreateCircuitAdd(unittest.TestCase):
+    def test_addition(self):
+        import cbmc_parser.create_circuit as cc
+        in_vals_a = 3
+        in_vals_b = 1
 
+        person_a = Person(Person.A)
+        , outputs, _ = cc.create_circuit_from_output_data('add_output', person_a)
+        person_a.load_input_integer(in_vals_a)
+        personb = Person(Person.B)
+        , outputs, _ = cc.create_circuit_from_output_data('add_output', person_b)
+        person_b.load_input_integer(in_vals_b)
+        in_vals = person_a.in_vals
+        in_vals.update(person_b.in_vals)
+
+        print(plain_circuit_evaluation(outputs, in_vals))
 
 if __name__ == '__main__':
     unittest.main()

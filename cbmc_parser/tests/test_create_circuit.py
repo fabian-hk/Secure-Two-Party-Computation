@@ -82,6 +82,24 @@ class TestCreateCircuit1(unittest.TestCase):
         #test if last gate has correct id
         self.assertEqual(len(gatelist)*10,gatelist[len(gatelist)-1].id)
 
+    def test_create_circuit_num_and_1(self):
+        personA = Person(Person.A)
+        inputs, outputs, num_and = create_circuit_from_output_data("test_output_1", personA)
+        self.assertEqual(6, num_and)
+
+    def test_create_circuit_inputs_1(self):
+        personA = Person(Person.A)
+        inputs, outputs, num_and = create_circuit_from_output_data("test_output_1", personA)
+
+        self.assertEqual(3, len(inputs.keys()))
+        self.assertEqual(10,inputs[10].id)
+        self.assertEqual(20, inputs[20].id)
+        self.assertEqual(40, inputs[40].id)
+
+    def test_person_list(self):
+        personA = Person(Person.A)
+        inputs, outputs, num_and = create_circuit_from_output_data("test_output_1", personA)
+
     def stest_execute_circuit_1(self):
         in_vals_a = "10"
         in_vals_b = "01"
@@ -143,7 +161,7 @@ class TestCreateCircuit2(unittest.TestCase):
         personA = Person(Person.A)
         inputs, outputs, num_and = create_circuit_from_output_data("test_output_2", personA)
 
-        self.assertEqual(2, len(inputs.keys()))
+        self.assertEqual(1, len(inputs.keys()))
 
     def test_gatelist_2(self):
         personA = Person(Person.A)

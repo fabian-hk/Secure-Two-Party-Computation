@@ -224,7 +224,9 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
         r_dash_a_r_b = f_eq(person, communicator, R)
 
     if r_pa_a_dash_b and r_dash_a_r_b:
-        print("r_eq equals r_new_eq")
+        #r_eq equals r_new_eq
+        #print("r_eq equals r_new_eq")
+        pass
     else:
         raise CheaterRecognized()
 

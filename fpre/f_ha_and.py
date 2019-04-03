@@ -53,23 +53,13 @@ def f_ha_and(person: Person, communicator: Fpre, own_y_bit, own_x_bit, own_x_mac
     return get_lsb(result_bit)
 
 
-def get_lsb(input_bytes):
+def get_lsb(input_bytes) -> bytearray:
     '''
     returns least significant bit of bytes input
     :param input_bytes:
     :return byte: b'\x00' or b'\x01'
     '''
-    a = ["{0:b}".format(e) for e in input_bytes]
-    least_significant_byte = a[-1]
-    result = least_significant_byte[-1]
-    byteArray = bytearray()
-    if result.isdigit():
-        if int(result) == 0:
-            return b'\x00'
-        else:
-            return b'\x01'
-    else:
-        raise TypeError
+    return bytearray([input_bytes[-1] & 1])
 
 
 def get_least_byte(input_bytes):

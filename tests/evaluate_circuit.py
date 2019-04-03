@@ -2,6 +2,7 @@ from multiprocessing import Process, Queue
 
 from tools.person import Person
 from MPC import MPC
+from protobuf import Output_pb2
 from tests.plain_evaluator import *
 from fpre.fpre import Fpre
 import conf
@@ -13,6 +14,7 @@ def user(id: int, create_circuit, input, q: Queue):
 
     com = Fpre(conf.test_server_ip, conf.test_server_port, certificate, partner)
     mpc = MPC(com)
+    mpc.function_independent_preprocessing()
 
     inputs, outputs, num_and = create_circuit(com.person)
     com.person.load_input_string(input[com.person.x])
@@ -26,6 +28,7 @@ def user(id: int, create_circuit, input, q: Queue):
         mpc.circuit_evaluation()
 
     result = mpc.output_determination()
+    result = protobuf_to_dict(result)
 
     if com.person.x == Person.B:
         q.put(result)
@@ -64,3 +67,10 @@ def evaluate_circuit(circuit, in_vals_a, in_vals_b):
     res_dict_plain = plain_circuit_evaluation(outputs, in_vals)
 
     return res_dict_mpc, res_dict_plain
+
+
+def protobuf_to_dict(proto: Output_pb2.Outputs):
+    result = {}
+    for res in proto.outputs:
+        result[res.id-2] = res.output
+    return result

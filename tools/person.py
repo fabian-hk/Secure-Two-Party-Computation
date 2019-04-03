@@ -33,14 +33,17 @@ class Person:
         return "Person: " + str(self.x) + " Delta: " + str(self.delta)
 
     def load_input_string(self, in_val: str):
-        for id, bit in zip(self.inputs, in_val):
-            self.in_vals[id] = int(bit).to_bytes(1, byteorder='big')
+        for ids, bit in zip(self.inputs, in_val):
+            for id in ids:
+                self.in_vals[id] = int(bit).to_bytes(1, byteorder='big')
 
     def load_input_integer(self, in_val: int):
         n = in_val
-        for id in reversed(self.inputs):
+        for ids in reversed(self.inputs):
             if n > 0:
-                self.in_vals[id] = int(n & 1).to_bytes(1, byteorder='big')
+                for id in ids:
+                    self.in_vals[id] = int(n & 1).to_bytes(1, byteorder='big')
                 n = n >> 1
             else:
-                self.in_vals[id] = b'\x00'
+                for id in ids:
+                    self.in_vals[id] = b'\x00'

@@ -31,6 +31,21 @@ def xor(a: bytearray, b: bytearray, c=bytearray(0), d=bytearray(0), e=bytearray(
     return f
 
 
+def print_output(proto):
+    bin_out = ""
+    dez_out = 0
+
+    i = 0
+    for res in reversed(proto.outputs):
+        tmp = int.from_bytes(res.output, byteorder='big')
+        bin_out += str(tmp)
+        dez_out += tmp * pow(2, i)
+        i += 1
+
+    print("\nResult in binary: " + bin_out[::-1])
+    print("Result in decimal: " + str(dez_out))
+
+
 def AND(a, b):
     """
     :param a:

@@ -10,8 +10,6 @@ from fpre.f_eq import f_eq as f_eq
 from fpre import f_ha_and
 from exceptions.CheaterException import CheaterRecognized
 
-import sys
-
 
 def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependentPreprocessing_pb2.AuthenticatedBits):
     '''
@@ -90,7 +88,6 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
         d = h.xor(own_r_bit, own_z_bit)
         communicator.exchange_data(d)
         own_z_mac = own_r_mac
-
 
     # ***_STEP__4-5__***
     # check correctness
@@ -193,16 +190,16 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
     else:
         raise TypeError()
 
-    #remove padded zeros from hashing
-    R_dash = R_dash[-int(conf.k/8):]
+    # remove padded zeros from hashing
+    R_dash = R_dash[-int(conf.k / 8):]
 
-    #order of sended R or R_dash has to change because both act simultaneously
+    # order of sended R or R_dash has to change because both act simultaneously
     if person.x == Person.A:
         # Person A sends first R before R_dash
         r_pa_a_dash_b = f_eq(person, communicator, R)
         r_dash_a_r_b = f_eq(person, communicator, R_dash)
     else:
-        #Person B sends first R_dash before R
+        # Person B sends first R_dash before R
         r_pa_a_dash_b = f_eq(person, communicator, R_dash)
         r_dash_a_r_b = f_eq(person, communicator, R)
 

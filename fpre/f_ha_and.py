@@ -1,16 +1,9 @@
-from tools import communication
-from random import randint
-from tools.person import Person
-import os
 import hashlib
-
 from random import randint
-import conf
-import socket
+
 import tools.helper as h
 from tools.person import Person
 from fpre.fpre import Fpre
-from protobuf import FunctionIndependentPreprocessing_pb2
 
 
 def f_ha_and(person: Person, communicator: Fpre, own_y_bit, own_x_bit, own_x_mac, opp_x_key):
@@ -61,6 +54,7 @@ def get_lsb(input_bytes) -> bytearray:
     :return bytes: b'\x00' or b'\x01'
     '''
     return bytearray([input_bytes[-1] & 1])
+
 
 '''
 def get_least_byte(input_bytes):

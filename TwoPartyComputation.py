@@ -5,6 +5,7 @@ import tools.helper as h
 from MPC import MPC
 from tests.test_circuit_creater import *
 from fpre.fpre import Fpre
+import cbmc_parser.create_circuit as cc
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Script for maliciously secure Two-Party Computation.',
@@ -35,7 +36,9 @@ if __name__ == "__main__":
 
     if args.circuit == "and_op":
         inputs, outputs, num_and = and_operation(com.person)
-        com.person.load_input_integer(args.input)
+    elif args.circuit == "add":
+        inputs, outputs, num_and = cc.create_circuit_from_output_data("add_output", com.person)
+    com.person.load_input_integer(args.input)
     mpc.load_cirucit(inputs, outputs, num_and)
 
     mpc.function_dependent_preprocessing()

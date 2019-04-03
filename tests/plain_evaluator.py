@@ -4,6 +4,7 @@ from tools import helper as h
 from tools.gate import *
 from tools.person import Person
 from tests.test_circuit_creater import *
+import cbmc_parser.create_circuit as cc
 
 
 def plain_circuit_evaluation(output_gates: List, inputs: Dict[int, int]):
@@ -52,15 +53,15 @@ def plain_circuit_evaluation(output_gates: List, inputs: Dict[int, int]):
 
 
 if __name__ == "__main__":
-    in_vals_a = "10"
-    in_vals_b = "01"
+    in_vals_a = 7
+    in_vals_b = 3
 
     person_a = Person(Person.A)
-    _, outputs, _ = create_example_circuit_5(person_a)
-    person_a.load_input_string(in_vals_a)
+    _, outputs, _ = cc.create_circuit_from_output_data('add_output', person_a)
+    person_a.load_input_integer(in_vals_a)
     person_b = Person(Person.B)
-    _, outputs, _ = create_example_circuit_5(person_b)
-    person_b.load_input_string(in_vals_b)
+    _, outputs, _ = cc.create_circuit_from_output_data('add_output', person_b)
+    person_b.load_input_integer(in_vals_b)
     in_vals = person_a.in_vals
     in_vals.update(person_b.in_vals)
 

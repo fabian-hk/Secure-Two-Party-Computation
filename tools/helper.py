@@ -36,7 +36,7 @@ def print_output(proto):
     dez_out = 0
 
     i = 0
-    for res in reversed(proto.outputs):
+    for res in proto.outputs:
         tmp = int.from_bytes(res.output, byteorder='big')
         bin_out += str(tmp)
         dez_out += tmp * pow(2, i)

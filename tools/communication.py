@@ -14,6 +14,8 @@ class Com:
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         context.verify_mode = ssl.CERT_REQUIRED
         context.check_hostname = True
+        context.load_cert_chain(conf.crt_storage + certificate + '-pub.pem',
+                                  conf.crt_storage + certificate + '-key.pem')
         context.load_verify_locations(conf.crt_storage + 'ca-root.pem')
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

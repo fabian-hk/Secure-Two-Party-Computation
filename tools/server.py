@@ -7,16 +7,27 @@ from fpre.fpre_server import FpreServer
 import conf
 
 
+class ServerANDTriple(Exception):
+    '''Raised when the server calculates a and triple'''
+    pass
+
+
 class Server(Process):
 
     def __init__(self, port):
         super().__init__()
 
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-        self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.s.bind(('', port))
-        self.s.listen(5)
-        # TODO wrap socket at this point already
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(conf.crt_storage + 'certificate-localhost-pub.pem',
+                                conf.crt_storage + 'certificate-localhost-key.pem')
+        context.load_verify_locations(conf.crt_storage + 'ca-root.pem')
+        context.verify_mode = ssl.CERT_REQUIRED
+
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.bind(('', port))
+        s.listen(5)
+        self.s = context.wrap_socket(s, server_side=True)
 
         self.ex_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         self.ex_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -96,12 +107,8 @@ class Connection(Process):
     def __init__(self, conn1: socket, conn2: socket):
         super().__init__()
 
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        context.load_cert_chain(conf.crt_storage + 'certificate-localhost-pub.pem',
-                                conf.crt_storage + 'certificate-localhost-key.pem')
-
-        self.conn1 = context.wrap_socket(conn1, server_side=True)
-        self.conn2 = context.wrap_socket(conn2, server_side=True)
+        self.conn1 = conn1
+        self.conn2 = conn2
 
         self.receive_buffer = bytes(0)
 
@@ -140,6 +147,7 @@ class Connection(Process):
                 self.send_data(self.conn2, b'\x02' + ser_auth_bits_b)
                 self.send_data(self.conn1, b'\x02')
             elif data_A[0:1] == b'\x03':
+                raise ServerANDTriple() # TODO remove code completely
                 data_B = self.receive(self.conn2)
                 if data_B[0:1] == b'\x03':
                     ser_and_triple_b = self.fpre_server.create_and_triple(data_A[1:], data_B[1:])

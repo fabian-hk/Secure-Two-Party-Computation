@@ -181,8 +181,8 @@ def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes,
                 raise CheaterRecognized()
 
         # check and triple condition
-        if xor(and_triple_A.r3, and_triple_B.r3) == xor(AND(and_triple_A.r1, and_triple_B.r2),
-                                                        AND(and_triple_B.r1, and_triple_A.r2)):
+        if xor(and_triple_A.r3, and_triple_B.r3) == AND(xor(and_triple_A.r1, and_triple_B.r1),
+                                                        xor(and_triple_A.r2, and_triple_B.r2)):
             pass
         else:
             raise ANDTripleConditionFalse()

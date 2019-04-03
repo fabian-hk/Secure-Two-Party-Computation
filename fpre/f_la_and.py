@@ -17,12 +17,16 @@ from exceptions.CheaterException import CheaterRecognized
 import sys
 
 
-# ****************** PI LA AND **************************
-# autheticated bit: [b]A PA -> (M[b],b)   |PB -> (K[b],delta)
-# autheticated bit: [b]B PB -> (M[b],b)   |PA -> (K[b],delta)
-
-
 def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependentPreprocessing_pb2.AuthenticatedBits):
+    '''
+    generates leaky authenticated and_triples.
+    throws CheaterRecognized Exception if one of the two Parties tried to cheat
+    :param communicator: Fpre
+    :param person: Person
+    :param and_triple:  FunctionIndependentPreprocessing_pb2.AuthenticatedBits
+    :return: and_triple is returned as protobuf message
+    '''
+
     if and_triple.r1 == bytes(0):
         auth_bits = get_authbits(person, communicator, 3)
         auth_bits_iter = iter(auth_bits.bits)
@@ -72,9 +76,7 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
 
     # ***_STEP__3__***
     if person.x == Person.A:
-        #u = h.xor(v, h.AND(own_x_bit, own_y_bit), own_z_bit)
-        u = h.xor(v, h.AND(own_x_bit, own_y_bit))
-
+        u = h.xor(v, h.AND(own_x_bit, own_y_bit), own_z_bit) # TODO discuss own fix
         nothing = communicator.exchange_data(u)
         d = communicator.exchange_data()
 
@@ -103,7 +105,7 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
     and_triple.M3 = bytes(own_z_mac)
     and_triple.K3 = bytes(opp_z_key)
 
-    #return
+
 
     # ***_STEP__4-5__***
     # check correctness
@@ -136,7 +138,7 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
     hash_function.update(opp_x_key + tmp_funct)
     T_1 = hash_function.digest()
 
-    if own_z_bit == 1:
+    if own_z_bit == b'\x01':
         hash_function = hashlib.sha3_256()
         hash_function.update(h.xor(opp_x_key, person.delta) + h.xor(opp_z_key, person.delta))
         U_1 = bytes(h.xor(T_1, hash_function.digest()))
@@ -156,7 +158,7 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
 
     # (c)
     # pick random k-bit string
-    R = os.urandom(int(conf.k/8))
+    R = os.urandom(int(conf.k / 8))
     V = []
 
     # V0
@@ -200,40 +202,41 @@ def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependent
 
     hash_function = hashlib.sha3_256()
     hash_function.update(own_x_mac)
-    #R_new = None
+    # R_dash = None
     if own_x_bit == b'\x00':
-        R_new = bytes(h.xor(W_x_x, hash_function.digest(), T_0))
+        R_dash = bytes(h.xor(W_x_x, hash_function.digest(), T_0))
     elif own_x_bit == b'\x01':
-        R_new = bytes(h.xor(W_x_x, hash_function.digest(), T_1))
+        R_dash = bytes(h.xor(W_x_x, hash_function.digest(), T_1))
     else:
         raise TypeError()
 
+    #remove padded zeros from hashing
+    R_dash = R_dash[-int(conf.k/8):]
+
+    #order of sended R or R_dash has to change because both act simultaneously
     if person.x == Person.A:
-        #PA sends first R then R'
+        # Person A sends first R before R_dash
         r_pa_a_dash_b = f_eq(person, communicator, R)
-        r_dash_a_r_b = f_eq(person, communicator, R_new)
+        r_dash_a_r_b = f_eq(person, communicator, R_dash)
     else:
-        r_pa_a_dash_b = f_eq(person, communicator, R_new)
+        #Person B sends first R_dash before R
+        r_pa_a_dash_b = f_eq(person, communicator, R_dash)
         r_dash_a_r_b = f_eq(person, communicator, R)
 
     if r_pa_a_dash_b and r_dash_a_r_b:
         print("r_eq equals r_new_eq")
     else:
-        print("cheat")
-        #raise CheaterRecognized()
-    '''
-    and_triple.r1 = own_x_bit
-    and_triple.M1 = own_x_mac
-    and_triple.K1 = opp_x_key
-    and_triple.r2 = own_y_bit
-    and_triple.M2 = own_y_mac
-    and_triple.K2 = opp_y_key
-    and_triple.r3 = bytes(own_z_bit)
-    and_triple.M3 = bytes(own_z_mac)
-    and_triple.K3 = bytes(opp_z_key)
-    '''
+        raise CheaterRecognized()
+
 
 def get_authbits(person: Person, communicator: Fpre, number):
+    '''
+
+    :param person: Person
+    :param communicator: Fpre
+    :param number: int
+    :return:
+    '''
     auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
     if person.x == Person.A:
         for i in range(number):

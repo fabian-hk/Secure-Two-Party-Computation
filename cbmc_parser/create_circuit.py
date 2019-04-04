@@ -160,7 +160,22 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
     # turn output mapping into list for mapping
     outputs = []
     for i in sorted(output_mapping.keys()):
-        outputs.append(gatelist[output_mapping[i] - 1])
+        out = gatelist[output_mapping[i] - 1]
+        # add gate to output list if two predecessors exist and both has valid gate IDs (greater 0)
+        if out.pre_a and out.pre_b:
+            if out.pre_a.id >= 0 and out.pre_b.id >= 0:
+                outputs.append(out)
+        # add gate if one predecessor is a valid gate and one is a direct input
+        elif out.pre_a and (h.id_in_list(out.id + 1, inputsA) or h.id_in_list(out.id + 1, inputsB)):
+            if out.pre_a.id >= 0:
+                outputs.append(out)
+        elif out.pre_b and (h.id_in_list(out.id, inputsA) or h.id_in_list(out.id, inputsB)):
+            if out.pre_b.id >= 0:
+                outputs.append(out)
+        # add gate if both predecessors are direct inputs
+        elif (h.id_in_list(out.id + 1, inputsA) or h.id_in_list(out.id + 1, inputsB)) and (
+                h.id_in_list(out.id, inputsA) or h.id_in_list(out.id, inputsB)):
+            outputs.append(out)
 
     # reverse input lists and assign them to the person
     inputsA = [i for i in reversed(inputsA)]
@@ -183,11 +198,20 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
         return inputs, outputs, num_and
 
 
-def create_circuit(circuit_name: str, person: Person):
-    if circuit_name in os.listdir("cbmc_parser/gate_files/"):
-        return create_circuit_from_output_data(circuit_name, person)
-    elif circuit_name.split(".")[-1] == "c":
-        compiler.cbmc_gc_compile(circuit_name)
-        return create_circuit_from_output_data("default_output", person)
+def create_circuit(circuit_name: str, person: Person, sub_folder=False):
+    if sub_folder:
+        if circuit_name in os.listdir("../cbmc_parser/gate_files/"):
+            return create_circuit_from_output_data(circuit_name, person)
+        elif circuit_name.split(".")[-1] == "c":
+            compiler.cbmc_gc_compile(circuit_name)
+            return create_circuit_from_output_data("default_output", person)
+        else:
+            raise CircuitCreationError()
     else:
-        raise CircuitCreationError()
+        if circuit_name in os.listdir("cbmc_parser/gate_files/"):
+            return create_circuit_from_output_data(circuit_name, person)
+        elif circuit_name.split(".")[-1] == "c":
+            compiler.cbmc_gc_compile(circuit_name)
+            return create_circuit_from_output_data("default_output", person)
+        else:
+            raise CircuitCreationError()

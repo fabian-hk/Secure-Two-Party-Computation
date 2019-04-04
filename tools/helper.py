@@ -1,3 +1,5 @@
+from typing import List
+
 from exceptions.CheaterException import CheaterRecognized
 from exceptions.ANDTripleConditionException import ANDTripleConditionFalse
 
@@ -44,6 +46,14 @@ def print_output(proto):
 
     print("\nResult in binary: " + bin_out[::-1])
     print("Result in decimal: " + str(dez_out))
+    return dez_out
+
+
+def id_in_list(id: int, list: List[List[int]]) -> bool:
+    for l in list:
+        if id in l:
+            return True
+    return False
 
 
 def AND(a, b):

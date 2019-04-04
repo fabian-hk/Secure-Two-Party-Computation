@@ -182,12 +182,6 @@ class MPC:
 
         raise IDNotFound()
 
-    def id_in_list(self, id: int, list: List[List[int]]) -> bool:
-        for l in list:
-            if id in l:
-                return True
-        return False
-
     def input_processing(self):
         # assemble all input bits together either to send them over or to compute the masked bits
         # bits to send to the other party
@@ -195,23 +189,23 @@ class MPC:
         # own input bits
         in_auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
         for in_gate in self.inputs.values():  # type: Gate
-            if self.id_in_list(in_gate.id, self.person.other_inputs):
+            if h.id_in_list(in_gate.id, self.person.other_inputs):
                 b = in_auth_bits_o.bits.add()
                 b.id = in_gate.id
                 b.r = in_gate.a
                 b.M = in_gate.Ma
-            elif self.id_in_list(in_gate.id, self.person.inputs):
+            elif h.id_in_list(in_gate.id, self.person.inputs):
                 b = in_auth_bits.bits.add()
                 b.id = in_gate.id
                 b.r = in_gate.a
                 b.M = in_gate.Ma
 
-            if self.id_in_list((in_gate.id + 1), self.person.other_inputs):
+            if h.id_in_list((in_gate.id + 1), self.person.other_inputs):
                 b = in_auth_bits_o.bits.add()
                 b.id = in_gate.id + 1
                 b.r = in_gate.b
                 b.M = in_gate.Mb
-            elif self.id_in_list((in_gate.id + 1), self.person.inputs):
+            elif h.id_in_list((in_gate.id + 1), self.person.inputs):
                 b = in_auth_bits.bits.add()
                 b.id = in_gate.id + 1
                 b.r = in_gate.b

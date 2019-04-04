@@ -53,14 +53,15 @@ def plain_circuit_evaluation(output_gates: List, inputs: Dict[int, int]):
 
 
 if __name__ == "__main__":
-    in_vals_a = 2
-    in_vals_b = 1
+    in_vals_a = 3
+    in_vals_b = 3
+    circuit = "test_output_1"
 
     person_a = Person(Person.A)
-    _, outputs, _ = cc.create_circuit_from_output_data('test_output_1', person_a)
+    _, outputs, _ = cc.create_circuit_from_output_data(circuit, person_a)
     person_a.load_input_integer(in_vals_a)
     person_b = Person(Person.B)
-    _, outputs, _ = cc.create_circuit_from_output_data('test_output_1', person_b)
+    _, outputs, _ = cc.create_circuit_from_output_data(circuit, person_b)
     person_b.load_input_integer(in_vals_b)
     in_vals = person_a.in_vals
     in_vals.update(person_b.in_vals)

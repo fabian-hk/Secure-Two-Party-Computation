@@ -1,5 +1,5 @@
 import unittest
-from random import randint
+from random import randint, random
 
 from tests.test_circuit_creater import *
 from tests.evaluate_circuit import evaluate_circuit
@@ -80,6 +80,36 @@ class TestCircuit(unittest.TestCase):
 
             # check if the MPC and plain result are the same
             self.assertEqual(res_mpc, res_plain)
+
+
+class TestFunctions(unittest.TestCase):
+
+    def test_add(self):
+        for i in range(20):
+            in_vals_a = randint(0, 2147483647)
+            in_vals_b = randint(0, 2147483647)
+
+            res_mpc_proto, res_mpc, res_plain = evaluate_circuit("add", in_vals_a, in_vals_b, True)
+
+            # check if the MPC and plain result are the same
+            self.assertEqual(res_mpc, res_plain)
+            res_dez = h.print_output(res_mpc_proto)
+            self.assertEqual(res_dez, (in_vals_a + in_vals_b))
+
+    def test_equality_test(self):
+        for i in range(20):
+            in_vals_a = randint(0, 4294967295)
+            if random() < 0.75:
+                in_vals_b = in_vals_a
+            else:
+                in_vals_b = randint(0, 4294967295)
+
+            res_mpc_proto, res_mpc, res_plain = evaluate_circuit("equality_test", in_vals_a, in_vals_b, True)
+
+            # check if the MPC and plain result are the same
+            self.assertEqual(res_mpc, res_plain)
+            res_dez = h.print_output(res_mpc_proto)
+            self.assertEqual(res_dez == 1, in_vals_a == in_vals_b)
 
 
 class TestGates(unittest.TestCase):

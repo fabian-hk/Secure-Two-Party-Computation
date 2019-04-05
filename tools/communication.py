@@ -37,8 +37,6 @@ class Com:
             self.s.connect((ip, port))
             print("Connection to Fpre successful - no encryption")
 
-
-
         self.receive_buffer = bytes(0)
 
         data = self.receive()

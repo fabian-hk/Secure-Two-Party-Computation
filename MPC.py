@@ -251,7 +251,7 @@ class MPC:
         for bit in self.rec_in_bits.inputs:
             if bit.id == id:
                 return bit.masked_input, bit.label
-        return None
+        raise IDNotFound()
 
     def circuit_evaluation(self):
         print("--------------- evaluation -----------------")

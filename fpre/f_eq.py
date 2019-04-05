@@ -9,8 +9,8 @@ from fpre.fpre  import Fpre
 def f_eq(person: Person, communiator: Fpre, R):
     if person.x == person.A:
         x = R
-        r = os.urandom(conf.k/8)
-        hash_function = hashlib.sha3_512()
+        r = os.urandom(int(conf.k/8))
+        hash_function = hashlib.sha3_256()
         hash_function.update(x + r)
         c = hash_function.digest()
         #connections
@@ -28,7 +28,7 @@ def f_eq(person: Person, communiator: Fpre, R):
         nothing = communiator.exchange_data(y)
         x = communiator.exchange_data()
         r = communiator.exchange_data()
-        hash_function = hashlib.sha3_512()
+        hash_function = hashlib.sha3_256()
         hash_function.update(x + r)
         if hash_function.digest() == c and x == y:
             return True

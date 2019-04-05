@@ -1,7 +1,12 @@
+import os
+import shutil
+
 from tools.gate import *
 from tools.person import Person
 import cbmc_parser.parse_native_format as pnf
 from cbmc_parser.gate_helper import GateHelper
+import cbmc_parser.compile_ansic as compiler
+from exceptions.CircuitCreationException import CircuitCreationError
 
 
 def create_circuit_from_output_data(output_file, person: Person, test=False):
@@ -19,7 +24,7 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
     # special gate for recognizing or gates
     mark_as_or = Gate(-2, person, None, None)
 
-    # list containing the Gate ojects
+    # list containing the Gate objects
     gatelist = []
     # dictionary mapping output bits to gates
     output_mapping = {}
@@ -32,10 +37,8 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
             gatelist.append(XOR(gate.id * 10, person, None, None))
         elif gate.type == "NOT":
             gatelist.append(AND(gate.id * 10, person, mark_as_not, None, True))
-            print("NOT")
         elif gate.type == "OR":
             gatelist.append(AND(gate.id * 10, person, mark_as_or, mark_as_or, True))
-            print("OR")
 
     # fill output_mapping with outputs from nonio gates
     for gate in nonio_gate_list:
@@ -67,7 +70,7 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
 
             elif gate_to[1] == 0:
                 if gate_to_update.pre_a == mark_as_or:
-                    new_not = AND((len(gatelist)+1) * 10, person, gate_to_fill_in, gate_to_fill_in, True)
+                    new_not = AND((len(gatelist) + 1) * 10, person, gate_to_fill_in, gate_to_fill_in, True)
                     new_not.next.append((gate_to_update, Gate.WIRE_A))
                     gatelist.append(new_not)
                     gate_to_update.pre_a = new_not
@@ -77,7 +80,7 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
 
             elif gate_to[1] == 1:
                 if gate_to_update.pre_b == mark_as_or:
-                    new_not = AND((len(gatelist)+1) * 10, person, gate_to_fill_in, gate_to_fill_in, True)
+                    new_not = AND((len(gatelist) + 1) * 10, person, gate_to_fill_in, gate_to_fill_in, True)
                     new_not.next.append((gate_to_update, Gate.WIRE_B))
                     gatelist.append(new_not)
                     gate_to_update.pre_b = new_not
@@ -113,7 +116,7 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
 
             elif gate_to[1] == 0:
                 if gate_to_update.pre_a == mark_as_or:
-                    new_not = AND((len(gatelist)+1) * 10, person, None, None, True)
+                    new_not = AND((len(gatelist) + 1) * 10, person, None, None, True)
                     new_not.next.append((gate_to_update, Gate.WIRE_A))
                     gatelist.append(new_not)
                     gate_to_update.pre_a = new_not
@@ -134,7 +137,7 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
 
             elif gate_to[1] == 1:
                 if gate_to_update.pre_b == mark_as_or:
-                    new_not = AND((len(gatelist)+1) * 10, person, None, None, True)
+                    new_not = AND((len(gatelist) + 1) * 10, person, None, None, True)
                     new_not.next.append((gate_to_update, Gate.WIRE_B))
                     gatelist.append(new_not)
                     gate_to_update.pre_b = new_not
@@ -157,7 +160,22 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
     # turn output mapping into list for mapping
     outputs = []
     for i in sorted(output_mapping.keys()):
-        outputs.append(gatelist[output_mapping[i] - 1])
+        out = gatelist[output_mapping[i] - 1]
+        # add gate to output list if two predecessors exist and both has valid gate IDs (greater 0)
+        if out.pre_a and out.pre_b:
+            if out.pre_a.id >= 0 and out.pre_b.id >= 0:
+                outputs.append(out)
+        # add gate if one predecessor is a valid gate and one is a direct input
+        elif out.pre_a and (h.id_in_list(out.id + 1, inputsA) or h.id_in_list(out.id + 1, inputsB)):
+            if out.pre_a.id >= 0:
+                outputs.append(out)
+        elif out.pre_b and (h.id_in_list(out.id, inputsA) or h.id_in_list(out.id, inputsB)):
+            if out.pre_b.id >= 0:
+                outputs.append(out)
+        # add gate if both predecessors are direct inputs
+        elif (h.id_in_list(out.id + 1, inputsA) or h.id_in_list(out.id + 1, inputsB)) and (
+                h.id_in_list(out.id, inputsA) or h.id_in_list(out.id, inputsB)):
+            outputs.append(out)
 
     # reverse input lists and assign them to the person
     inputsA = [i for i in reversed(inputsA)]
@@ -170,9 +188,25 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
         if gate.type == Gate.TYPE_AND:
             num_and += 1
 
+    # clean circuit files
+    # if os.path.isdir(conf.default_output):
+    #    shutil.rmtree(conf.default_output)
+
     if test:
         return inputs, outputs, num_and, gatelist
     else:
         return inputs, outputs, num_and
 
-create_circuit_from_output_data("test_output_1",Person(Person.A),True)
+
+def create_circuit(circuit_name: str, person: Person, sub_folder=False):
+    relative_path = "cbmc_parser/gate_files/"
+    if sub_folder:
+        relative_path = "../" + relative_path
+
+    if circuit_name in os.listdir(relative_path):
+        return create_circuit_from_output_data(circuit_name, person)
+    elif circuit_name.split(".")[-1] == "c":
+        compiler.cbmc_gc_compile(circuit_name)
+        return create_circuit_from_output_data("default_output", person)
+    else:
+        raise CircuitCreationError()

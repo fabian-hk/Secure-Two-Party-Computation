@@ -1,79 +1,81 @@
 import os
-from random import randint
-import conf
-import socket
 import hashlib
 
+import conf
 import tools.helper as h
 from tools.person import Person
+from protobuf import FunctionIndependentPreprocessing_pb2
 from fpre.fpre import Fpre
-
-from fpre import f_eq as f_eq
+from fpre.f_eq import f_eq as f_eq
 from fpre import f_ha_and
+from exceptions.CheaterException import CheaterRecognized
 
 
+def f_la_and(communicator: Fpre, person: Person, and_triple: FunctionIndependentPreprocessing_pb2.AuthenticatedBits):
+    '''
+    generates leaky authenticated and_triples.
+    throws CheaterRecognized Exception if one of the two Parties tried to cheat
+    :param communicator: Fpre
+    :param person: Person
+    :param and_triple:  FunctionIndependentPreprocessing_pb2.AuthenticatedBits
+    :return: and_triple is returned as protobuf message
+    '''
+    # ***_STEP__1__ ***
+    if and_triple.r1 == bytes(0):
+        auth_bits = get_authbits(person, communicator, 3)
+        auth_bits_iter = iter(auth_bits.bits)
 
-import sys
+        auth_bit = next(auth_bits_iter)
+        own_x_bit = auth_bit.r
+        own_x_mac = auth_bit.M
+        opp_x_key = auth_bit.K
+        auth_bit = next(auth_bits_iter)
+        own_y_bit = auth_bit.r
+        own_y_mac = auth_bit.M
+        opp_y_key = auth_bit.K
 
-#****************** PI LA AND **************************
-#autheticated bit: [b]A PA -> (M[b],b)   |PB -> (K[b],delta)
-#autheticated bit: [b]B PB -> (M[b],b)   |PA -> (K[b],delta)
-
-
-
-def f_la_and(communicator, person, and_triple):
-
-    #TODO set initial values
-    #***_STEP__1__***
-    #init
-    own_x_bit = 0               #wrong
-    own_x_mac = person.delta    #wrong but correct datataype
-
-    own_y_bit = 0               #wrong
-    own_y_mac = person.delta    #wrong but correct datataype
-
-
-    opp_x_key = person.delta    #wrong but correct datatype
-
-    opp_y_key = person.delta    #wrong but correct datatype
-
-    own_z_bit = None
-    own_z_mac = None
-
-    own_r_bit = None
-    own_r_mac = None
-
-    opp_z_key = None
-    opp_r_key = None
-
-    if person.x == person.A:
-        own_z_bit = 0               #wrong
-        own_z_mac = person.delta    #wrong
-
-        opp_r_key = person.delta    #wrong
-
+        if person.x == Person.A:
+            auth_bit = next(auth_bits_iter)
+            own_z_bit = auth_bit.r
+            own_z_mac = auth_bit.M
+            opp_r_key = auth_bit.K
+        else:
+            auth_bit = next(auth_bits_iter)
+            own_r_bit = auth_bit.r
+            own_r_mac = auth_bit.M
+            opp_z_key = auth_bit.K
     else:
-        own_r_bit = 0               #wrong
-        own_r_mac = person.delta    #wrong but correct datatype
+        own_x_bit = and_triple.r1
+        own_x_mac = and_triple.M1
+        opp_x_key = and_triple.K1
+        own_y_bit = and_triple.r2
+        own_y_mac = and_triple.M2
+        opp_y_key = and_triple.K2
 
-        opp_z_key = person.delta    #wrong but correct datatype
-    #...
-    #...
-    #...
-    v = f_ha_and.f_ha_and(person, own_y_bit)
+        auth_bits = get_authbits(person, communicator, 1)
+        auth_bits_iter = iter(auth_bits.bits)
 
+        if person.x == Person.A:
+            auth_bit = next(auth_bits_iter)
+            own_z_bit = auth_bit.r
+            own_z_mac = auth_bit.M
+            opp_r_key = auth_bit.K
+        else:
+            auth_bit = next(auth_bits_iter)
+            own_r_bit = auth_bit.r
+            own_r_mac = auth_bit.M
+            opp_z_key = auth_bit.K
 
+    # ***_STEP__2__***
+    v = f_ha_and.f_ha_and(person, communicator, own_y_bit, own_x_bit, own_x_mac, opp_x_key)
 
     # ***_STEP__3__***
-    if person.x == person.A:
-        if own_x_bit == 1 and own_y_bit == 1:
-            u = abs(v - 1)
-        else:
-            u = v
-        nothing = communicator.exchange_data(230, u)
-        d = communicator.exchange_data(231)
+    if person.x == Person.A:
+        u = h.xor(v, h.AND(own_x_bit, own_y_bit), own_z_bit)  # TODO discuss own fix
+        nothing = communicator.exchange_data(u)
+        d = communicator.exchange_data()
 
-        if d == 0:
+        if d == b'\x00':
             opp_d_key = int(0).to_bytes(len(person.delta), byteorder='big')
         else:
             opp_d_key = person.delta
@@ -81,134 +83,157 @@ def f_la_and(communicator, person, and_triple):
         opp_z_key = h.xor(opp_d_key, opp_r_key)
 
     if person.x == person.B:
-        tmp = None
-        u = communicator.exchange_data(230)
-        own_z_bit = None
-        if own_x_bit == 1 and own_y_bit == 1:
-            tmp = abs(u - 1)
-        else:
-            tmp = u
-        own_z_bit = abs(u - v)
-
-        d = abs(own_r_bit - own_z_bit)
-        nothing = communicator.exchange_data(231, d)
+        u = communicator.exchange_data()
+        own_z_bit = h.xor(u, v, h.AND(own_x_bit, own_y_bit))
+        d = h.xor(own_r_bit, own_z_bit)
+        communicator.exchange_data(d)
         own_z_mac = own_r_mac
 
-    U = []
     # ***_STEP__4-5__***
-    #check correctness
-    #(a)
-    if own_z_bit == 1:
-        hash_function = hashlib.sha3_512()
+    # check correctness
+    # (a)
+    if own_z_bit == b'\x01':
+        hash_function = hashlib.sha3_256()
         hash_function.update(opp_x_key + h.xor(opp_z_key, person.delta))
+        T_0 = hash_function.digest()
     else:
-        hash_function = hashlib.sha3_512()
+        hash_function = hashlib.sha3_256()
         hash_function.update(opp_x_key + opp_z_key)
-    T_0 = hash_function.digest()
+        T_0 = hash_function.digest()
 
-    if bool(own_y_bit) != bool(own_y_bit):
-        hash_function = hashlib.sha3_512()
-        hash_function.update(h.xor(opp_x_key, person.delta) +  h.xor(opp_y_key, opp_z_key, person.delta))
+    if h.xor(own_y_bit, own_z_bit) == b'\x01':
+        hash_function = hashlib.sha3_256()
+        hash_function.update(h.xor(opp_x_key, person.delta) + h.xor(opp_y_key, opp_z_key, person.delta))
+        U_0 = bytes(h.xor(T_0, hash_function.digest()))
+
     else:
-        hash_function = hashlib.sha3_512()
-        hash_function.update(opp_x_key + h.xor(opp_y_key, opp_z_key))
-    U.append(h.xor(T_0, hash_function.digest()))
+        hash_function = hashlib.sha3_256()
+        hash_function.update(h.xor(opp_x_key, person.delta) + h.xor(opp_y_key, opp_z_key))
+        U_0 = bytes(h.xor(T_0, hash_function.digest()))
 
-    if bool(own_y_bit) != bool(own_y_bit):
-        tmp_funct = h.xor(h.xor(opp_y_key, opp_z_key, person.delta))
+    if h.xor(own_y_bit, own_z_bit) == b'\x01':
+        tmp_funct = h.xor(opp_y_key, opp_z_key, person.delta)
     else:
-        tmp_funct = h.xor(h.xor(opp_y_key, opp_z_key))
+        tmp_funct = h.xor(opp_y_key, opp_z_key)
 
-    hash_function = hashlib.sha3_512()
+    hash_function = hashlib.sha3_256()
     hash_function.update(opp_x_key + tmp_funct)
     T_1 = hash_function.digest()
 
-    if own_z_bit == 1:
-        hash_function = hashlib.sha3_512()
+    if own_z_bit == b'\x01':
+        hash_function = hashlib.sha3_256()
         hash_function.update(h.xor(opp_x_key, person.delta) + h.xor(opp_z_key, person.delta))
+        U_1 = bytes(h.xor(T_1, hash_function.digest()))
     else:
-        hash_function = hashlib.sha3_512()
+        hash_function = hashlib.sha3_256()
         hash_function.update(h.xor(opp_x_key, person.delta) + opp_z_key)
-    U.append(h.xor(T_1, hash_function.digest()))
+        U_1 = bytes(h.xor(T_1, hash_function.digest()))
 
-    #(b)
-    if own_x_bit < 2 and own_x_bit >= 0:
-        U_solid = communicator.exchange_data(240, U[own_x_bit])
+    # (b)
+    if own_x_bit == b'\x00':
+        U_solid = communicator.exchange_data(U_0)
+    elif own_x_bit == b'\x01':
+        U_solid = communicator.exchange_data(U_1)
     else:
-        raise TypeError
+        raise TypeError()
 
-    #(c)
-    #pick random k-bit string
-    R_size = len(T_1)
-    R = os.urandom(R_size)
-    V = []
+    # (c)
+    # pick random k-bit string
+    R = os.urandom(int(conf.k / 8))
 
-    #V0
-    hash_function = hashlib.sha3_512()
+    # V0
+    hash_function = hashlib.sha3_256()
     hash_function.update(own_x_mac + own_z_mac)
-    V.append(hash_function.digest())
-    #V1
-    hash_function = hashlib.sha3_512()
-    hash_function.update(own_x_mac +  h.xor(own_z_mac, own_y_mac))
-    V.append(hash_function.update())
+    V_0 = hash_function.digest()
+    # V1
+    hash_function = hashlib.sha3_256()
+    hash_function.update(own_x_mac + h.xor(own_z_mac, own_y_mac))
+    V_1 = hash_function.digest()
 
-
-    W = []
-    hash_function = hashlib.sha3_512()
+    # W_i_j
+    hash_function = hashlib.sha3_256()
     hash_function.update(opp_x_key)
     hash_key_x = hash_function.digest()
-    hash_function = hashlib.sha3_512()
+    hash_function = hashlib.sha3_256()
     hash_function.update(h.xor(opp_x_key, person.delta))
     hash_key_x_xor = hash_function.digest()
-    W_0_0 = h.xor(hash_key_x,  V[0], R)
-    W_0_1 = h.xor(hash_key_x_xor,  V[0], R)
-    W_1_0 = h.xor(hash_key_x, V[1], U_solid, R)
-    W_1_1 = h.xor(hash_key_x_xor, V[1], U_solid, R)
+    W_0_0 = bytes(h.xor(hash_key_x, V_0, R))
+    W_0_1 = bytes(h.xor(hash_key_x_xor, V_1, R))
+    W_1_0 = bytes(h.xor(hash_key_x, V_1, U_solid, R))
+    W_1_1 = bytes(h.xor(hash_key_x_xor, V_0, U_solid, R))
 
-    #(d)
-
-    W_opp_x_0 = None
-    W_opp_x_1 = None
-    if own_x_bit == 0:
-        W_opp_x_0 = communicator.exchange_data(241, W_0_0)
-        W_opp_x_1 = communicator.exchange_data(242, W_0_1)
-    elif own_x_bit == 1:
-        W_opp_x_0 = communicator.exchange_data(241, W_1_0)
-        W_opp_x_1 = communicator.exchange_data(242, W_1_1)
+    # (d)
+    if own_x_bit == b'\x00':
+        W_opp_x_0 = communicator.exchange_data(W_0_0)
+        W_opp_x_1 = communicator.exchange_data(W_0_1)
+    elif own_x_bit == b'\x01':
+        W_opp_x_0 = communicator.exchange_data(W_1_0)
+        W_opp_x_1 = communicator.exchange_data(W_1_1)
     else:
-        raise TypeError
+        raise TypeError()
 
-    r_eq = f_eq(person, communicator, R)
-
-    #(e)
-
-    W_x_x = None
-    if own_x_bit == 0:
+    # (e)
+    if own_x_bit == b'\x00':
         W_x_x = W_opp_x_0
-    elif own_x_bit == 1:
+    elif own_x_bit == b'\x01':
         W_x_x = W_opp_x_1
     else:
-        raise TypeError
+        raise TypeError()
 
     hash_function = hashlib.sha3_256()
     hash_function.update(own_x_mac)
-    R_new = None
-    if own_x_bit == 0:
-        R_new = h.xor(W_x_x, hash_function.digest(), T_0)
-    elif own_x_bit == 1:
-        R_new = h.xor(W_x_x, hash_function.digest(), T_1)
+    # R_dash = None
+    if own_x_bit == b'\x00':
+        R_dash = bytes(h.xor(W_x_x, hash_function.digest(), T_0))
+    elif own_x_bit == b'\x01':
+        R_dash = bytes(h.xor(W_x_x, hash_function.digest(), T_1))
     else:
-        raise TypeError
+        raise TypeError()
 
-    #TODO send R_new to FEQ
+    # remove padded zeros from hashing
+    R_dash = R_dash[-int(conf.k / 8):]
+
+    # order of sended R or R_dash has to change because both act simultaneously
+    if person.x == Person.A:
+        # Person A sends first R before R_dash
+        r_pa_a_dash_b = f_eq(person, communicator, R)
+        r_dash_a_r_b = f_eq(person, communicator, R_dash)
+    else:
+        # Person B sends first R_dash before R
+        r_pa_a_dash_b = f_eq(person, communicator, R_dash)
+        r_dash_a_r_b = f_eq(person, communicator, R)
+
+    if not r_pa_a_dash_b or not r_dash_a_r_b:
+        raise CheaterRecognized()
+
+    # save and triple in protobuf message
+    and_triple.r1 = own_x_bit
+    and_triple.M1 = own_x_mac
+    and_triple.K1 = opp_x_key
+    and_triple.r2 = own_y_bit
+    and_triple.M2 = own_y_mac
+    and_triple.K2 = opp_y_key
+    and_triple.r3 = bytes(own_z_bit)
+    and_triple.M3 = bytes(own_z_mac)
+    and_triple.K3 = bytes(opp_z_key)
 
 
-    #TODO return values
+def get_authbits(person: Person, communicator: Fpre, number):
+    '''
 
+    :param person: Person
+    :param communicator: Fpre
+    :param number: int
+    :return:
+    '''
+    auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
+    if person.x == Person.A:
+        for i in range(number):
+            auth_bit = auth_bits.bits.add()
+            auth_bit.id = i
+            communicator.authenticated_bit(auth_bit)
+        communicator.send_auth_bits(auth_bits.SerializeToString())
+    else:
+        auth_bits.ParseFromString(communicator.rec_auth_bits())
 
-
-
-
-def f_eq(x):
-    return True
-
+    return auth_bits

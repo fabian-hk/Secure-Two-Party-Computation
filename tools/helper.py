@@ -1,3 +1,5 @@
+from typing import List
+
 from exceptions.CheaterException import CheaterRecognized
 from exceptions.ANDTripleConditionException import ANDTripleConditionFalse
 
@@ -29,6 +31,29 @@ def xor(a: bytearray, b: bytearray, c=bytearray(0), d=bytearray(0), e=bytearray(
     for i in range(l):
         f[i] = a[i] ^ b[i] ^ c[i] ^ d[i] ^ e[i]
     return f
+
+
+def print_output(proto):
+    bin_out = ""
+    dez_out = 0
+
+    i = 0
+    for res in proto.outputs:
+        tmp = int.from_bytes(res.output, byteorder='big')
+        bin_out += str(tmp)
+        dez_out += tmp * pow(2, i)
+        i += 1
+
+    print("\nResult in binary: " + bin_out[::-1])
+    print("Result in decimal: " + str(dez_out))
+    return dez_out
+
+
+def id_in_list(id: int, list: List[List[int]]) -> bool:
+    for l in list:
+        if id in l:
+            return True
+    return False
 
 
 def AND(a, b):
@@ -181,8 +206,8 @@ def check_and_triple(and_triple_A, and_triple_B, delta_a: bytes, delta_b: bytes,
                 raise CheaterRecognized()
 
         # check and triple condition
-        if xor(and_triple_A.r3, and_triple_B.r3) == xor(AND(and_triple_A.r1, and_triple_B.r2),
-                                                        AND(and_triple_B.r1, and_triple_A.r2)):
+        if xor(and_triple_A.r3, and_triple_B.r3) == AND(xor(and_triple_A.r1, and_triple_B.r1),
+                                                        xor(and_triple_A.r2, and_triple_B.r2)):
             pass
         else:
             raise ANDTripleConditionFalse()

@@ -8,6 +8,7 @@ from fpre.fpre import Fpre
 import fpre.f_a_and as faand
 import conf
 from exceptions.CheaterException import CheaterRecognized
+from exceptions.IDNotFoundException import IDNotFound
 
 
 class MPC:
@@ -29,8 +30,6 @@ class MPC:
         self.in_bits = InputPreprocessing_pb2.Inputs()
         self.rec_in_bits = InputPreprocessing_pb2.Inputs()
 
-        self.function_independent_preprocessing()
-
     def load_cirucit(self, inputs: Dict[int, Gate], outputs: List, num_and):
         """
         Loads the list with the input and output gates of the cirucit.
@@ -45,12 +44,11 @@ class MPC:
     def function_independent_preprocessing(self):
         self.com.init_fpre()
         if self.person.x == Person.A:
-            for i in range(conf.upper_bound_gates):
-                for j in range(3):
-                    auth_bit = self.auth_bits.bits.add()
-                    auth_bit.id = i * 10 + j
-                    self.com.authenticated_bit(auth_bit)
-                    self.labels.append(os.urandom(int(conf.k / 8)))
+            for i in range(conf.input_size + conf.upper_bound_gates):
+                auth_bit = self.auth_bits.bits.add()
+                auth_bit.id = i * 10
+                self.com.authenticated_bit(auth_bit)
+                self.labels.append(os.urandom(int(conf.k / 8)))
 
             # Serialize the authenticated bits and send them to the server
             self.com.send_auth_bits(self.auth_bits.SerializeToString())
@@ -62,7 +60,9 @@ class MPC:
 
     def function_dependent_preprocessing(self):
         label_iter = iter(self.labels) if self.person.x == Person.A else None
-        self.and_triples = iter(faand.f_a_and(self.person, self.com, self.num_and).triples)
+        # if self.num_and > 0:
+        #    and_triples = faand.f_a_and(self.person, self.com, self.num_and)
+        #    self.and_triples = iter(and_triples.triples)
         for out in self.outputs:
             self.gate_initialization(out, label_iter)
 
@@ -126,8 +126,8 @@ class MPC:
 
                 if self.person.x == Person.A: gate.Ly0 = label_iter.__next__()
 
-                # compute the complete AND triple
-                faand.compute_and_triple(and_triple, next(self.and_triples), self.com, self.person)
+                # compute the AND triple
+                faand.f_a_and(self.person, self.com, and_triple)
 
                 gate.initialize_auth_bit_o(and_triple)
                 gate.initialize_auth_bit_y(next(self.auth_bits))
@@ -158,7 +158,7 @@ class MPC:
         if id % 10 == 1:
             return in_g.Kb
 
-        return None
+        raise IDNotFound()
 
     def label_by_wire_id(self, id: int, l: bytes) -> bytes:
         in_g = self.inputs[(id - (id % 10))]  # type: Gate
@@ -180,7 +180,7 @@ class MPC:
         elif id % 10 == 1 and in_g.type == Gate.TYPE_XOR and l == b'\x01':
             return h.xor(in_g.Lb0, self.person.delta)
 
-        return None
+        raise IDNotFound()
 
     def input_processing(self):
         # assemble all input bits together either to send them over or to compute the masked bits
@@ -189,23 +189,23 @@ class MPC:
         # own input bits
         in_auth_bits = FunctionIndependentPreprocessing_pb2.AuthenticatedBits()
         for in_gate in self.inputs.values():  # type: Gate
-            if in_gate.id in self.person.other_inputs:
+            if h.id_in_list(in_gate.id, self.person.other_inputs):
                 b = in_auth_bits_o.bits.add()
                 b.id = in_gate.id
                 b.r = in_gate.a
                 b.M = in_gate.Ma
-            elif in_gate.id in self.person.inputs:
+            elif h.id_in_list(in_gate.id, self.person.inputs):
                 b = in_auth_bits.bits.add()
                 b.id = in_gate.id
                 b.r = in_gate.a
                 b.M = in_gate.Ma
 
-            if (in_gate.id + 1) in self.person.other_inputs:
+            if h.id_in_list((in_gate.id + 1), self.person.other_inputs):
                 b = in_auth_bits_o.bits.add()
                 b.id = in_gate.id + 1
                 b.r = in_gate.b
                 b.M = in_gate.Mb
-            elif (in_gate.id + 1) in self.person.inputs:
+            elif h.id_in_list((in_gate.id + 1), self.person.inputs):
                 b = in_auth_bits.bits.add()
                 b.id = in_gate.id + 1
                 b.r = in_gate.b
@@ -291,13 +291,9 @@ class MPC:
                 out.get_y_auth_bit(auth_bits.bits.add())
             self.com.exchange_data(auth_bits.SerializeToString())
             outputs.ParseFromString(self.com.exchange_data())
-            self.com.close_session()
-            print()
-            print(outputs)
         else:
             auth_bits.ParseFromString(self.com.exchange_data())
             auth_bits = iter(auth_bits.bits)
-            result = {}
             for out in self.outputs:  # type: Gate
                 auth_bit = next(auth_bits)
                 if auth_bit.r == b'\x01':
@@ -308,14 +304,12 @@ class MPC:
                         raise CheaterRecognized()
 
                 res = h.xor(out.masked_bit_y, auth_bit.r, out.y)
-                result[out.id] = res
                 output = outputs.outputs.add()
                 output.id = out.id + 2
                 output.output = bytes(res)
             print("Auth bits verification passed")
 
             self.com.exchange_data(outputs.SerializeToString())
-            self.com.close_session()
-            print()
-            print(outputs)
-            return result
+
+        self.com.close_session()
+        return outputs

@@ -6,6 +6,9 @@ venv/
 #files
 *.pyc
 
+#cmbc
+cbmc_parser/gate_files/default_output/
+
 
 #latex
 *.pdf

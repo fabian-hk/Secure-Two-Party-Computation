@@ -1,17 +1,15 @@
 import os
 
-#This will only work if CBMC-GC is installed
+import conf
 
-#path from destination of this file to CBMC-GC root directory
-path_to_cbmc = "../../../../CBMC-GC-2-master"
-#filename of ansi c file in ansi_c_code directory that is compiled to gates 
-ansic_filename = "addition.c"
 
-def cbmc_gc_compile(path_to_cbmc, ansic_filename):
-	goto_location_for_output = "cd gate_files/default_output; " 
-	execute_cbmc_gc = "./" + path_to_cbmc + "/bin/cbmc-gc ../../ansi_c_code/" + ansic_filename +"; "
+# This will only work if CBMC-GC is linked in the conf.py
 
-	#result is always stored in gate_files/default_output
-	os.system(goto_location_for_output + execute_cbmc_gc)
+def cbmc_gc_compile(ansic_file_path):
+    if not os.path.isdir(conf.default_output):
+        os.mkdir(conf.default_output)
+    goto_location_for_output = "cd " + conf.default_output + "; "
+    execute_cbmc_gc = conf.cbmc_path + " ../../../" + ansic_file_path
 
-cbmc_gc_compile(path_to_cbmc, ansic_filename)
+    # result is always stored in gate_files/default_output
+    os.system(goto_location_for_output + execute_cbmc_gc + "> /dev/null 2>&1")

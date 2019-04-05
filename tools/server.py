@@ -7,18 +7,29 @@ from fpre.fpre_server import FpreServer
 import conf
 
 
+class ServerANDTriple(Exception):
+    '''Raised when the server calculates a and triple'''
+    pass
+
+
 class Server(Process):
 
-    def __init__(self, port):
+    def __init__(self, port, no_encryption=False):
         super().__init__()
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        context.load_cert_chain(conf.crt_storage + 'certificate-localhost-pub.pem',
-                                conf.crt_storage + 'certificate-localhost-key.pem')
+
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind(('', port))
         s.listen(5)
-        self.s = context.wrap_socket(s, server_side=True)
+
+        if not no_encryption:
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            context.load_cert_chain(conf.server_certificate, conf.server_priv_key)
+            context.load_verify_locations(conf.root_cert)
+            context.verify_mode = ssl.CERT_REQUIRED
+            self.s = context.wrap_socket(s, server_side=True)
+        else:
+            self.s = s
 
         self.ex_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         self.ex_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -32,25 +43,28 @@ class Server(Process):
         while True:
             print("Waiting for connection")
 
-            conn1, addr1 = self.s.accept()
-            print("First connection. IP: " + str(addr1))
+            try:
+                conn1, addr1 = self.s.accept()
+                print("First connection. IP: " + str(addr1))
 
-            conn2, addr2 = self.s.accept()
-            print("Second connection. IP: " + str(addr2))
+                conn2, addr2 = self.s.accept()
+                print("Second connection. IP: " + str(addr2))
 
-            conn = Connection(conn1, conn2)
-            conn.start()
+                conn = Connection(conn1, conn2)
+                conn.start()
 
-            conn3, addr3 = self.ex_s.accept()
-            print("Third connection. IP: " + str(addr3))
+                conn3, addr3 = self.ex_s.accept()
+                print("Third connection. IP: " + str(addr3))
 
-            conn4, addr4 = self.ex_s.accept()
-            print("Fourth connection. IP: " + str(addr4))
+                conn4, addr4 = self.ex_s.accept()
+                print("Fourth connection. IP: " + str(addr4))
 
-            print()
+                print()
 
-            ex = Exchange(conn3, conn4)
-            ex.start()
+                ex = Exchange(conn3, conn4)
+                ex.start()
+            except OSError:
+                print("Error: SSL handshake failed")
 
     def run(self):
         """
@@ -97,6 +111,7 @@ class Connection(Process):
 
     def __init__(self, conn1: socket, conn2: socket):
         super().__init__()
+
         self.conn1 = conn1
         self.conn2 = conn2
 
@@ -106,8 +121,11 @@ class Connection(Process):
 
     def receive(self, conn):
         data = self.receive_buffer
-        data += conn.recv(self.BUFFER_SIZE)
-        length = int.from_bytes(data[:4], byteorder='big')
+        if len(self.receive_buffer) >= 4:
+            length = int.from_bytes(data[:4], byteorder='big')
+        else:
+            data += conn.recv(self.BUFFER_SIZE)
+            length = int.from_bytes(data[:4], byteorder='big')
         data = data[4:]
         while len(data) < length:
             data += conn.recv(self.BUFFER_SIZE)
@@ -137,6 +155,7 @@ class Connection(Process):
                 self.send_data(self.conn2, b'\x02' + ser_auth_bits_b)
                 self.send_data(self.conn1, b'\x02')
             elif data_A[0:1] == b'\x03':
+                raise ServerANDTriple()  # TODO remove code completely
                 data_B = self.receive(self.conn2)
                 if data_B[0:1] == b'\x03':
                     ser_and_triple_b = self.fpre_server.create_and_triple(data_A[1:], data_B[1:])
@@ -157,5 +176,5 @@ class Connection(Process):
 
 
 if __name__ == "__main__":
-    server = Server(8448)
+    server = Server(conf.test_server_port)
     server.start_server()

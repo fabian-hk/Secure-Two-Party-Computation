@@ -49,10 +49,11 @@ def print_output(proto):
     return dez_out
 
 
-def id_in_list(id: int, list: List[List[int]]) -> bool:
-    for l in list:
-        if id in l:
-            return True
+def id_in_list(id: int, lists: List[List[List[int]]]) -> bool:
+    for list in lists:
+        for l in list:
+            if id in l:
+                return True
     return False
 
 

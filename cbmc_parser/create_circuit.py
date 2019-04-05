@@ -90,11 +90,20 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
 
     # fill inputs lists for both persons, expand gates marked as or and not to nands
     inputsA = []
-    inputsB = []
-    for i in range(rangeA[0], rangeA[1] + 1):
+    j = 0
+    for r in rangeA:
         inputsA.append([])
-    for i in range(rangeB[0], rangeB[1] + 1):
+        for i in range(r[0], r[1] + 1):
+            inputsA[j].append([])
+        j += 1
+
+    inputsB = []
+    j = 0
+    for r in rangeB:
         inputsB.append([])
+        for i in range(r[0], r[1] + 1):
+            inputsB[j].append([])
+        j += 1
 
     inputs = {}
     # connect inputs to gates and fill inputsA, inputsB, inputs dictionarys
@@ -107,12 +116,18 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
                 gate_to_update.pre_b = None
 
                 inputs[gate_to_update.id] = gate_to_update
-                if gate_from.id in range(rangeA[0], rangeA[1] + 1):
-                    inputsA[gate_from.id - rangeA[0]].append(gate_to_update.id)
-                    inputsA[gate_from.id - rangeA[0]].append(gate_to_update.id + 1)
-                else:
-                    inputsB[gate_from.id - rangeB[0]].append(gate_to_update.id)
-                    inputsB[gate_from.id - rangeB[0]].append(gate_to_update.id + 1)
+                i = 0
+                for r in rangeA:
+                    if gate_from.id in range(r[0], r[1] + 1):
+                        inputsA[i][gate_from.id - r[0]].append(gate_to_update.id)
+                        inputsA[i][gate_from.id - r[0]].append(gate_to_update.id + 1)
+                    i += 1
+                i = 0
+                for r in rangeB:
+                    if gate_from.id in range(r[0], r[1] + 1):
+                        inputsB[i][gate_from.id - r[0]].append(gate_to_update.id)
+                        inputsB[i][gate_from.id - r[0]].append(gate_to_update.id + 1)
+                    i += 1
 
             elif gate_to[1] == 0:
                 if gate_to_update.pre_a == mark_as_or:
@@ -122,18 +137,30 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
                     gate_to_update.pre_a = new_not
 
                     inputs[new_not.id] = new_not
-                    if gate_from.id in range(rangeA[0], rangeA[1] + 1):
-                        inputsA[gate_from.id - rangeA[0]].append(new_not.id)
-                    else:
-                        inputsB[gate_from.id - rangeB[0]].append(new_not.id)
+                    i = 0
+                    for r in rangeA:
+                        if gate_from.id in range(r[0], r[1] + 1):
+                            inputsA[i][gate_from.id - r[0]].append(new_not.id)
+                        i += 1
+                    i = 0
+                    for r in rangeB:
+                        if gate_from.id in range(r[0], r[1] + 1):
+                            inputsB[i][gate_from.id - r[0]].append(new_not.id)
+                        i += 1
                 else:
                     gate_to_update.pre_a = None
 
                     inputs[gate_to_update.id] = gate_to_update
-                    if gate_from.id in range(rangeA[0], rangeA[1] + 1):
-                        inputsA[gate_from.id - rangeA[0]].append(gate_to_update.id)
-                    else:
-                        inputsB[gate_from.id - rangeB[0]].append(gate_to_update.id)
+                    i = 0
+                    for r in rangeA:
+                        if gate_from.id in range(r[0], r[1] + 1):
+                            inputsA[i][gate_from.id - r[0]].append(gate_to_update.id)
+                        i += 1
+                    i = 0
+                    for r in rangeB:
+                        if gate_from.id in range(r[0], r[1] + 1):
+                            inputsB[i][gate_from.id - r[0]].append(gate_to_update.id)
+                        i += 1
 
             elif gate_to[1] == 1:
                 if gate_to_update.pre_b == mark_as_or:
@@ -143,19 +170,31 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
                     gate_to_update.pre_b = new_not
 
                     inputs[new_not.id] = new_not
-                    if gate_from.id in range(rangeA[0], rangeA[1] + 1):
-                        inputsA[gate_from.id - rangeA[0]].append(new_not.id + 1)
-                    else:
-                        inputsB[gate_from.id - rangeB[0]].append(new_not.id + 1)
+                    i = 0
+                    for r in rangeA:
+                        if gate_from.id in range(r[0], r[1] + 1):
+                            inputsA[i][gate_from.id - r[0]].append(new_not.id + 1)
+                        i += 1
+                    i = 0
+                    for r in rangeB:
+                        if gate_from.id in range(r[0], r[1] + 1):
+                            inputsB[i][gate_from.id - r[0]].append(new_not.id + 1)
+                        i += 1
 
                 else:
                     gate_to_update.pre_b = None
 
                     inputs[gate_to_update.id] = gate_to_update
-                    if gate_from.id in range(rangeA[0], rangeA[1] + 1):
-                        inputsA[gate_from.id - rangeA[0]].append(gate_to_update.id + 1)
-                    else:
-                        inputsB[gate_from.id - rangeB[0]].append(gate_to_update.id + 1)
+                    i = 0
+                    for r in rangeA:
+                        if gate_from.id in range(r[0], r[1] + 1):
+                            inputsA[i][gate_from.id - r[0]].append(gate_to_update.id + 1)
+                        i += 1
+                    i = 0
+                    for r in rangeB:
+                        if gate_from.id in range(r[0], r[1] + 1):
+                            inputsB[i][gate_from.id - r[0]].append(gate_to_update.id + 1)
+                        i += 1
 
     # turn output mapping into list for mapping
     outputs = []
@@ -178,8 +217,10 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
             outputs.append(out)
 
     # reverse input lists and assign them to the person
-    inputsA = [i for i in reversed(inputsA)]
-    inputsB = [i for i in reversed(inputsB)]
+    for i in range(len(inputsA)):
+        inputsA[i] = [i for i in reversed(inputsA[i])]
+    for i in range(len(inputsB)):
+        inputsB[i] = [i for i in reversed(inputsB[i])]
     person.inputs = inputsA if person.x == Person.A else inputsB
     person.other_inputs = inputsB if person.x == Person.A else inputsA
 
@@ -210,3 +251,7 @@ def create_circuit(circuit_name: str, person: Person, sub_folder=False):
         return create_circuit_from_output_data("default_output", person)
     else:
         raise CircuitCreationError()
+
+
+if __name__ == "__main__":
+    create_circuit_from_output_data("mean", Person(Person.A))

@@ -1,0 +1,9 @@
+return_value: int32;
+INPUT_A_0: int32;
+INPUT_A_1: int32;
+INPUT_A_2: int32;
+INPUT_A_3: int32;
+INPUT_B_0: int32;
+INPUT_B_1: int32;
+INPUT_B_2: int32;
+INPUT_B_3: int32;

@@ -1,4 +1,5 @@
 from multiprocessing import Process, Queue
+from typing import List
 
 from tools.person import Person
 from MPC import MPC
@@ -21,9 +22,9 @@ def user(id: int, create_circuit, input, q: Queue):
         inputs, outputs, num_and = cc.create_circuit(create_circuit, com.person, True)
     else:
         inputs, outputs, num_and = create_circuit(com.person)
-    if type(input[com.person.x]) == str:
+    if type(input[com.person.x][0]) == str:
         com.person.load_input_string(input[com.person.x])
-    elif type(input[com.person.x]) == int:
+    elif type(input[com.person.x][0]) == int:
         com.person.load_input_integer(input[com.person.x])
     else:
         raise TypeError()
@@ -70,9 +71,9 @@ def evaluate_circuit(circuit, in_vals_a, in_vals_b, proto_out=False):
         _, outputs, _ = cc.create_circuit(circuit, person_a, True)
     else:
         _, outputs, _ = circuit(person_a)
-    if type(in_vals_a) == str:
+    if type(in_vals_a[0]) == str:
         person_a.load_input_string(in_vals_a)
-    elif type(in_vals_a) == int:
+    elif type(in_vals_a[0]) == int:
         person_a.load_input_integer(in_vals_a)
     else:
         raise TypeError()
@@ -81,9 +82,9 @@ def evaluate_circuit(circuit, in_vals_a, in_vals_b, proto_out=False):
         _, outputs, _ = cc.create_circuit(circuit, person_b, True)
     else:
         _, outputs, _ = circuit(person_b)
-    if type(in_vals_b) == str:
+    if type(in_vals_b[0]) == str:
         person_b.load_input_string(in_vals_b)
-    elif type(in_vals_b) == int:
+    elif type(in_vals_b[0]) == int:
         person_b.load_input_integer(in_vals_b)
     else:
         raise TypeError()

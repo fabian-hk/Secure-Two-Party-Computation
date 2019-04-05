@@ -18,7 +18,7 @@ if __name__ == "__main__":
     parser.add_argument('circuit', type=str,
                         help='Either one of the example circuits or a path to an parsable c-code file (ending .c). '
                              'Path must be relativ to the location of this file.')
-    parser.add_argument('input', type=int, help='Own input to the circuit as an Integer.')
+    parser.add_argument('input', type=int, nargs='+', help='Own input to the circuit as an Integer.')
     parser.add_argument('-cn', type=str, default=None,
                         help='Common name of the partner you want to talk to.')
     parser.add_argument('-c', '--certificate', type=str, default=None,

@@ -35,22 +35,24 @@ def get_input_mapping_file(folder_name):
 
 def get_inputrange_partyA(partyA_inputrange_file, max_input_id):
     reader_inputrange_partyA = csv.reader(partyA_inputrange_file, delimiter=' ', quoting=csv.QUOTE_NONE)
-    # TODO check if there are more lines when more variables are used as input
-    line1 = next(reader_inputrange_partyA)
+    line = next(reader_inputrange_partyA, None)
+    result = []
+    while line:
+        result.append((int(line[1]), int(line[1]) - 1 + int(line[2])))
+        line = next(reader_inputrange_partyA, None)
     partyA_inputrange_file.close()
-    return (int(line1[1]), int(line1[2]))
+    return result
 
 
 def get_inputrange_partyB(partyB_inputrange_file, max_input_id):
     reader_inputrange_partyB = csv.reader(partyB_inputrange_file, delimiter=' ', quoting=csv.QUOTE_NONE)
-    # TODO check if there are more lines when more variables are used as input
-    line1 = next(reader_inputrange_partyB)
-    startid = int(line1[1])
-    endid = int(line1[2])
-    if endid < startid:
-        endid = max_input_id
+    line = next(reader_inputrange_partyB, None)
+    result = []
+    while line:
+        result.append((int(line[1]), int(line[1]) - 1 + int(line[2])))
+        line = next(reader_inputrange_partyB, None)
     partyB_inputrange_file.close()
-    return (startid, endid)
+    return result
 
 
 def transform_wire_string_to_tuple(wirestring):

@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 import conf
 
@@ -32,18 +33,24 @@ class Person:
     def __str__(self):
         return "Person: " + str(self.x) + " Delta: " + str(self.delta)
 
-    def load_input_string(self, in_val: str):
-        for ids, bit in zip(self.inputs, in_val):
-            for id in ids:
-                self.in_vals[id] = int(bit).to_bytes(1, byteorder='big')
+    def load_input_string(self, in_vals: List[str]):
+        i = 0
+        for in_val in in_vals:
+            for ids, bit in zip(self.inputs[i], in_val):
+                for id in ids:
+                    self.in_vals[id] = int(bit).to_bytes(1, byteorder='big')
+            i += 1
 
-    def load_input_integer(self, in_val: int):
-        n = in_val
-        for ids in reversed(self.inputs):
-            if n > 0:
-                for id in ids:
-                    self.in_vals[id] = int(n & 1).to_bytes(1, byteorder='big')
-                n = n >> 1
-            else:
-                for id in ids:
-                    self.in_vals[id] = b'\x00'
+    def load_input_integer(self, in_vals: List[int]):
+        i = 0
+        for in_val in in_vals:
+            n = in_val
+            for ids in reversed(self.inputs[i]):
+                if n > 0:
+                    for id in ids:
+                        self.in_vals[id] = int(n & 1).to_bytes(1, byteorder='big')
+                    n = n >> 1
+                else:
+                    for id in ids:
+                        self.in_vals[id] = b'\x00'
+            i += 1

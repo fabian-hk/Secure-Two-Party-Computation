@@ -34,6 +34,9 @@ class Person:
         return "Person: " + str(self.x) + " Delta: " + str(self.delta)
 
     def load_input_string(self, in_vals: List[str]):
+        if len(in_vals) != len(self.inputs):
+            raise IndexError()
+
         i = 0
         for in_val in in_vals:
             for ids, bit in zip(self.inputs[i], in_val):
@@ -42,6 +45,9 @@ class Person:
             i += 1
 
     def load_input_integer(self, in_vals: List[int]):
+        if len(in_vals) != len(self.inputs):
+            raise IndexError()
+
         i = 0
         for in_val in in_vals:
             n = in_val

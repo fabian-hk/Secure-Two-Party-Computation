@@ -24,5 +24,5 @@ the output Y has the id xxx2
 
 # Create certificates for the parties
 - [Tutorial](https://legacy.thomas-leister.de/eine-eigene-openssl-ca-erstellen-und-zertifikate-ausstellen/) how to generate certificates
-- Certificates should allways have the ending ``-pub.pem``
-- Private keys should allways end on ``-key.pem``
+- Certificates should always have the ending ``-pub.pem``
+- Private keys should always end on ``-key.pem``

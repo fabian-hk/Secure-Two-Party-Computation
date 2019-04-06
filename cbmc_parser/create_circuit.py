@@ -24,7 +24,7 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
     # special gate for recognizing or gates
     mark_as_or = Gate(-2, person, None, None)
 
-    # list containing the Gate ojects
+    # list containing the Gate objects
     gatelist = []
     # dictionary mapping output bits to gates
     output_mapping = {}
@@ -240,22 +240,17 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
 
 
 def create_circuit(circuit_name: str, person: Person, sub_folder=False):
+    relative_path = "cbmc_parser/gate_files/"
     if sub_folder:
-        if circuit_name in os.listdir("../cbmc_parser/gate_files/"):
-            return create_circuit_from_output_data(circuit_name, person)
-        elif circuit_name.split(".")[-1] == "c":
-            compiler.cbmc_gc_compile(circuit_name)
-            return create_circuit_from_output_data("default_output", person)
-        else:
-            raise CircuitCreationError()
+        relative_path = "../" + relative_path
+
+    if circuit_name in os.listdir(relative_path):
+        return create_circuit_from_output_data(circuit_name, person)
+    elif circuit_name.split(".")[-1] == "c":
+        compiler.cbmc_gc_compile(circuit_name)
+        return create_circuit_from_output_data("default_output", person)
     else:
-        if circuit_name in os.listdir("cbmc_parser/gate_files/"):
-            return create_circuit_from_output_data(circuit_name, person)
-        elif circuit_name.split(".")[-1] == "c":
-            compiler.cbmc_gc_compile(circuit_name)
-            return create_circuit_from_output_data("default_output", person)
-        else:
-            raise CircuitCreationError()
+        raise CircuitCreationError()
 
 
 if __name__ == "__main__":

@@ -239,11 +239,8 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
         return inputs, outputs, num_and
 
 
-def create_circuit(circuit_name: str, person: Person, sub_folder=False):
+def create_circuit(circuit_name: str, person: Person):
     relative_path = "cbmc_parser/gate_files/"
-    if sub_folder:
-        relative_path = "../" + relative_path
-
     if circuit_name in os.listdir(relative_path):
         return create_circuit_from_output_data(circuit_name, person)
     elif circuit_name.split(".")[-1] == "c":

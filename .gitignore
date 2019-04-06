@@ -1,10 +1,12 @@
 #directories
 venv/
 .idea/
+certificates/
 
 
 #files
 *.pyc
+Dockerfile
 
 #cmbc
 cbmc_parser/gate_files/default_output/

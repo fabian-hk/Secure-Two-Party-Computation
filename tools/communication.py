@@ -29,7 +29,7 @@ class Com:
             context.check_hostname = True
             context.load_cert_chain(certificate, priv_key)
             context.load_verify_locations(conf.root_cert)
-            self.s = context.wrap_socket(s, server_hostname='127.0.0.1')
+            self.s = context.wrap_socket(s, server_hostname='localhost')
             self.s.connect((ip, port))
             print("Connection to Fpre successful - " + str(self.s.version()))
         else:

@@ -94,15 +94,24 @@ class Exchange(Process):
                 data = sock.recv(self.BUFFER_SIZE)
                 if data != b'\xfe':
                     if sock == self.conn1:
-                        self.conn2.sendall(data)
+                        try:
+                            self.conn2.sendall(data)
+                        except ConnectionResetError:
+                            run = False
+                            break
                     elif sock == self.conn2:
-                        self.conn1.sendall(data)
+                        try:
+                            self.conn1.sendall(data)
+                        except ConnectionResetError:
+                            run = False
+                            break
                 else:
                     run = False
+                    break
 
-        self.conn1.shutdown(socket.SHUT_RDWR)
+        # self.conn1.shutdown(socket.SHUT_RDWR)
         self.conn1.close()
-        self.conn2.shutdown(socket.SHUT_RDWR)
+        # self.conn2.shutdown(socket.SHUT_RDWR)
         self.conn2.close()
 
 

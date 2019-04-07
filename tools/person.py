@@ -21,7 +21,7 @@ class Person:
         self.inputs = []
 
         # List to store all input wire IDs for the other person.
-        # Whereby the wire for the MSB is the first element and the wire for de LSB is
+        # Whereby the wire for the LSB is the first element and the wire for de MSB is
         # the last element.
         self.other_inputs = []
 

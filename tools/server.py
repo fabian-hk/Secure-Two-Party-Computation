@@ -33,7 +33,7 @@ class Server(Process):
 
         self.ex_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         self.ex_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.ex_s.bind(('', port + 10))
+        self.ex_s.bind(('', port + 1))
         self.ex_s.listen(5)
 
     def start_server(self):

@@ -1,5 +1,6 @@
 import unittest
 from random import randint, random
+import numpy as np
 
 from tests.test_circuit_creater import *
 from tests.evaluate_circuit import evaluate_circuit
@@ -85,7 +86,7 @@ class TestCircuit(unittest.TestCase):
 class TestFunctions(unittest.TestCase):
 
     def test_add(self):
-        for i in range(10):
+        for i in range(5):
             in_vals_a = [randint(0, 2147483647)]
             in_vals_b = [randint(0, 2147483647)]
 
@@ -97,7 +98,7 @@ class TestFunctions(unittest.TestCase):
             self.assertEqual(res_dez, (in_vals_a[0] + in_vals_b[0]))
 
     def test_equality_test(self):
-        for i in range(10):
+        for i in range(5):
             in_vals_a = [randint(0, 4294967295)]
             if random() < 0.75:
                 in_vals_b = in_vals_a
@@ -110,6 +111,18 @@ class TestFunctions(unittest.TestCase):
             self.assertEqual(res_mpc, res_plain)
             res_dez = h.print_output(res_mpc_proto)
             self.assertEqual(res_dez == 1, in_vals_a == in_vals_b)
+
+    def test_mean(self):
+        for i in range(5):
+            in_vals_a = [randint(0, 268435454), randint(0, 268435454), randint(0, 268435454), randint(0, 268435454)]
+            in_vals_b = [randint(0, 268435454), randint(0, 268435454), randint(0, 268435454), randint(0, 268435454)]
+
+            res_mpc_proto, res_mpc, res_plain = evaluate_circuit("mean", in_vals_a, in_vals_b, True)
+
+            # check if the MPC and plain result are the same
+            self.assertEqual(res_mpc, res_plain)
+            res_dez = h.print_output(res_mpc_proto)
+            self.assertEqual(int(np.mean(in_vals_a + in_vals_b)), res_dez)
 
 
 class TestGates(unittest.TestCase):

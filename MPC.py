@@ -64,23 +64,108 @@ class MPC:
         #    and_triples = faand.f_a_and(self.person, self.com, self.num_and)
         #    self.and_triples = iter(and_triples.triples)
         for out in self.outputs:
-            self.gate_initialization(out, label_iter)
+            self.gate_initialization_iterative(out, label_iter)
 
         if self.person.x == Person.A:
             self.com.exchange_data(self.garbled_gates.SerializeToString())
         else:
             self.garbled_gates.ParseFromString(self.com.exchange_data())
 
-    def gate_initialization(self, gate, label_iter):
+    def gate_initialization_iterative(self, out: Gate, label_iter):
+        """
+        Iterative method to go through the circuit and initialize the gates.
+        :param out:
+        :param label_iter:
+        """
+        stack = [-1]
+        gate = out
+        while stack and not out.prepro:
+            if not gate.a and gate.pre_a:
+                stack.append(gate)
+                gate = gate.pre_a
+            elif not gate.b and gate.pre_b:
+                stack.append(gate)
+                gate = gate.pre_b
+            elif not gate.prepro:
+                gate.prepro = True
+                if gate.type == Gate.TYPE_XOR:
+                    # initialize variables if they are not already initialized
+                    if not gate.pre_a:
+                        gate.initialize_vars(auth_bit_A=next(self.auth_bits))
+                        if self.person.x == Person.A: gate.La0 = label_iter.__next__()
+                    if not gate.pre_b:
+                        gate.initialize_vars(auth_bit_B=next(self.auth_bits))
+                        if self.person.x == Person.A: gate.Lb0 = label_iter.__next__()
+
+                    # do the function dependent preprocessing
+                    gate.function_dependent_preprocessing()
+
+                    # propagate variables to the successor gates
+                    for n in gate.next:  # type: tuple[Gate, int]
+                        if n[1] == Gate.WIRE_A:
+                            if self.person.x == Person.A: n[0].La0 = gate.Ly0
+                            n[0].a = gate.y
+                            n[0].Ma = gate.My
+                            n[0].Ka = gate.Ky
+                        else:
+                            if self.person.x == Person.A: n[0].Lb0 = gate.Ly0
+                            n[0].b = gate.y
+                            n[0].Mb = gate.My
+                            n[0].Kb = gate.Ky
+                elif gate.type == Gate.TYPE_AND:
+                    and_triple = FunctionDependentPreprocessing_pb2.ANDTriple()
+                    and_triple.id = gate.id
+                    # initialize all variables and create the and triple
+                    if not gate.pre_a:
+                        gate.initialize_vars(auth_bit_A=next(self.auth_bits),
+                                             and_triple=and_triple)
+                        if self.person.x == Person.A: gate.La0 = label_iter.__next__()
+                    else:
+                        gate.get_auth_bit(and_triple, Gate.WIRE_A)
+                    if not gate.pre_b:
+                        gate.initialize_vars(auth_bit_B=next(self.auth_bits),
+                                             and_triple=and_triple)
+                        if self.person.x == Person.A: gate.Lb0 = label_iter.__next__()
+                    else:
+                        gate.get_auth_bit(and_triple, Gate.WIRE_B)
+
+                    if self.person.x == Person.A: gate.Ly0 = label_iter.__next__()
+
+                    # compute the AND triple
+                    faand.f_a_and(self.person, self.com, and_triple)
+
+                    gate.initialize_auth_bit_o(and_triple)
+                    gate.initialize_auth_bit_y(next(self.auth_bits))
+
+                    # do the function dependent preprocessing
+                    gate.function_dependent_preprocessing(self.garbled_gates.gates.add())
+
+                    # propagate variables to the successor gates
+                    for n in gate.next:  # type: tuple[Gate, int]
+                        if n[1] == Gate.WIRE_A:
+                            if self.person.x == Person.A: n[0].La0 = gate.Ly0 if not gate.is_nand else h.xor(gate.Ly0,
+                                                                                                             self.person.delta)
+                            n[0].a = gate.y
+                            n[0].Ma = gate.My
+                            n[0].Ka = gate.Ky
+                        else:
+                            if self.person.x == Person.A: n[0].Lb0 = gate.Ly0 if not gate.is_nand else h.xor(gate.Ly0,
+                                                                                                             self.person.delta)
+                            n[0].b = gate.y
+                            n[0].Mb = gate.My
+                            n[0].Kb = gate.Ky
+                gate = stack.pop()
+
+    def gate_initialization_recursive(self, gate, label_iter):
         """
         :param gate:
         :type gate Gate
         :param garbled_gates
         """
         if not gate.a and gate.pre_a:
-            self.gate_initialization(gate.pre_a, label_iter)
+            self.gate_initialization_recursive(gate.pre_a, label_iter)
         if not gate.b and gate.pre_b:
-            self.gate_initialization(gate.pre_b, label_iter)
+            self.gate_initialization_recursive(gate.pre_b, label_iter)
         if not gate.prepro:
             gate.prepro = True
             if gate.type == Gate.TYPE_XOR:
@@ -256,8 +341,37 @@ class MPC:
     def circuit_evaluation(self):
         print("--------------- evaluation -----------------")
         for out in self.outputs:
-            self.circuit_evaluation_recursive(out)
+            self.circuit_evaluation_iterative(out)
         print("Auth bits verification passed")
+
+    def circuit_evaluation_iterative(self, out: Gate):
+        stack = [-1]
+        gate = out
+        while stack and not out.evaluated:
+            if not gate.label_a and gate.pre_a:
+                stack.append(gate)
+                gate = gate.pre_a
+            elif not gate.label_b and gate.pre_b:
+                stack.append(gate)
+                gate = gate.pre_b
+            elif not gate.evaluated:
+                gate.evaluated = True
+                # if gate has inputs then retrieve the values from the input processing
+                if not gate.label_a or not gate.masked_bit_a:
+                    gate.masked_bit_a, gate.label_a = self.get_inputs_by_id(gate.id)
+                if not gate.label_b or not gate.masked_bit_b:
+                    gate.masked_bit_b, gate.label_b = self.get_inputs_by_id(gate.id + 1)
+
+                gate.circuit_evaluation(Wrapper.get_garbled_gate_bit_by_id(gate.id, self.garbled_gates))
+
+                for n in gate.next:  # type: tuple[Gate, int]
+                    if n[1] == Gate.WIRE_A:
+                        n[0].masked_bit_a = gate.masked_bit_y
+                        n[0].label_a = gate.label_y
+                    elif n[1] == Gate.WIRE_B:
+                        n[0].masked_bit_b = gate.masked_bit_y
+                        n[0].label_b = gate.label_y
+                gate = stack.pop()
 
     def circuit_evaluation_recursive(self, gate: Gate):
         if not gate.label_a and gate.pre_a:

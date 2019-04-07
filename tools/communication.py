@@ -48,7 +48,7 @@ class Com:
 
         ex_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         ex_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        ex_s.connect((ip, port + 10))
+        ex_s.connect((ip, port + 1))
 
         if not self.no_encryption:
             if self.person.x == Person.A:

@@ -16,10 +16,11 @@ def plain_circuit_evaluation(output_gates: List, inputs: Dict[int, int]):
     :rtype Dict[int, bytes]
     """
     res = {}
+    i = 0
     for out in output_gates:  # type: Gate
         stack = [-1]
         gate = out
-        while stack:
+        while stack and not out.evaluated:
             if not gate.a and gate.pre_a:
                 stack.append(gate)
                 gate = gate.pre_a
@@ -35,7 +36,7 @@ def plain_circuit_evaluation(output_gates: List, inputs: Dict[int, int]):
 
                 if gate.type == Gate.TYPE_XOR:
                     gate.y = h.xor(gate.a, gate.b)
-                if gate.type == Gate.TYPE_AND:
+                elif gate.type == Gate.TYPE_AND:
                     gate.y = h.AND(gate.a, gate.b)
                     if gate.is_nand:
                         gate.y = h.xor(gate.y, b'\x01')
@@ -47,15 +48,16 @@ def plain_circuit_evaluation(output_gates: List, inputs: Dict[int, int]):
                         n[0].b = gate.y
                 gate = stack.pop()
 
-        print("Gate ID " + str(out.id) + " y: " + str(out.y))
+        print("Bit: " + str(i) + " Gate ID " + str(out.id) + " y: " + str(out.y))
+        i += 1
         res[out.id] = out.y
     return res
 
 
 if __name__ == "__main__":
-    in_vals_a = 3
-    in_vals_b = 3
-    circuit = "test_output_1"
+    in_vals_a = [3, 4, 8, 9]
+    in_vals_b = [3, 4, 8, 9]
+    circuit = "mean"
 
     person_a = Person(Person.A)
     _, outputs, _ = cc.create_circuit_from_output_data(circuit, person_a)

@@ -79,7 +79,7 @@ class MPC:
         """
         stack = [-1]
         gate = out
-        while stack and not out.prepro:
+        while stack:
             if not gate.a and gate.pre_a:
                 stack.append(gate)
                 gate = gate.pre_a
@@ -154,6 +154,8 @@ class MPC:
                             n[0].b = gate.y
                             n[0].Mb = gate.My
                             n[0].Kb = gate.Ky
+                gate = stack.pop()
+            else:
                 gate = stack.pop()
 
     def gate_initialization_recursive(self, gate, label_iter):
@@ -371,6 +373,8 @@ class MPC:
                     elif n[1] == Gate.WIRE_B:
                         n[0].masked_bit_b = gate.masked_bit_y
                         n[0].label_b = gate.label_y
+                gate = stack.pop()
+            else:
                 gate = stack.pop()
 
     def circuit_evaluation_recursive(self, gate: Gate):

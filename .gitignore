@@ -16,3 +16,9 @@ cbmc_parser/gate_files/default_output/
 *.synctex.gz
 *.log
 __pycache__/
+
+#docker
+.client_base/
+.alice/
+.bob/
+.server/

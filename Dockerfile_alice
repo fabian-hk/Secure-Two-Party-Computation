@@ -1,0 +1,4 @@
+FROM client_base:latest
+COPY . /docker
+#CMD ["openssl", "version"]
+#CMD ["python3", "TwoPartyComputation.py", "add", "45", "-cn", "bob.mpc"]

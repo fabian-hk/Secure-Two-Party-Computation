@@ -97,21 +97,26 @@ class TestCreateCircuit1(unittest.TestCase):
         personA = Person(Person.A)
         inputs, outputs, num_and = create_circuit_from_output_data("test_output_1", personA)
 
-    def stest_execute_circuit_1(self):
-        in_vals_a = "10"
-        in_vals_b = "01"
+    def test_execute_circuit_1(self):
+        #in_vals_a = ["10"]
+        in_vals_a = [1]
+        #in_vals_b = ["01"]
+        in_vals_b = [1]
 
         person_a = Person(Person.A)
         _, outputs, _ = create_circuit_from_output_data("test_output_1", person_a)
-        person_a.load_input_string(in_vals_a)
+        #person_a.load_input_string(in_vals_a)
+        person_a.load_input_integer(in_vals_a)
         person_b = Person(Person.B)
         _, outputs, _ = create_circuit_from_output_data("test_output_1", person_b)
-        person_b.load_input_string(in_vals_b)
+        #person_b.load_input_string(in_vals_b)
+        person_b.load_input_integer(in_vals_b)
         in_vals = person_a.in_vals
         in_vals.update(person_b.in_vals)
 
-        print(plain_circuit_evaluation(outputs, in_vals))
-        self.assertTrue(1 == 1)
+        x = plain_circuit_evaluation(outputs, in_vals)
+        self.assertEquals(x[50][0], 1)
+
 
 
 class TestCreateCircuit2(unittest.TestCase):

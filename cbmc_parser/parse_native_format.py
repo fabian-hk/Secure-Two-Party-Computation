@@ -2,38 +2,82 @@ import csv
 import os
 from cbmc_parser.gate_helper import GateHelper
 
+# ------------------------------ functions for getting file contents ------------------------------
 
 def get_nonio_gate_file(folder_name):
+    """
+    Get file object for output.gate.txt
+
+    :param folder_name: folder which contains output.* files for a circuit
+    :return: file object for output.gate.txt from specified folder
+    """
+
     script_dir = os.path.dirname(__file__)
     abs_file_path = os.path.join(script_dir, 'gate_files', folder_name, 'output.gate.txt')
     return open(abs_file_path, 'r', newline='', encoding="utf8")
 
 
 def get_input_gate_file(folder_name):
+    """
+    Get file object for output.inputs.txt
+
+    :param folder_name: folder which contains output.* files for a circuit
+    :return: file object for output.inputs.txt from specified folder
+    """
+
     script_dir = os.path.dirname(__file__)
     abs_file_path = os.path.join(script_dir, 'gate_files', folder_name, 'output.inputs.txt')
     return open(abs_file_path, 'r', newline='', encoding="utf8")
 
 
 def get_partyA_input_range_file(folder_name):
+    """
+    Get file object for output.inputs.partyA.txt
+
+    :param folder_name: folder which contains output.* files for a circuit
+    :return: file object for output.inputs.partyA.txt from specified folder
+    """
+
     script_dir = os.path.dirname(__file__)
     abs_file_path = os.path.join(script_dir, 'gate_files', folder_name, 'output.inputs.partyA.txt')
     return open(abs_file_path, 'r', newline='', encoding="utf8")
 
 
 def get_partyB_input_range_file(folder_name):
+    """
+    Get file object for output.inputs.partyB.txt
+
+    :param folder_name: folder which contains output.* files for a circuit
+    :return: file object for output.inputs.partyB.txt from specified folder
+    """
+
     script_dir = os.path.dirname(__file__)
     abs_file_path = os.path.join(script_dir, 'gate_files', folder_name, 'output.inputs.partyB.txt')
     return open(abs_file_path, 'r', newline='', encoding="utf8")
 
 
 def get_input_mapping_file(folder_name):
+    """
+    Get file object for output.mapping.txt
+
+    :param folder_name: folder which contains output.* files for a circuit
+    :return: file object for output.mapping.txt from specified folder
+    """
+
     script_dir = os.path.dirname(__file__)
     abs_file_path = os.path.join(script_dir, 'gate_files', folder_name, 'output.mapping.txt')
     return open(abs_file_path, 'r', newline='', encoding="utf8")
 
+# -------------------------------------------------------------------------------------------------
 
 def get_inputrange_partyA(partyA_inputrange_file, max_input_id):
+    """
+    Get input ranges for all inputs of partyA
+
+    :param folder_name: file object of output.inputs.partyA.txt file
+    :return: list of tuples (x,y), where x is position the first bit of the integer and y the position of the last bit
+    """
+
     reader_inputrange_partyA = csv.reader(partyA_inputrange_file, delimiter=' ', quoting=csv.QUOTE_NONE)
     line = next(reader_inputrange_partyA, None)
     result = []
@@ -45,6 +89,12 @@ def get_inputrange_partyA(partyA_inputrange_file, max_input_id):
 
 
 def get_inputrange_partyB(partyB_inputrange_file, max_input_id):
+    """
+    Get input ranges for all inputs of partyB
+
+    :param folder_name: file object of output.inputs.partyB.txt file
+    :return: list of tuples (x,y), where x is position the first bit of the integer and y the position of the last bit
+    """
     reader_inputrange_partyB = csv.reader(partyB_inputrange_file, delimiter=' ', quoting=csv.QUOTE_NONE)
     line = next(reader_inputrange_partyB, None)
     result = []
@@ -55,12 +105,27 @@ def get_inputrange_partyB(partyB_inputrange_file, max_input_id):
     return result
 
 
+
 def transform_wire_string_to_tuple(wirestring):
+    """
+    Transforms String representation to integer
+
+    :param wirestring: String configuration which occurs in output.gate.txt and output.inputs.txt file
+    :return: decomposition of the String into Tuple of three Integers
+    """
+
     wirelist = wirestring.split(':')
     return int(wirelist[0]), int(wirelist[1]), int(wirelist[2])
 
 
 def get_input_gates(input_gate_file):
+    """
+    Parse input_gate_file file object and convert contents to list of GateHelper objects
+
+    :param input_gate_file: file object of output.inputs.txt file
+    :return: list containing GateHelper objects representing the gates parsed from input_gate_file
+    """
+
     reader_input_gates = csv.reader(input_gate_file, delimiter=' ', quoting=csv.QUOTE_NONE)
 
     input_gate_list = []
@@ -88,6 +153,13 @@ def get_input_gates(input_gate_file):
 
 
 def get_nonio_gates(nonio_gate_file):
+    """
+    Parse nonio_gate_file file object and convert contents to list of GateHelper objects
+
+    :param input_gate_file: file object of output.gate.txt file
+    :return: list containing GateHelper objects representing the gates parsed from nonio_gate_file
+    """
+
     reader_nonio_gates = csv.reader(nonio_gate_file, delimiter=' ', quoting=csv.QUOTE_NONE)
 
     nonio_gate_list = []
@@ -118,11 +190,14 @@ def get_nonio_gates(nonio_gate_file):
 
 def parse_native(output_file):
     """
-    Takes ranges and .output files as input, parses files and generates representation of circuit
+    Takes ranges and an output file as input, parses files and generates representation of circuit
+
+    Output files have to contain output.gate.txt, output.inputs.partyA.txt, output.inputs.partyB.txt,
+    output.inputs.txt and output.mapping.txt
+
+    Output files are generated by CBMC-GC ANSI-C parser: https://gitlab.com/securityengineering/CBMC-GC-2.git
 
     Note that the index of a gate in a list is equal to its id - 1 since there is no gate-id 0
-
-    cmbc gc repository reference:  CBMC-GC-2/src/circuit-utils/src/circuit.cpp
 
     :param output_file: string with path to folder that contains output files of cmbc
     :return following

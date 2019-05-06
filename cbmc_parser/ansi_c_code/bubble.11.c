@@ -1,4 +1,4 @@
-/* output median with bubble sort - only A has input right now*/
+/* output median with bubble sort - smaller median candidate is returned*/
 void mpc_main() {
     int INPUT_A_a0;
     int INPUT_A_a1;
@@ -36,6 +36,5 @@ void mpc_main() {
       }
     }
   }
-  temp1 = arr[4]+arr[5]
-  OUTPUT_median = temp1/2;
+  OUTPUT_median = arr[4];
 }

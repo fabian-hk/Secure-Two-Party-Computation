@@ -1,2 +1,2 @@
-docker run --net=host bob python TwoPartyComputation.py $*
+docker run --net=host bob python3 TwoPartyComputation.py $*
 

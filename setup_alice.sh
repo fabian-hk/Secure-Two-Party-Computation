@@ -1,6 +1,6 @@
 mkdir .alice  > /dev/null ||	echo "folder is already available"  > /dev/null
 
-cp -r certificates_bob .alice/
+cp -r certificates_alice .alice/certificates
 
 #copy important stuff
 cp Dockerfile_alice .alice/Dockerfile

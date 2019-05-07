@@ -1,2 +1,2 @@
-docker run --net=host alice python TwoPartyComputation.py $*
+docker run --net=host alice python3 TwoPartyComputation.py $*
 

@@ -12,4 +12,4 @@ def cbmc_gc_compile(ansic_file_path):
     execute_cbmc_gc = conf.cbmc_path + "cbmc-gc" + " ../../../" + ansic_file_path
 
     # result is always stored in gate_files/default_output
-    os.system(goto_location_for_output + execute_cbmc_gc + "> /dev/null 2>&1")
+    os.system("/docker/CBMC-GC-2/bin/cbmc-gc /docker/" +ansic_file_path + " --outdir /docker/cbmc_parser/gate_files/default_output/" + "")

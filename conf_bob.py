@@ -1,6 +1,6 @@
 k = 128
 input_size = 8  # number of input bits
-upper_bound_gates = 1500
+upper_bound_gates = 4000
 
 test_server_ip = 'localhost'
 test_server_port = 8448

@@ -9,9 +9,8 @@ cp -r tools/ .server/
 cp MPC.py .server/
 cp Server.py .server/
 cp TwoPartyComputation.py .server/ 
-#cp ~/Downloads/CBMC-GC-2/bin/cbmc .server/
 
-cp -r ~/Downloads/certificates .server/
+cp -r certificates_server/ .server/certificates
 
 cp Dockerfile_server .server/Dockerfile
 cp conf_server.py .server/conf.py

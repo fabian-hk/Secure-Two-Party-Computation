@@ -1,8 +1,33 @@
 # Installation
 Dependencies:
-- ```pip install protobuf```
+- ```Docker``` needs to be installed.
 
-# Usage example
+# Usage 
+## Calculated Function
+If your prefered function is not available, you have to add the function implemented in C. 
+It should be named ```functionName.c``` or similar.
+The C-file has to be placed in the root of the project.
+
+## Certificates
+If you want to juse certificates to improve the security, they have to be placed in the corresponiding directory. 
+
+## On Linux, Mac OS
+After the steps above, generate docker container with the corresponding ```setup_server.sh```, ```setup_client_base.sh```, ```setup_alice.sh``` and ```setup_bob.sh```. 
+The client_base needs to be generated on every machine which runs alice or bob.  
+If all the containers need to be generated on a single machine just execute ```renew_docker.sh```. 
+
+To run the Server use ```run_server.sh```, if there is no need for certificates run ```run_server.sh -n```.  
+
+To run the client use ```run_alice``` or ```run_bob.sh```
+
+
+
+
+
+## Windows
+
+
+
 1. In the ``conf.py`` file you have to set the ``crt_storage`` variable to your 
 certification folder  and the ``cbmc_path``
 variable to the ``bin`` folder in which the ``cbmc-gc`` executable is 

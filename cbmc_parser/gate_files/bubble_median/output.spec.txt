@@ -1,0 +1,11 @@
+INPUT_A_a0: int32;
+INPUT_A_a1: int32;
+INPUT_A_a2: int32;
+INPUT_A_a3: int32;
+INPUT_A_a4: int32;
+INPUT_B_a5: int32;
+INPUT_B_a6: int32;
+INPUT_B_a7: int32;
+INPUT_B_a8: int32;
+INPUT_B_a9: int32;
+OUTPUT_median: int32;

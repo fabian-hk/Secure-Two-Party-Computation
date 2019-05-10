@@ -1,6 +1,33 @@
 #!/bin/bash 
+#======================================================================================
+#
+#		   FILE:	run.sh
+#		
+#		  USAGE:	run.sh [-s] [-a] [-b] [--server] [--alice] [--bob]
+#
+#	DESCRPITION:	Execute TwoPartyComputation, as Server or Client.
+#
+# 		OPTIONS:	see function 'usage' below
+#  REQUIREMENTS:	docker
+#======================================================================================
+usage () {
+	cat <<-EOF
+	usage: $0 [-h] [-s [-n]]
+	usage: $0 [-a FUNCTION INPUT... -cn NAME -s SERVER_IP -p PORT]
+	usage: $0 [-b FUNCTION INPUT... -cn NAME -s SERVER_IP -p PORT]
+	usage: $0 [-a FUNCTION INPUT... -n]
+	usage: $0 [-b FUNCTION INPUT... -n]
+	
+	-h | --help 		print this help
+	-s | --server		start Server
+	-a | --alice		start Alice
+	-b | --bob		start Bob
+	-cn			use certificate with global name
+	-n			no certificates
+	EOF
+}
 
-## functions
+
 server () {
 	echo "server"
 	mkdir .server ||    echo "folder is already available"
@@ -78,9 +105,6 @@ bob () {
 	docker run --net=host bob python3 TwoPartyComputation.py $@
 }
 
-help () {
-	echo "Use the parameter:"
-}
 
 ## Main
 case "$1" in
@@ -98,6 +122,9 @@ case "$1" in
 		client
 		bob "$@"
 		;;
+	--help | -h)
+		usage
+		;;
 	*)
-		help
+		usage
 esac

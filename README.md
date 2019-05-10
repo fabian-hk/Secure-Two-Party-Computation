@@ -12,17 +12,21 @@ The C-file has to be placed in the root of the project.
 If you want to juse certificates to improve the security, they have to be placed in the corresponiding directory. 
 
 ## On Linux, Mac OS
-After the steps above, generate docker container with the corresponding ```setup_server.sh```, ```setup_client_base.sh```, ```setup_alice.sh``` and ```setup_bob.sh```. 
-The client_base needs to be generated on every machine which runs alice or bob.  
-If all the containers need to be generated on a single machine just execute ```renew_docker.sh```. 
+### Server 
+Run server with ```run.sh --server``` with certificates 
+or ```run.sh --server -n``` if no certifiates should be used.  
 
-To run the Server use ```run_server.sh```, if there is no need for certificates run ```run_server.sh -n```.  
+### Client
+Run client Alice with ```run.sh --alice FUNCTION INPUTS -cn NAME -s SERVER_IP -p SERVER_PORT```.   
+Run client Bob with ```run.sh --bob FUNCTION INPUTS -cn NAME -s SERVER_IP -p SERVER_PORT```.   
 
-To run the client use ```run_alice``` or ```run_bob.sh```
+OR if Server runs on local machine:
+Run client Alice with ```run.sh --alice FUNCTION INPUTS -cn NAME ```.   
+Run client Bob with ```run.sh --bob FUNCTION INPUTS -cn NAME```.   
 
-
-
-
+OR if no certificates needed:
+Run client Alice with ```run.sh --alice FUNCTION INPUTS -n```.   
+Run client Bob with ```run.sh --bob FUNCTION INPUTS -n```.   
 
 ## Windows
 

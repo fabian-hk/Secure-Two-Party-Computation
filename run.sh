@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/bin/bash 
 
 ## functions
 server () {
@@ -79,20 +78,26 @@ bob () {
 	docker run --net=host bob python3 TwoPartyComputation.py $@
 }
 
+help () {
+	echo "Use the parameter:"
+}
 
 ## Main
-if [[ "$1" == "Server" ]] || [[ "$1" == "server" ]] || [[ "$1" == "s" ]] ;  then
-	echo "Server is chosen"
-	shift
-	server "$@"
-elif [[ "$1" == "Alice" ]] || [[ "$1" == "alice" ]] || [[ "$1" == "a" ]] ;  then
-	echo "Alice is chosen"
-	shift
-	client
-	alice "$@"
-elif [[ "$1" == "Bob" ]] || [[ "$1" == "bob" ]] || [[ "$1" == "b" ]] ;  then
-	echo "Bob is chosen"
-	shift
-	client
-	bob "$@"
-fi
+case "$1" in
+	--server | -s)
+		shift
+		server "$@"
+		;;
+	--alice | -a)
+		shift
+		client
+		alice "$@"
+		;;
+	--bob | -b)
+		shift
+		client
+		bob "$@"
+		;;
+	*)
+		help
+esac

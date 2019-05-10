@@ -22,7 +22,7 @@ usage () {
 	-s | --server		start Server
 	-a | --alice		start Alice
 	-b | --bob		start Bob
-	-cn			use certificate with global name
+	-cn			specify common name you want to talk to
 	-n			no certificates
 	EOF
 }
@@ -31,6 +31,7 @@ usage () {
 server () {
 	echo "server"
 	mkdir .server ||    echo "folder is already available"
+	mkdir .server/conf
 	cp -r exceptions/ .server/
 	cp -r fpre/ .server/
 	cp -r protobuf/ .server/ 
@@ -41,7 +42,7 @@ server () {
 	cp TwoPartyComputation.py .server/ 
 	cp -r data/certificates_server/ .server/certificates
 	cp docker/Dockerfile_server .server/Dockerfile
-	cp conf/conf_server.py .server/conf.py
+	cp conf/conf_server.py .server/conf/conf.py
 	cd .server/
 	docker build -t server .
 	cd ..
@@ -75,10 +76,11 @@ client () {
 
 alice () {
 	echo "alice"
-	mkdir .alice  > /dev/null ||    echo "folder is already available"  > /dev/null	
-	cp -r certificates_alice .alice/certificates
+	mkdir .alice  > /dev/null ||    echo "folder is already available"  > /dev/null
+	mkdir .alice/conf
+	cp -r data/certificates_alice .alice/certificates
 	cp docker/Dockerfile_alice .alice/Dockerfile
-	cp conf/conf_alice.py .alice/conf.py
+	cp conf/conf_alice.py .alice/conf/conf.py
 	cp function.c .alice/function.c
 	cd .alice/
 	docker build -t alice .
@@ -91,10 +93,11 @@ alice () {
 }
 bob () {
 	echo "bob"
-	mkdir .bob > /dev/null ||   echo "folder is already available"  > /dev/null 
+	mkdir .bob > /dev/null ||   echo "folder is already available"  > /dev/null
+	mkdir .bob/conf
 	cp -r data/certificates_bob .bob/certificates
 	cp docker/Dockerfile_bob .bob/Dockerfile
-	cp conf/conf_bob.py .bob/conf.py
+	cp conf/conf_bob.py .bob/conf/conf.py
 	cp function.c .bob/function.c
 	cd .bob/
 	docker build -t bob  . 

@@ -2,6 +2,9 @@
 venv/
 .idea/
 
+.pytest_cache/
+run.sh___jb_old___
+test.py
 
 #files
 *.pyc

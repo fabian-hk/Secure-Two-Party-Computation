@@ -1,6 +1,6 @@
 import hashlib
 import os
-import conf
+from conf import conf
 
 
 from tools.person import Person

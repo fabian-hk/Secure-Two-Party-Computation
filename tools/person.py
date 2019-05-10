@@ -1,7 +1,7 @@
 import os
 from typing import List
 
-import conf
+from conf import conf
 
 
 class Person:

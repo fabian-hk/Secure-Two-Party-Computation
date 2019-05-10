@@ -7,7 +7,7 @@ WORKDIR /docker
 COPY . /docker
 
 EXPOSE 8448
-EXPOSE 8458
+EXPOSE 8449
 
 
 CMD ["python3", "Server.py"]

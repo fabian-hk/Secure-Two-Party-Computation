@@ -1,7 +1,7 @@
 from fpre.fpre import Fpre
 import fpre.f_la_and as flaand
 from protobuf import FunctionDependentPreprocessing_pb2
-import conf
+from conf import conf
 
 certificate = "certificate-bob"
 partner = "alice.mpc"

@@ -1,6 +1,6 @@
 import os
 
-import conf
+from conf import conf
 
 
 # This will only work if CBMC-GC is linked in the conf.py

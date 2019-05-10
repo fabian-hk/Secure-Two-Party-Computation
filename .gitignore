@@ -1,7 +1,6 @@
 #directories
 venv/
 .idea/
-data/
 
 
 #files

@@ -20,11 +20,11 @@ or ```run.sh --server -n``` if no certifiates should be used.
 Run client Alice with ```run.sh --alice FUNCTION INPUTS -cn NAME -s SERVER_IP -p SERVER_PORT```.   
 Run client Bob with ```run.sh --bob FUNCTION INPUTS -cn NAME -s SERVER_IP -p SERVER_PORT```.   
 
-OR if Server runs on local machine:
+OR if Server runs on local machine:<br/>
 Run client Alice with ```run.sh --alice FUNCTION INPUTS -cn NAME ```.   
 Run client Bob with ```run.sh --bob FUNCTION INPUTS -cn NAME```.   
 
-OR if no certificates needed:
+OR if no certificates needed:<br/>
 Run client Alice with ```run.sh --alice FUNCTION INPUTS -n```.   
 Run client Bob with ```run.sh --bob FUNCTION INPUTS -n```.   
 

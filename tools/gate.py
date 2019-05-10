@@ -4,7 +4,7 @@ import abc
 from tools.person import Person
 from tools import helper as h
 from fpre.fpre import Fpre
-import conf
+from conf import conf
 from exceptions.CheaterException import CheaterRecognized
 
 

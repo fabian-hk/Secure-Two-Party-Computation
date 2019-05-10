@@ -6,7 +6,7 @@ from protobuf import FunctionIndependentPreprocessing_pb2, FunctionDependentPrep
 from tools.gate import *
 from fpre.fpre import Fpre
 import fpre.f_a_and as faand
-import conf
+from conf import conf
 from exceptions.CheaterException import CheaterRecognized
 from exceptions.IDNotFoundException import IDNotFound
 

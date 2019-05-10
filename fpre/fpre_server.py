@@ -2,7 +2,7 @@ import os
 import sys
 from random import randint
 
-import conf
+from conf import conf
 import tools.helper as h
 from protobuf import FunctionIndependentPreprocessing_pb2, FunctionDependentPreprocessing_pb2
 

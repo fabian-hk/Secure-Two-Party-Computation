@@ -1,7 +1,7 @@
 import os
 from random import randint
 
-import conf
+from conf import conf
 from tools.person import Person
 from tools.communication import Com
 

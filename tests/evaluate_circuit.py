@@ -6,7 +6,7 @@ from MPC import MPC
 from protobuf import Output_pb2
 from tests.plain_evaluator import *
 from fpre.fpre import Fpre
-import conf
+from conf import conf
 import cbmc_parser.create_circuit as cc
 
 

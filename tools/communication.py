@@ -4,7 +4,7 @@ import ssl
 from ssl import CertificateError
 
 from tools.person import Person
-import conf
+from conf import conf
 
 
 class Com:

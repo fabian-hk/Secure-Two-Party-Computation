@@ -1,8 +1,10 @@
 #directories
 venv/
 .idea/
-data/
 
+.pytest_cache/
+run.sh___jb_old___
+test.py
 
 #files
 *.pyc
@@ -16,3 +18,9 @@ cbmc_parser/gate_files/default_output/
 *.synctex.gz
 *.log
 __pycache__/
+
+#docker
+.client_base/
+.alice/
+.bob/
+.server/

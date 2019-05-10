@@ -1,7 +1,7 @@
 import os
 import hashlib
 
-import conf
+from conf import conf
 import tools.helper as h
 from tools.person import Person
 from protobuf import FunctionIndependentPreprocessing_pb2

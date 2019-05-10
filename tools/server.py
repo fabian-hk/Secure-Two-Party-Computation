@@ -4,7 +4,7 @@ import ssl
 import select
 
 from fpre.fpre_server import FpreServer
-import conf
+from conf import conf
 
 
 class ServerANDTriple(Exception):

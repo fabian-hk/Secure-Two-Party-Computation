@@ -9,7 +9,7 @@ import fpre.f_la_and as flaand
 from protobuf import FunctionDependentPreprocessing_pb2
 from tools.person import Person
 import tools.helper as h
-import conf
+from conf import conf
 
 
 class TestFpre(unittest.TestCase):

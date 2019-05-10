@@ -11,12 +11,19 @@ from exceptions.CircuitCreationException import CircuitCreationError
 
 def create_circuit_from_output_data(output_file, person: Person, test=False):
     """
+    Creates and fills Data Structures needed for Circuit-Evaluation given cbmc-gc output files
 
-    :param output_file: file that contains cbmc outputs
-    :param person:
+    :param output_file: file that contains cbmc-gc output.* files of a circuit for a c program
+    :param person: Person object of the Person that creates the circuit from the output files
     :type person: Person
-    :return: inputs, outputs
+    :return: inputs     dictionary mapping all Gate objects from gatelist, where at least one input to the gate is an
+                        input to the circuit, from their id to their object
+    :return: outputs    list containing all Gate objects from gatelist, where the output of the gate is at least one
+                        output of the circuit
+    :return: num_and    number of AND-Gates used
+    :return: gatelist   list containing all gate objects in order of id - only returned if test-flag is set
     """
+
     input_gate_list, rangeA, rangeB, nonio_gate_list = pnf.parse_native(output_file)
 
     # special gate for recognizing not gates
@@ -240,6 +247,14 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
 
 
 def create_circuit(circuit_name: str, person: Person):
+    """
+    Creates Circuit for evaluation
+
+    :param circuit_name: name of the output file or C-Program-File ending with .c that for which a circuit is created
+    :param person: Person Object of the person who the circuit is created dor
+    :return: output from create_circuit_from_output_data
+    """
+
     relative_path = "cbmc_parser/gate_files/"
     if circuit_name in os.listdir(relative_path):
         return create_circuit_from_output_data(circuit_name, person)

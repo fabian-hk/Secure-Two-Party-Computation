@@ -4,7 +4,6 @@ class GateHelper:
         # self.id, together with the self.type forms a unique identifier (since Input Gates have ids 1 to size-of-input)
         self.id = id
         # types used are strings: INPUT, AND, OR, XOR, NOT, NAND
-        # TODO: replace - A OR B - with - NOT A AND NOT B -
         self.type = type
 
         # number of inputs that a gate has - all except NOT have 2

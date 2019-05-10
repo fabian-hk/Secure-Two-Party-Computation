@@ -55,9 +55,9 @@ def plain_circuit_evaluation(output_gates: List, inputs: Dict[int, int]):
 
 
 if __name__ == "__main__":
-    in_vals_a = [3, 4, 8, 9]
-    in_vals_b = [3, 4, 8, 9]
-    circuit = "mean"
+    in_vals_a = [1,2,3,4,5]
+    in_vals_b = [6, 7, 8, 9,10]
+    circuit = "bubble_median"
 
     person_a = Person(Person.A)
     _, outputs, _ = cc.create_circuit_from_output_data(circuit, person_a)

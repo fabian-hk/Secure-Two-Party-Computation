@@ -1,17 +1,16 @@
-/* output median with bubble sort - only A has input right now*/
+/* output median with bubble sort - smaller median candidate is returned*/
 void mpc_main() {
-	int INPUT_A_a0;
-	int INPUT_A_a1;
-	int INPUT_A_a2;
-	int INPUT_A_a3;
-	int INPUT_A_a4;
-	int INPUT_A_a5;
-	int INPUT_A_a6;
-	int INPUT_A_a7;
-	int INPUT_A_a8;
-	int INPUT_A_a9;
-	int INPUT_A_a10;
-	int arr[11];
+    int INPUT_A_a0;
+    int INPUT_A_a1;
+    int INPUT_A_a2;
+    int INPUT_A_a3;
+    int INPUT_A_a4;
+    int INPUT_B_a5;
+    int INPUT_B_a6;
+    int INPUT_B_a7;
+    int INPUT_B_a8;
+    int INPUT_B_a9;
+	int arr[10];
   int i, j, tmp1, tmp2, inc;
   int OUTPUT_median;
 
@@ -20,14 +19,13 @@ void mpc_main() {
   arr[2] = INPUT_A_a2;
   arr[3] = INPUT_A_a3;
   arr[4] = INPUT_A_a4;
-  arr[5] = INPUT_A_a5;
-  arr[6] = INPUT_A_a6;
-  arr[7] = INPUT_A_a7;
-  arr[8] = INPUT_A_a8;
-  arr[9] = INPUT_A_a9;
-  arr[10] = INPUT_A_a10;
+  arr[5] = INPUT_B_a5;
+  arr[6] = INPUT_B_a6;
+  arr[7] = INPUT_B_a7;
+  arr[8] = INPUT_B_a8;
+  arr[9] = INPUT_B_a9;
 
-  for (i = 10; i > 0; i--) {
+  for (i = 9; i > 0; i--) {
     for (j = 0; j < i; j++) {
       inc = j + 1;
       tmp1 = arr[j];
@@ -38,6 +36,5 @@ void mpc_main() {
       }
     }
   }
-
-  OUTPUT_median = arr[5];
+  OUTPUT_median = arr[4];
 }

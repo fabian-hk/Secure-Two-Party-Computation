@@ -1,34 +1,4 @@
-#!/bin/bash 
-#======================================================================================
-#
-#		   FILE:	run.sh
-#		
-#		  USAGE:	run.sh [-s] [-a] [-b] [--server] [--alice] [--bob]
-#
-#	DESCRPITION:	Execute TwoPartyComputation, as Server or Client.
-#
-# 		OPTIONS:	see function 'usage' below
-#  REQUIREMENTS:	docker
-#======================================================================================
-usage () {
-	cat <<-EOF
-	usage: $0 [-h] [-s [-n]]
-	usage: $0 [-a FUNCTION INPUT... -cn NAME -s SERVER_IP -p PORT]
-	usage: $0 [-b FUNCTION INPUT... -cn NAME -s SERVER_IP -p PORT]
-	usage: $0 [-a FUNCTION INPUT... -n]
-	usage: $0 [-b FUNCTION INPUT... -n]
-	
-	-h | --help 		print this help
-	-s | --server		start Server
-	-a | --alice		start Alice
-	-b | --bob		start Bob
-	-cn			specify common name you want to talk to
-	-n			no certificates
-	EOF
-}
-
-
-server () {
+function server () {
 	echo "server"
 	mkdir .server ||    echo "folder is already available"
 	mkdir .server/conf
@@ -53,7 +23,7 @@ server () {
 	docker run --net=host server python3 Server.py $@
 }
 
-client () {
+function client () {
 	echo "client"
 	mkdir .client_base ||   echo "folder is already available"
 	cp -r cbmc_parser/ .client_base/
@@ -75,7 +45,7 @@ client () {
 	echo "client built"
 }
 
-alice () {
+function alice () {
 	echo "alice"
 	mkdir .alice  > /dev/null ||    echo "folder is already available"  > /dev/null
 	mkdir .alice/conf
@@ -92,7 +62,7 @@ alice () {
 	docker run --net=host alice python3 TwoPartyComputation.py $@
 		
 }
-bob () {
+function bob () {
 	echo "bob"
 	mkdir .bob > /dev/null ||   echo "folder is already available"  > /dev/null
 	mkdir .bob/conf
@@ -110,25 +80,8 @@ bob () {
 }
 
 
-## Main
-case "$1" in
-	--server | -s)
-		shift
-		server "$@"
-		;;
-	--alice | -a)
-		shift
-		client
-		alice "$@"
-		;;
-	--bob | -b)
-		shift
-		client
-		bob "$@"
-		;;
-	--help | -h)
-		usage
-		;;
-	*)
-		usage
-esac
+switch ($Args[0]) {
+	-s {server($args[1])}
+	-a {client; alice($args[1])}
+	-b {client; bob($args[1])}
+}

@@ -5,6 +5,7 @@ import select
 
 from fpre.fpre_server import FpreServer
 from conf import conf
+from conf import cert_conf
 
 
 class ServerANDTriple(Exception):
@@ -24,8 +25,8 @@ class Server(Process):
 
         if not no_encryption:
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            context.load_cert_chain(conf.server_certificate, conf.server_priv_key)
-            context.load_verify_locations(conf.root_cert)
+            context.load_cert_chain(cert_conf.server_certificate, cert_conf.server_priv_key)
+            context.load_verify_locations(cert_conf.root_cert)
             context.verify_mode = ssl.CERT_REQUIRED
             self.s = context.wrap_socket(s, server_side=True)
         else:

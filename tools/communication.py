@@ -4,7 +4,7 @@ import ssl
 from ssl import CertificateError
 
 from tools.person import Person
-from conf import conf
+from conf import cert_conf
 
 
 class Com:
@@ -18,17 +18,17 @@ class Com:
 
         if not self.no_encryption:
             if cert:
-                certificate = conf.crt_storage + cert + '-pub.pem'
-                priv_key = conf.crt_storage + cert + '-key.pem'
+                certificate = cert_conf.crt_storage + cert + '-pub.pem'
+                priv_key = cert_conf.crt_storage + cert + '-key.pem'
             else:
-                certificate = conf.certificate
-                priv_key = conf.priv_key
+                certificate = cert_conf.certificate
+                priv_key = cert_conf.priv_key
 
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
             context.verify_mode = ssl.CERT_REQUIRED
             context.check_hostname = True
             context.load_cert_chain(certificate, priv_key)
-            context.load_verify_locations(conf.root_cert)
+            context.load_verify_locations(cert_conf.root_cert)
             self.s = context.wrap_socket(s, server_hostname='localhost')
             self.s.connect((ip, port))
             print("Connection to Fpre successful - " + str(self.s.version()))
@@ -55,7 +55,7 @@ class Com:
                 context_s = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
                 context_s.verify_mode = ssl.CERT_REQUIRED
                 context_s.load_cert_chain(certificate, priv_key)
-                context_s.load_verify_locations(conf.crt_storage + 'ca-root.pem')
+                context_s.load_verify_locations(cert_conf.crt_storage + 'ca-root.pem')
                 self.ex_s = context_s.wrap_socket(ex_s, server_side=True)
                 cn = self.get_common_name(self.ex_s.getpeercert())
                 if cn != partner:
@@ -65,7 +65,7 @@ class Com:
                 context_c.verify_mode = ssl.CERT_REQUIRED
                 context_c.check_hostname = True
                 context_c.load_cert_chain(certificate, priv_key)
-                context_c.load_verify_locations(conf.crt_storage + 'ca-root.pem')
+                context_c.load_verify_locations(cert_conf.crt_storage + 'ca-root.pem')
                 self.ex_s = context_c.wrap_socket(ex_s, server_hostname=partner)
             print("Connection to exchange successful - " + str(self.ex_s.version()))
         else:

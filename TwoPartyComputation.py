@@ -44,13 +44,13 @@ if __name__ == "__main__":
     mpc.function_independent_preprocessing()
 
     # Parse the circuit and load the inputs for the person
-    inputs, outputs, num_and = cc.create_circuit(args.circuit, com.person)
+    inputs, outputs, num_and, gatelist = cc.create_circuit(args.circuit, com.person, True)
     try:
         com.person.load_input_integer(args.input)
     except IndexError:
         com.close_session()
         raise
-    mpc.load_cirucit(inputs, outputs, num_and)
+    mpc.load_cirucit(inputs, outputs, num_and, gatelist)
 
     # Do the function dependent preprocessing which garbles the circuit
     mpc.function_dependent_preprocessing()

@@ -9,13 +9,14 @@ import cbmc_parser.compile_ansic as compiler
 from exceptions.CircuitCreationException import CircuitCreationError
 
 
-def create_circuit_from_output_data(output_file, person: Person, test=False):
+def create_circuit_from_output_data(output_file, person: Person, get_gatelist=False):
     """
     Creates and fills Data Structures needed for Circuit-Evaluation given cbmc-gc output files
 
     :param output_file: file that contains cbmc-gc output.* files of a circuit for a c program
     :param person: Person object of the Person that creates the circuit from the output files
     :type person: Person
+    :param get_gatelist: Flag that be set when gatelist is required, gatelist is then returned
     :return: inputs     dictionary mapping all Gate objects from gatelist, where at least one input to the gate is an
                         input to the circuit, from their id to their object
     :return: outputs    list containing all Gate objects from gatelist, where the output of the gate is at least one
@@ -240,13 +241,13 @@ def create_circuit_from_output_data(output_file, person: Person, test=False):
     # if os.path.isdir(conf.default_output):
     #    shutil.rmtree(conf.default_output)
 
-    if test:
+    if get_gatelist:
         return inputs, outputs, num_and, gatelist
     else:
         return inputs, outputs, num_and
 
 
-def create_circuit(circuit_name: str, person: Person):
+def create_circuit(circuit_name: str, person: Person, get_gatelist = False):
     """
     Creates Circuit for evaluation
 
@@ -257,10 +258,10 @@ def create_circuit(circuit_name: str, person: Person):
 
     relative_path = "cbmc_parser/gate_files/"
     if circuit_name in os.listdir(relative_path):
-        return create_circuit_from_output_data(circuit_name, person)
+        return create_circuit_from_output_data(circuit_name, person, get_gatelist)
     elif circuit_name.split(".")[-1] == "c":
         compiler.cbmc_gc_compile(circuit_name)
-        return create_circuit_from_output_data("default_output", person)
+        return create_circuit_from_output_data("default_output", person, get_gatelist)
     else:
         raise CircuitCreationError()
 

@@ -30,7 +30,7 @@ usage () {
 
 server () {
 	echo "server"
-	mkdir .server ||    echo "folder is already available"
+	mkdir -p .server 
 	mkdir .server/conf
 	cp -r exceptions/ .server/
 	cp -r fpre/ .server/
@@ -55,7 +55,7 @@ server () {
 
 client () {
 	echo "client"
-	mkdir .client_base ||   echo "folder is already available"
+	mkdir -p .client_base 
 	cp -r cbmc_parser/ .client_base/
 	cp -r exceptions/ .client_base/
 	cp -r fpre/ .client_base/
@@ -77,7 +77,7 @@ client () {
 
 alice () {
 	echo "alice"
-	mkdir .alice  > /dev/null ||    echo "folder is already available"  > /dev/null
+	mkdir -p .alice  
 	mkdir .alice/conf
 	cp -r data/certificates_alice .alice/certificates
 	cp docker/Dockerfile_alice .alice/Dockerfile
@@ -94,7 +94,7 @@ alice () {
 }
 bob () {
 	echo "bob"
-	mkdir .bob > /dev/null ||   echo "folder is already available"  > /dev/null
+	mkdir -p .bob 
 	mkdir .bob/conf
 	cp -r data/certificates_bob .bob/certificates
 	cp docker/Dockerfile_bob .bob/Dockerfile

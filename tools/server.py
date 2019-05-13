@@ -17,7 +17,8 @@ class Server(Process):
 
     def __init__(self, port, no_encryption=False):
         super().__init__()
-
+#        while(True):
+#            pass
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind(('', port))

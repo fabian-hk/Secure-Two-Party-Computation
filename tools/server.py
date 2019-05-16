@@ -17,8 +17,8 @@ class Server(Process):
 
     def __init__(self, port, no_encryption=False):
         super().__init__()
-#        while(True):
-#            pass
+        #        while(True):
+        #            pass
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind(('', port))
@@ -65,6 +65,9 @@ class Server(Process):
 
                 ex = Exchange(conn3, conn4)
                 ex.start()
+
+                conn.join()
+                ex.join()
             except OSError:
                 print("Error: SSL handshake failed")
 
@@ -111,9 +114,7 @@ class Exchange(Process):
                     run = False
                     break
 
-        # self.conn1.shutdown(socket.SHUT_RDWR)
         self.conn1.close()
-        # self.conn2.shutdown(socket.SHUT_RDWR)
         self.conn2.close()
 
 
@@ -165,15 +166,6 @@ class Connection(Process):
                 ser_auth_bits_b = self.fpre_server.create_auth_bits(data_A[1:])
                 self.send_data(self.conn2, b'\x02' + ser_auth_bits_b)
                 self.send_data(self.conn1, b'\x02')
-            elif data_A[0:1] == b'\x03':
-                raise ServerANDTriple()  # TODO remove code completely
-                data_B = self.receive(self.conn2)
-                if data_B[0:1] == b'\x03':
-                    ser_and_triple_b = self.fpre_server.create_and_triple(data_A[1:], data_B[1:])
-                    self.send_data(self.conn2, b'\x03' + ser_and_triple_b)
-                    self.send_data(self.conn1, b'\x03')
-                else:
-                    print("Data_B not 2")
             elif data_A[0:1] == b'\xfd':
                 data_B = self.receive(self.conn2)
                 self.send_data(self.conn1, data_B[1:])

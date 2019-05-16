@@ -30,8 +30,9 @@ usage () {
 
 server () {
 	echo "server"
-	mkdir .server ||    echo "folder is already available"
+	mkdir -p .server 
 	mkdir .server/conf
+	mkdir .server/data
 	cp -r exceptions/ .server/
 	cp -r fpre/ .server/
 	cp -r protobuf/ .server/ 
@@ -40,9 +41,10 @@ server () {
 	cp MPC.py .server/
 	cp Server.py .server/
 	cp TwoPartyComputation.py .server/ 
-	cp -r data/certificates_server/ .server/certificates
+	cp -r data/certificates_server/ .server/data/certificates
 	cp docker/Dockerfile_server .server/Dockerfile
-	cp conf/conf_server.py .server/conf/conf.py
+	cp conf/conf.py .server/conf/conf.py
+	cp conf/cert_conf_server.py .server/conf/cert_conf.py
 	cd .server/
 	docker build -t server .
 	cd ..
@@ -54,7 +56,7 @@ server () {
 
 client () {
 	echo "client"
-	mkdir .client_base ||   echo "folder is already available"
+	mkdir -p .client_base/data/CBMC-GC-2/bin
 	cp -r cbmc_parser/ .client_base/
 	cp -r exceptions/ .client_base/
 	cp -r fpre/ .client_base/
@@ -64,7 +66,7 @@ client () {
 	cp MPC.py .client_base/
 	cp TwoPartyComputation.py .client_base/
 	mkdir -p .client_base/CBMC-GC-2/bin/
-	cp data/CBMC-GC-2/bin/cbmc-gc .client_base/CBMC-GC-2/bin/cbmc-gc
+	cp data/CBMC-GC-2/bin/cbmc-gc .client_base/data/CBMC-GC-2/bin/cbmc-gc
 	cp docker/Dockerfile_client_base .client_base/Dockerfile
 	cd .client_base/
 	docker build -t client_base  . 
@@ -76,28 +78,32 @@ client () {
 
 alice () {
 	echo "alice"
-	mkdir .alice  > /dev/null ||    echo "folder is already available"  > /dev/null
+	mkdir -p .alice  
 	mkdir .alice/conf
-	cp -r data/certificates_alice .alice/certificates
+	mkdir .alice/data
+	cp -r data/certificates_alice .alice/data/certificates
 	cp docker/Dockerfile_alice .alice/Dockerfile
-	cp conf/conf_alice.py .alice/conf/conf.py
+	cp conf/conf.py .alice/conf/conf.py
+	cp conf/cert_conf_alice.py .alice/conf/cert_conf.py
 	cp function.c .alice/function.c
 	cd .alice/
 	docker build -t alice .
 	cd ..
 	rm -r .alice/
-	clear 
+	clear
 	echo "Alice built"
 	docker run --net=host alice python3 TwoPartyComputation.py $@
 		
 }
 bob () {
 	echo "bob"
-	mkdir .bob > /dev/null ||   echo "folder is already available"  > /dev/null
+	mkdir -p .bob 
 	mkdir .bob/conf
-	cp -r data/certificates_bob .bob/certificates
+	mkdir .bob/data
+	cp -r data/certificates_bob .bob/data/certificates
 	cp docker/Dockerfile_bob .bob/Dockerfile
-	cp conf/conf_bob.py .bob/conf/conf.py
+	cp conf/conf.py .bob/conf/conf.py
+	cp conf/cert_conf_bob.py .bob/conf/cert_conf.py
 	cp function.c .bob/function.c
 	cd .bob/
 	docker build -t bob  . 

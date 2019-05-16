@@ -11,6 +11,16 @@ import cbmc_parser.create_circuit as cc
 
 
 def user(id: int, create_circuit, input, q: Queue):
+    '''
+
+    :param id:
+    :param create_circuit: Function that returns a circuit with the same return signature as the one in file
+    cbmc_parser.create_circuit the create circuit method
+    :param input:
+    :param q:
+    :return:
+    '''
+
     certificate = "certificate-alice" if id == 0 else "certificate-bob"
     partner = "bob.mpc" if id == 0 else "alice.mpc"
 

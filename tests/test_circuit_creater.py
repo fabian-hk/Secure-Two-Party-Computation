@@ -13,7 +13,9 @@ def create_example_circuit_0(person: Person):
     inputs = {10: and0, 20: and1}
     outputs = [xor3]
     num_and = 2
-    return inputs, outputs, num_and
+    gatelist = [and0, and1, xor3]
+
+    return inputs, outputs, num_and, gatelist
 
 
 def create_example_circuit_1(person: Person):
@@ -27,7 +29,9 @@ def create_example_circuit_1(person: Person):
     inputs = {10: xor0, 20: xor1}
     outputs = [xor3]
     num_and = 0
-    return inputs, outputs, num_and
+    gatelist = [xor0, xor1, xor3]
+
+    return inputs, outputs, num_and, gatelist
 
 
 def create_example_circuit_2(person: Person):
@@ -48,7 +52,9 @@ def create_example_circuit_2(person: Person):
     inputs = {0: and0, 10: and1, 20: xor2, 30: xor3, 40: and4}
     outputs = [and7, xor8, and9]
     num_and = 6
-    return inputs, outputs, num_and
+    gatelist = [and0, and1, xor2, xor3, and4, and5, xor6, and7, xor8, and9]
+
+    return inputs, outputs, num_and, gatelist
 
 
 def create_example_circuit_3(person: Person):
@@ -62,7 +68,9 @@ def create_example_circuit_3(person: Person):
     inputs = {10: and0, 20: and1}
     outputs = [and3]
     num_and = 3
-    return inputs, outputs, num_and
+    gatelist = [and0, and1, and3]
+
+    return inputs, outputs, num_and, gatelist
 
 
 def create_example_circuit_4(person: Person):
@@ -83,7 +91,9 @@ def create_example_circuit_4(person: Person):
     inputs = {10: and0, 20: and1, 30: and3}
     outputs = [and9, and10]
     num_and = 8
-    return inputs, outputs, num_and
+    gatelist = [and0, and1, and3, and4, xor5, xor6, and7, and8, and9, and10]
+
+    return inputs, outputs, num_and, gatelist
 
 
 def create_example_circuit_5(person: Person):
@@ -97,7 +107,9 @@ def create_example_circuit_5(person: Person):
     inputs = {10: and0, 20: and1}
     outputs = [and3]
     num_and = 3
-    return inputs, outputs, num_and
+    gatelist = [and0, and1, and3]
+
+    return inputs, outputs, num_and, gatelist
 
 
 def create_and_gate(person: Person):
@@ -109,7 +121,9 @@ def create_and_gate(person: Person):
     inputs = {10: and0}
     outputs = [and0]
     num_and = 1
-    return inputs, outputs, num_and
+    gatelist = [and0]
+
+    return inputs, outputs, num_and, gatelist
 
 
 def create_xor_gate(person: Person):
@@ -121,7 +135,9 @@ def create_xor_gate(person: Person):
     inputs = {10: xor0}
     outputs = [xor0]
     num_and = 0
-    return inputs, outputs, num_and
+    gatelist = [xor0]
+
+    return inputs, outputs, num_and, gatelist
 
 
 def create_nand_gate(person: Person):
@@ -133,7 +149,9 @@ def create_nand_gate(person: Person):
     inputs = {10: and0}
     outputs = [and0]
     num_and = 1
-    return inputs, outputs, num_and
+    gatelist = [and0]
+
+    return inputs, outputs, num_and, gatelist
 
 
 def and_operation(person: Person):
@@ -158,4 +176,6 @@ def and_operation(person: Person):
          [70]]]
 
     num_and = 8
-    return inputs, and0, num_and
+    gatelist = and0
+
+    return inputs, and0, num_and, gatelist

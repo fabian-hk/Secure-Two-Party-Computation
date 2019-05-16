@@ -56,7 +56,7 @@ server () {
 
 client () {
 	echo "client"
-	mkdir -p .client_base 
+	mkdir -p .client_base/data/CBMC-GC-2/bin
 	cp -r cbmc_parser/ .client_base/
 	cp -r exceptions/ .client_base/
 	cp -r fpre/ .client_base/
@@ -66,7 +66,7 @@ client () {
 	cp MPC.py .client_base/
 	cp TwoPartyComputation.py .client_base/
 	mkdir -p .client_base/CBMC-GC-2/bin/
-	cp data/CBMC-GC-2/bin/cbmc-gc .client_base/CBMC-GC-2/bin/cbmc-gc
+	cp data/CBMC-GC-2/bin/cbmc-gc .client_base/data/CBMC-GC-2/bin/cbmc-gc
 	cp docker/Dockerfile_client_base .client_base/Dockerfile
 	cd .client_base/
 	docker build -t client_base  . 
@@ -90,7 +90,7 @@ alice () {
 	docker build -t alice .
 	cd ..
 	rm -r .alice/
-	clear 
+	clear
 	echo "Alice built"
 	docker run --net=host alice python3 TwoPartyComputation.py $@
 		

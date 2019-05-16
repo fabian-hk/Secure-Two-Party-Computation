@@ -52,6 +52,7 @@ GOTO serverorclient
 	mkdir client_base
 	mkdir client_base\
 	mkdir client_base\data
+	mkdir client_base\data\CBMC-GC-2\bin
 	mkdir client_base\cbmc_parser
 	mkdir client_base\exceptions
 	mkdir client_base\fpre

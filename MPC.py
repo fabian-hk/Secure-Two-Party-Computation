@@ -4,7 +4,7 @@ import os
 from protobuf import FunctionIndependentPreprocessing_pb2, FunctionDependentPreprocessing_pb2, InputPreprocessing_pb2, \
     Output_pb2, Wrapper
 from tools.gate import *
-from tools.console_utilities import *
+from progress.bar import ShadyBar
 from fpre.fpre import Fpre
 import fpre.f_a_and as faand
 from conf import conf
@@ -68,10 +68,10 @@ class MPC:
         #    and_triples = faand.f_a_and(self.person, self.com, self.num_and)
         #    self.and_triples = iter(and_triples.triples)
         print("------------- Function dependent preprocessing started -----------------")
-        num_gates_initialized = 0
         print(str(self.num_gates) + " Gates will be initialized")
+        bar = ShadyBar("Progress: ", max=self.num_gates, suffix='%(percent)d%%')
         for out in self.outputs:
-            num_gates_initialized = self.gate_initialization_iterative(out, label_iter, num_gates_initialized)
+            self.gate_initialization_iterative(out, label_iter, bar)
 
         print()
         print("Iterative Initialization finished")
@@ -83,7 +83,7 @@ class MPC:
 
         print("Exchange finished")
 
-    def gate_initialization_iterative(self, out: Gate, label_iter, num_gates_initialized = 0):
+    def gate_initialization_iterative(self, out: Gate, label_iter, bar):
         """
         Iterative method to go through the circuit and initialize the gates.
         :param out:
@@ -100,8 +100,7 @@ class MPC:
                 stack.append(gate)
                 gate = gate.pre_b
             elif not gate.prepro:
-                num_gates_initialized += 1
-                printProgressBar(num_gates_initialized, self.num_gates, 'Progress: ', '', 1, 50)
+                bar.next()
                 gate.prepro = True
                 if gate.type == Gate.TYPE_XOR:
                     # initialize variables if they are not already initialized
@@ -172,7 +171,6 @@ class MPC:
                 gate = stack.pop()
             else:
                 gate = stack.pop()
-        return num_gates_initialized
 
     def gate_initialization_recursive(self, gate, label_iter):
         """
@@ -359,13 +357,13 @@ class MPC:
     def circuit_evaluation(self):
         print("--------------- evaluation -----------------")
         print(str(self.num_gates) + " Gates will be evaluated")
-        num_gates_evaluated = 0
+        bar = ShadyBar("Progress: ", max=self.num_gates, suffix='%(percent)d%%')
         for out in self.outputs:
-            num_gates_evaluated = self.circuit_evaluation_iterative(out, num_gates_evaluated)
+            self.circuit_evaluation_iterative(out, bar)
         print()
         print("Auth bits verification passed")
 
-    def circuit_evaluation_iterative(self, out: Gate, num_gates_evaluated = 0):
+    def circuit_evaluation_iterative(self, out: Gate, bar):
         stack = [-1]
         gate = out
 
@@ -377,8 +375,7 @@ class MPC:
                 stack.append(gate)
                 gate = gate.pre_b
             elif not gate.evaluated:
-                num_gates_evaluated += 1
-                printProgressBar(num_gates_evaluated,self.num_gates,'Progress: ','',1,50)
+                bar.next()
                 gate.evaluated = True
                 # if gate has inputs then retrieve the values from the input processing
                 if not gate.label_a or not gate.masked_bit_a:
@@ -398,7 +395,6 @@ class MPC:
                 gate = stack.pop()
             else:
                 gate = stack.pop()
-        return num_gates_evaluated
 
     def circuit_evaluation_recursive(self, gate: Gate):
         if not gate.label_a and gate.pre_a:

@@ -1,3 +1,5 @@
+# Code aus: https://stackoverflow.com/questions/3160699/python-progress-bar
+# User: ChristopheD
 # Print iterations progress
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
     """

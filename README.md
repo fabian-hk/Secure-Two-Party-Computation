@@ -1,24 +1,28 @@
 # Installation
 Dependencies:
 - ```Docker``` needs to be installed.
+- For Windows: https://www.docker.com/products/docker-desktop
+- For Linux: ```sudo apt-get install docker.io```
 
 For local installation:
 - ```pip install protobuf```
+- ```pip install progress```
 
 # Docker usage 
 
 ## Calculated Function
-If your prefered function is not available, you have to add the function implemented in C. 
+If your preferred function is not available, you have to add the function implemented in C. 
+Please see our documentation for further information on which language constructs are available.
 It should be named ```functionName.c``` or similar.
 The C-file has to be placed in the root of the project.
 
 ## Certificates
-If you want to juse certificates to improve the security, they have to be placed in the corresponiding directory. 
+If you want to use certificates to improve the security, they have to be placed in the corresponding directory. 
 
 ## On Linux, Mac OS
 ### Server 
 Run server with ```run.sh --server``` with certificates 
-or ```run.sh --server -n``` if no certifiates should be used.  
+or ```run.sh --server -n``` if no certificates should be used.  
 
 ### Client
 Run client Alice with ```run.sh --alice FUNCTION INPUTS -cn NAME -s SERVER_IP -p SERVER_PORT```.   
@@ -42,9 +46,10 @@ network adapter.
 # Usage
 
 1. Put the ```cbmc-gc``` executable in the ```data/CBMC-GC-2/bin``` folder.
-2. ```python3 Server.py```
-3. ```python3 TwoPartyComputation.py add 4 -cn bob.mpc```
-4. ```python3 TwoPartyComputation.py add 5 -cn alice.mpc```
+2. Make it executable: ```chmod +x cbmc-gc```
+3. Run the server: ```python3 Server.py```
+4. Run Alice: ```python3 TwoPartyComputation.py add 4 -cn bob.mpc```
+5. Run Bob: ```python3 TwoPartyComputation.py add 5 -cn alice.mpc```
 
 # Instruction on variables
 

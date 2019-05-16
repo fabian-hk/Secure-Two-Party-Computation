@@ -19,16 +19,16 @@ def user(id: int, create_circuit, input, q: Queue):
     mpc.function_independent_preprocessing()
 
     if type(create_circuit) == str:
-        inputs, outputs, num_and = cc.create_circuit(create_circuit, com.person)
+        inputs, outputs, num_and, gatelist = cc.create_circuit(create_circuit, com.person)
     else:
-        inputs, outputs, num_and = create_circuit(com.person)
+        inputs, outputs, num_and, gatelist = create_circuit(com.person)
     if type(input[com.person.x][0]) == str:
         com.person.load_input_string(input[com.person.x])
     elif type(input[com.person.x][0]) == int:
         com.person.load_input_integer(input[com.person.x])
     else:
         raise TypeError()
-    mpc.load_cirucit(inputs, outputs, num_and)
+    mpc.load_cirucit(inputs, outputs, num_and, gatelist)
 
     mpc.function_dependent_preprocessing()
 
@@ -68,9 +68,9 @@ def evaluate_circuit(circuit, in_vals_a, in_vals_b, proto_out=False):
     # evaluate in plain form to check the output
     person_a = Person(Person.A)
     if type(circuit) == str:
-        _, outputs, _ = cc.create_circuit(circuit, person_a)
+        _, outputs, _, _ = cc.create_circuit(circuit, person_a)
     else:
-        _, outputs, _ = circuit(person_a)
+        _, outputs, _, _ = circuit(person_a)
     if type(in_vals_a[0]) == str:
         person_a.load_input_string(in_vals_a)
     elif type(in_vals_a[0]) == int:
@@ -79,9 +79,9 @@ def evaluate_circuit(circuit, in_vals_a, in_vals_b, proto_out=False):
         raise TypeError()
     person_b = Person(Person.B)
     if type(circuit) == str:
-        _, outputs, _ = cc.create_circuit(circuit, person_b)
+        _, outputs, _, _ = cc.create_circuit(circuit, person_b)
     else:
-        _, outputs, _ = circuit(person_b)
+        _, outputs, _, _ = circuit(person_b)
     if type(in_vals_b[0]) == str:
         person_b.load_input_string(in_vals_b)
     elif type(in_vals_b[0]) == int:

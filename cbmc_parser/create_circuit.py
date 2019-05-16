@@ -9,7 +9,7 @@ import cbmc_parser.compile_ansic as compiler
 from exceptions.CircuitCreationException import CircuitCreationError
 
 
-def create_circuit_from_output_data(output_file, person: Person, get_gatelist=False):
+def create_circuit_from_output_data(output_file, person: Person):
     """
     Creates and fills Data Structures needed for Circuit-Evaluation given cbmc-gc output files
 
@@ -241,13 +241,9 @@ def create_circuit_from_output_data(output_file, person: Person, get_gatelist=Fa
     # if os.path.isdir(conf.default_output):
     #    shutil.rmtree(conf.default_output)
 
-    if get_gatelist:
-        return inputs, outputs, num_and, gatelist
-    else:
-        return inputs, outputs, num_and
+    return inputs, outputs, num_and, gatelist
 
-
-def create_circuit(circuit_name: str, person: Person, get_gatelist = False):
+def create_circuit(circuit_name: str, person: Person):
     """
     Creates Circuit for evaluation
 
@@ -258,10 +254,10 @@ def create_circuit(circuit_name: str, person: Person, get_gatelist = False):
 
     relative_path = "cbmc_parser/gate_files/"
     if circuit_name in os.listdir(relative_path):
-        return create_circuit_from_output_data(circuit_name, person, get_gatelist)
+        return create_circuit_from_output_data(circuit_name, person)
     elif circuit_name.split(".")[-1] == "c":
         compiler.cbmc_gc_compile(circuit_name)
-        return create_circuit_from_output_data("default_output", person, get_gatelist)
+        return create_circuit_from_output_data("default_output", person)
     else:
         raise CircuitCreationError()
 

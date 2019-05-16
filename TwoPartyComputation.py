@@ -44,7 +44,7 @@ if __name__ == "__main__":
     mpc.function_independent_preprocessing()
 
     # Parse the circuit and load the inputs for the person
-    inputs, outputs, num_and, gatelist = cc.create_circuit(args.circuit, com.person, True)
+    inputs, outputs, num_and, gatelist = cc.create_circuit(args.circuit, com.person)
     try:
         com.person.load_input_integer(args.input)
     except IndexError:

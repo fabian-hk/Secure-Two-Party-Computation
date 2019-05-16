@@ -141,7 +141,7 @@ class TestCreateCircuit2(unittest.TestCase):
 
     def test_read_output_2(self):
         personA = Person(Person.A)
-        inputs, outputs, num_and, gatelist = create_circuit_from_output_data('test_output_2', personA, True)
+        inputs, outputs, num_and, gatelist = create_circuit_from_output_data('test_output_2', personA)
         print('-------inputs-------')
         for key in inputs.keys():
             print('input-object-id: ' + str(key) + '  input-object-id: ' + str(inputs[key].id))
@@ -156,12 +156,12 @@ class TestCreateCircuit2(unittest.TestCase):
 
     def test_create_circuit_num_and_2(self):
         personA = Person(Person.A)
-        inputs, outputs, num_and = create_circuit_from_output_data("test_output_2", personA)
+        inputs, outputs, num_and, _ = create_circuit_from_output_data("test_output_2", personA)
         self.assertEqual(1, num_and)
 
     def test_create_circuit_inputs_2(self):
         personA = Person(Person.A)
-        inputs, outputs, num_and = create_circuit_from_output_data("test_output_2", personA)
+        inputs, outputs, num_and, _ = create_circuit_from_output_data("test_output_2", personA)
 
         self.assertEqual(1, len(inputs.keys()))
 

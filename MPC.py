@@ -32,7 +32,7 @@ class MPC:
         self.in_bits = InputPreprocessing_pb2.Inputs()
         self.rec_in_bits = InputPreprocessing_pb2.Inputs()
 
-    def load_cirucit(self, inputs: Dict[int, Gate], outputs: List, num_and, gatelist=None):
+    def load_cirucit(self, inputs: Dict[int, Gate], outputs: List, num_and, gatelist):
         """
         Loads the list with the input and output gates of the cirucit.
         :param num_and: number of and gates in the circuit

@@ -13,6 +13,9 @@ script.sh
 #cmbc
 cbmc_parser/gate_files/default_output/
 
+#cmbc
+cbmc_parser/gate_files/default_output/
+
 
 #latex
 *.pdf

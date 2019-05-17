@@ -3,7 +3,6 @@ import argparse
 from tools.person import Person
 import tools.helper as h
 from MPC import MPC
-from tests.test_circuit_creater import *
 from fpre.fpre import Fpre
 import cbmc_parser.create_circuit as cc
 

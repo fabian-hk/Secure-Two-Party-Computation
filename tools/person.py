@@ -52,7 +52,7 @@ class Person:
         for in_val in in_vals:
             n = in_val
             for ids in reversed(self.inputs[i]):
-                if n > 0:
+                if n != 0:
                     for id in ids:
                         self.in_vals[id] = int(n & 1).to_bytes(1, byteorder='big')
                     n = n >> 1

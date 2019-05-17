@@ -1,10 +1,10 @@
 from typing import Dict, List
 import os
+from progress.bar import ShadyBar
 
 from protobuf import FunctionIndependentPreprocessing_pb2, FunctionDependentPreprocessing_pb2, InputPreprocessing_pb2, \
     Output_pb2, Wrapper
 from tools.gate import *
-from progress.bar import ShadyBar
 from fpre.fpre import Fpre
 import fpre.f_a_and as faand
 from conf import conf

@@ -46,7 +46,8 @@ Run client Bob with ```run.sh --bob FUNCTION INPUTS -n```.
 
 The server can't be used under Windows because it uses several processes and they have
 to pass socket object to each other. So you have to use Docker for the server. We recommend
-to use Docker also for the clients for optimal stability.
+to use Docker also for the clients for optimal stability. You can use the run.bat script
+exactly like the run.sh script for Linux and Mac OS.
 
 # Usage with command line
 
@@ -68,7 +69,7 @@ test the program.
 3. Run Bob: ```python3 TwoPartyComputation.py add 5 -c certificate-bob -cn alice.mpc```
 
 Here are all available options listed:
-````bash
+````
 usage: TwoPartyComputation.py [-h] [-cn CN] [-c CERTIFICATE] [-n] [-s SERVER]
                               [-p PORT]
                               circuit input [input ...]

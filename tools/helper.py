@@ -1,4 +1,5 @@
 from typing import List
+import math
 
 from exceptions.CheaterException import CheaterRecognized
 from exceptions.ANDTripleConditionException import ANDTripleConditionFalse
@@ -43,6 +44,9 @@ def print_output(proto):
         bin_out += str(tmp)
         dez_out += tmp * pow(2, i)
         i += 1
+
+    tmp = dez_out.to_bytes(4, byteorder='big')
+    dez_out = int.from_bytes(tmp, byteorder='big', signed=True)
 
     print("\nResult in binary: " + bin_out[::-1])
     print("Result in decimal: " + str(dez_out))

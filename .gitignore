@@ -8,6 +8,7 @@ test.py
 
 #files
 *.pyc
+script.sh
 
 #cmbc
 cbmc_parser/gate_files/default_output/

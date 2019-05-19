@@ -13,6 +13,18 @@ To run the program you can use Docker. To install Docker you can do the followin
 To run the program on your computer you need Python version 3.6 or newer and you have to install the following pip packages:
 - ```pip3 install protobuf progress```
 
+# Setup
+1. You have to compile the [CBMC-GC-2](https://gitlab.com/securityengineering/CBMC-GC-2) parser for your system and 
+put the ```cbmc-gc``` executable in the ```data/CBMC-GC-2/bin``` folder.
+2. Make it executable: ```chmod +x cbmc-gc```
+3. If you want to use your own certificates, you can create and sign them with the
+root-ca private key in the ``data/certificates/`` folder and then you have to copy the 
+signed certificates in the same folder. After that you can either specify the certificates
+at runtime with ``-c`` or configure them in the ``conf/cert_conf.py`` file. For information
+on how to create certificates read the section ``Create certificates``. However there 
+are already signed certificates for alice and bob, so you can use them if you just want to 
+test the program.
+
 # Usage with Docker 
 
 ## Calculated Function
@@ -51,19 +63,6 @@ exactly like the run.sh script for Linux and Mac OS.
 
 # Usage with command line
 
-## Setup
-1. You have to compile the [CBMC-GC-2](https://gitlab.com/securityengineering/CBMC-GC-2) parser for your system and 
-put the ```cbmc-gc``` executable in the ```data/CBMC-GC-2/bin``` folder.
-2. Make it executable: ```chmod +x cbmc-gc```
-3. If you want to use your own certificates, you can create and sign them with the
-root-ca private key in the ``data/certificates/`` folder and then you have to copy the 
-signed certificates in the same folder. After that you can either specify the certificates
-at runtime with ``-c`` or configure them in the ``conf/cert_conf.py`` file. For information
-on how to create certificates read the section ``Create certificates``. However there 
-are already signed certificates for alice and bob, so you can use them if you just want to 
-test the program.
-
-## Run
 1. Run the server: ```python3 Server.py``` => with TLS encryption
 2. Run Alice: ```python3 TwoPartyComputation.py add 4 -c certficiate-alice -cn bob.mpc```
 3. Run Bob: ```python3 TwoPartyComputation.py add 5 -c certificate-bob -cn alice.mpc```

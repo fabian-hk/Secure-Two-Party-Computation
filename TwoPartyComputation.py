@@ -48,7 +48,7 @@ if __name__ == "__main__":
         com.person.load_input_integer(args.input)
     except IndexError:
         com.close_session()
-        raise
+        raise IndexError()
     mpc.load_cirucit(inputs, outputs, num_and, gatelist)
 
     # Do the function dependent preprocessing which garbles the circuit

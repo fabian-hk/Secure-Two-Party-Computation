@@ -13,7 +13,7 @@ To run the program you can use Docker. To install Docker you can do the followin
 To run the program on your computer you need Python version 3.6 or newer and you have to install the following pip packages:
 - ```pip install protobuf progress```
 
-# Docker usage 
+# Usage with Docker 
 
 ## Calculated Function
 If your preferred function is not available, you have to add the function implemented in C. 
@@ -101,6 +101,56 @@ Example usage:
 
 ````
 
+# Usage as API in your own project
+
+If you want to use this software as a Python module in you own project you have
+to create an Fpre object for the communication and and MPC object for the actual
+MPC protocol. The following code shows how to connect to the server (which you have
+to start separately), loading an function written in C and the input and finally
+executing the MPC protocol and determining the output as an integer.
+
+````python
+from tools.person import Person
+import tools.helper as h
+from MPC import MPC
+from fpre.fpre import Fpre
+import cbmc_parser.create_circuit as cc
+
+# Initialize connection and determine who is A and who is B
+com = Fpre("10.10.5.143", 8448, "certificate-bob", "alice.mpc", False)
+
+# Initialize MCP class which will do the garbling and evaluation
+mpc = MPC(com)
+
+# First do the function independent preprocessing to generate authenticated bits
+mpc.function_independent_preprocessing()
+
+# Parse the circuit and load the inputs for the person
+inputs, outputs, num_and, gatelist = cc.create_circuit("path_to/program.c", com.person)
+try:
+    com.person.load_input_integer([34, 12])
+except IndexError:
+    com.close_session()
+    raise IndexError()
+mpc.load_cirucit(inputs, outputs, num_and, gatelist)
+
+# Do the function dependent preprocessing which garbles the circuit
+mpc.function_dependent_preprocessing()
+
+# Create masked input bits
+mpc.input_processing()
+
+# Person B evaluates the circuit
+if com.person.x == Person.B:
+    mpc.circuit_evaluation()
+
+# Determine the real output values
+result = mpc.output_determination()
+
+# Print the output as binary and decimal number to the console
+h.print_output(result)
+````
+
 # Information about the gate IDs
 The gate IDs must always end with a zero so that the gate wires can have 
 unique IDs. The input A has the id xxx0 the input B has the id xxx1 and
@@ -112,7 +162,7 @@ the output Y has the id xxx2
 - Private keys should always end on ``-key.pem``
 
 # Contributors
-- Fabian Hauck
+- Fabian Hauck [GitHub](https://github.com/fabian-hk)
 - Marcel Galuschka
 - Simon Bihlmaier
 - Julian Obst

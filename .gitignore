@@ -12,10 +12,7 @@ script.sh
 
 #cmbc
 cbmc_parser/gate_files/default_output/
-
-#cmbc
-cbmc_parser/gate_files/default_output/
-
+data/CBMC-GC-2/bin/cbmc-gc
 
 #latex
 *.pdf

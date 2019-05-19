@@ -8,11 +8,6 @@ from conf import conf
 from conf import cert_conf
 
 
-class ServerANDTriple(Exception):
-    '''Raised when the server calculates a and triple'''
-    pass
-
-
 class Server(Process):
 
     def __init__(self, port, no_encryption=False):

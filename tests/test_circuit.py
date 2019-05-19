@@ -87,8 +87,14 @@ class TestFunctions(unittest.TestCase):
 
     def test_add(self):
         for i in range(5):
-            in_vals_a = [randint(0, 2147483647)]
-            in_vals_b = [randint(0, 2147483647)]
+            in_vals_a = [randint(0, 1073741823)]
+            in_vals_b = [randint(0, 1073741823)]
+
+            if random() < 0.5:
+                in_vals_a[0] *= -1
+
+            if random() < 0.5:
+                in_vals_b[0] *= -1
 
             res_mpc_proto, res_mpc, res_plain = evaluate_circuit("add", in_vals_a, in_vals_b, True)
 

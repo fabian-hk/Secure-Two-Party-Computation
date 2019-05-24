@@ -163,5 +163,5 @@ the output Y has the id xxx2.
 # Contributors
 - Fabian Hauck [GitHub](https://github.com/fabian-hk)
 - Marcel Galuschka
-- Simon Bihlmaier
+- Simon Bihlmaier [GitHub](https://github.com/sibmr)
 - Julian Obst

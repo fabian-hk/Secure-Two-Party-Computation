@@ -93,10 +93,6 @@ class TestCreateCircuit1(unittest.TestCase):
         self.assertEqual(20, inputs[20].id)
         self.assertEqual(40, inputs[40].id)
 
-    def test_person_list(self):
-        personA = Person(Person.A)
-        inputs, outputs, num_and = create_circuit_from_output_data("test_output_1", personA)
-
     def test_execute_circuit_1(self):
         #in_vals_a = ["10"]
         in_vals_a = [1]
@@ -118,8 +114,8 @@ class TestCreateCircuit1(unittest.TestCase):
         self.assertEquals(x[50][0], 1)
 
 
-
 class TestCreateCircuit2(unittest.TestCase):
+
     def printgate(self, gate):
         prea = 'None'
         preb = 'None'

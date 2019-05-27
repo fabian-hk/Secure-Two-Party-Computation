@@ -68,6 +68,7 @@ client () {
 	mkdir -p .client_base/CBMC-GC-2/bin/
 	cp data/CBMC-GC-2/bin/cbmc-gc .client_base/data/CBMC-GC-2/bin/cbmc-gc
 	cp docker/Dockerfile_client_base .client_base/Dockerfile
+    chmod +x .client_base/data/CBMC-GC-2/bin/cbmc-gc
 	cd .client_base/
 	docker build -t client_base  . 
 	cd ..
@@ -86,6 +87,7 @@ alice () {
 	cp conf/conf.py .alice/conf/conf.py
 	cp conf/cert_conf_alice.py .alice/conf/cert_conf.py
 	cp function.c .alice/function.c
+    chmod +x .alice/data/CBMC-GC-2/bin/cbmc-gc
 	cd .alice/
 	docker build -t alice .
 	cd ..
@@ -105,6 +107,7 @@ bob () {
 	cp conf/conf.py .bob/conf/conf.py
 	cp conf/cert_conf_bob.py .bob/conf/cert_conf.py
 	cp function.c .bob/function.c
+    chmod +x .bob/data/CBMC-GC-2/bin/cbmc-gc
 	cd .bob/
 	docker build -t bob  . 
 	cd ..

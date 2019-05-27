@@ -86,7 +86,7 @@ alice () {
 	cp docker/Dockerfile_alice .alice/Dockerfile
 	cp conf/conf.py .alice/conf/conf.py
 	cp conf/cert_conf_alice.py .alice/conf/cert_conf.py
-	cp function.c .alice/function.c
+	cp $1 .alice/$1
     chmod +x .alice/data/CBMC-GC-2/bin/cbmc-gc
 	cd .alice/
 	docker build -t alice .
@@ -106,7 +106,7 @@ bob () {
 	cp docker/Dockerfile_bob .bob/Dockerfile
 	cp conf/conf.py .bob/conf/conf.py
 	cp conf/cert_conf_bob.py .bob/conf/cert_conf.py
-	cp function.c .bob/function.c
+	cp $1 .alice/$1
     chmod +x .bob/data/CBMC-GC-2/bin/cbmc-gc
 	cd .bob/
 	docker build -t bob  . 

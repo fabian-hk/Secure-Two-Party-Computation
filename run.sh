@@ -51,7 +51,7 @@ server () {
 	rm -r .server/
 	clear
 	echo "Docker container built"
-	docker run --net=host server python3 Server.py $@
+	docker run --net=host server python3 -u Server.py $@
 }
 
 client () {
@@ -78,6 +78,8 @@ client () {
 }
 
 alice () {
+    noslash=$(echo $1 | sed 's/\///g')
+    newfile=".alice/$noslash"
 	echo "alice"
 	mkdir -p .alice  
 	mkdir .alice/conf
@@ -86,18 +88,21 @@ alice () {
 	cp docker/Dockerfile_alice .alice/Dockerfile
 	cp conf/conf.py .alice/conf/conf.py
 	cp conf/cert_conf_alice.py .alice/conf/cert_conf.py
-	cp $1 .alice/$1
+	cp $1 $newfile
     chmod +x .alice/data/CBMC-GC-2/bin/cbmc-gc
 	cd .alice/
 	docker build -t alice .
 	cd ..
-	rm -r .alice/
+	#rm -r .alice/
 	clear
 	echo "Alice built"
-	docker run --net=host alice python3 TwoPartyComputation.py $@
+    shift
+	docker run --net=host alice python3 -u TwoPartyComputation.py $noslash $@
 		
 }
 bob () {
+    noslash=$(echo $1 | sed 's/\///g')
+    newfile=".bob/$noslash"
 	echo "bob"
 	mkdir -p .bob 
 	mkdir .bob/conf
@@ -106,7 +111,7 @@ bob () {
 	cp docker/Dockerfile_bob .bob/Dockerfile
 	cp conf/conf.py .bob/conf/conf.py
 	cp conf/cert_conf_bob.py .bob/conf/cert_conf.py
-	cp $1 .alice/$1
+	cp $1 $newfile
     chmod +x .bob/data/CBMC-GC-2/bin/cbmc-gc
 	cd .bob/
 	docker build -t bob  . 
@@ -114,11 +119,13 @@ bob () {
 	rm -r .bob/
 	clear 
 	echo "Bob built"
-	docker run --net=host bob python3 TwoPartyComputation.py $@
+    shift
+	docker run --net=host bob python3 -u TwoPartyComputation.py $noslash $@
 }
 
 
 ## Main
+fullpath = $2
 case "$1" in
 	--server | -s)
 		shift
@@ -127,7 +134,7 @@ case "$1" in
 	--alice | -a)
 		shift
 		client
-		alice "$@"
+		alice $noslash $@
 		;;
 	--bob | -b)
 		shift

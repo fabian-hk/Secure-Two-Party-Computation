@@ -1,4 +1,4 @@
-/* output median with bubble sort - smaller median candidate is returned*/
+/* output median with bubble sort - smaller median candidate is returned */
 void mpc_main() {
     int INPUT_A_a0;
     int INPUT_A_a1;

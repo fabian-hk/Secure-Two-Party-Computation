@@ -46,7 +46,6 @@ class TestParseCircuit1(unittest.TestCase):
         self.assertEqual(1, len(nonio_gate_list[4].output_number_list))
 
 
-
 class TestParseCircuit2(unittest.TestCase):
     def test_parse_native_ranges_2(self):
         input_gate_list, rangeA, rangeB, nonio_gate_list = parse_native("test_output_2")

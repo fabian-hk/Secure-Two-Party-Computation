@@ -44,7 +44,7 @@ GOTO serverorclient
 	rmdir .server\ /s/q
 	echo "Docker container built"
 	shift
-	docker run --net=host server python3 Server.py %_tail%
+	docker run --net=host server python3 -u Server.py %_tail%
 	exit
 
 :client
@@ -94,7 +94,7 @@ GOTO serverorclient
 	rmdir alice\ /s/q
 	echo "Alice built"
 	shift 
-	docker run --net=host alice python3 TwoPartyComputation.py %_tail%
+	docker run --net=host alice python3 -u TwoPartyComputation.py %_tail%
 	exit		
 
 :bob
@@ -114,6 +114,6 @@ GOTO serverorclient
 	rmdir bob\ /s/q
 	echo "bob built"
 	shift
-	docker run --net=host bob python3 TwoPartyComputation.py %_tail%
+	docker run --net=host bob python3 -u TwoPartyComputation.py %_tail%
 	exit		
 

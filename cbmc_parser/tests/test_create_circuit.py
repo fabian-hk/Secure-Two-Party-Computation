@@ -30,7 +30,7 @@ class TestCreateCircuit1(unittest.TestCase):
 
     def test_read_output_1(self):
         personA = Person(Person.A)
-        inputs, outputs, num_and, gatelist = create_circuit_from_output_data('test_output_1', personA, True)
+        inputs, outputs, num_and, gatelist = create_circuit_from_output_data('test_output_1', personA)
         print('-------inputs-------')
         for key in inputs.keys():
             print('input-object-id: ' + str(key) + '  input-object-id: ' + str(inputs[key].id))
@@ -45,7 +45,7 @@ class TestCreateCircuit1(unittest.TestCase):
 
     def test_gatelist_1(self):
         personA = Person(Person.A)
-        inputs, outputs, num_and, gatelist = create_circuit_from_output_data('test_output_1', personA, True)
+        inputs, outputs, num_and, gatelist = create_circuit_from_output_data('test_output_1', personA)
 
         # test if number of gates of specific types is correct
         num_type_and = 0
@@ -81,12 +81,12 @@ class TestCreateCircuit1(unittest.TestCase):
 
     def test_create_circuit_num_and_1(self):
         personA = Person(Person.A)
-        inputs, outputs, num_and = create_circuit_from_output_data("test_output_1", personA)
+        inputs, outputs, num_and, _ = create_circuit_from_output_data("test_output_1", personA)
         self.assertEqual(6, num_and)
 
     def test_create_circuit_inputs_1(self):
         personA = Person(Person.A)
-        inputs, outputs, num_and = create_circuit_from_output_data("test_output_1", personA)
+        inputs, outputs, num_and, _ = create_circuit_from_output_data("test_output_1", personA)
 
         self.assertEqual(3, len(inputs.keys()))
         self.assertEqual(10,inputs[10].id)
@@ -100,11 +100,11 @@ class TestCreateCircuit1(unittest.TestCase):
         in_vals_b = [1]
 
         person_a = Person(Person.A)
-        _, outputs, _ = create_circuit_from_output_data("test_output_1", person_a)
+        _, outputs, _, _ = create_circuit_from_output_data("test_output_1", person_a)
         #person_a.load_input_string(in_vals_a)
         person_a.load_input_integer(in_vals_a)
         person_b = Person(Person.B)
-        _, outputs, _ = create_circuit_from_output_data("test_output_1", person_b)
+        _, outputs, _, _ = create_circuit_from_output_data("test_output_1", person_b)
         #person_b.load_input_string(in_vals_b)
         person_b.load_input_integer(in_vals_b)
         in_vals = person_a.in_vals
@@ -163,7 +163,7 @@ class TestCreateCircuit2(unittest.TestCase):
 
     def test_gatelist_2(self):
         personA = Person(Person.A)
-        inputs, outputs, num_and, gatelist = create_circuit_from_output_data("test_output_2", personA, True)
+        inputs, outputs, num_and, gatelist = create_circuit_from_output_data("test_output_2", personA)
 
         self.assertEqual(10, gatelist[0].id)
         self.assertEqual(None, gatelist[0].pre_a)

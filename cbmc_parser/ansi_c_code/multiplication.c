@@ -1,7 +1,7 @@
 /* Calculates product of the inputs from both partys */
-int mpc_main(int INPUT_B_x, int INPUT_A_y)
+int mpc_main(int INPUT_B, int INPUT_A)
 {
-  int OUTPUTw = INPUT_B_x * INPUT_A_y;
-  return OUTPUTw;
+  int OUTPUT = INPUT_B * INPUT_A;
+  return OUTPUT;
 }
 

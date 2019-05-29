@@ -86,15 +86,22 @@ GOTO serverorclient
 	robocopy data\certificates_alice\ alice\data\certificates
 	copy docker\Dockerfile_alice alice\Dockerfile
 	copy conf\conf.py alice\conf\conf.py
-	copy conf\cert_conf_alice.py alice\conf\cert_conf.py
-	copy function.c alice\function.c
+	copy conf\cert_conf_alice.py alice\conf\cert_conf.py	
+	set nodir=%2%
+	set nodir=%nodir:\=%
+	copy %2 alice\%nodir%
+	set _toshift=%_tail%
+	call set _newtail=%%_toshift:*%2=%%
+	set _newtail=%2%_toshift%
+	copy %2% alice\%nodir%
 	cd alice\
 	docker build -t alice .
 	cd ..
 	rmdir alice\ /s/q
 	echo "Alice built"
-	shift 
-	docker run --net=host alice python3 -u TwoPartyComputation.py %_tail%
+	set _toshift=%_tail%
+	call set _newtail=%%_toshift:*%2=%%
+	docker run --net=host alice python3 -u TwoPartyComputation.py %nodir% %_newtail%
 	exit		
 
 :bob
@@ -107,13 +114,16 @@ GOTO serverorclient
 	copy docker\Dockerfile_bob bob\Dockerfile
 	copy conf\conf.py bob\conf\conf.py
 	copy conf\cert_conf_bob.py bob\conf\cert_conf.py
-	copy function.c bob\function.c
+	set nodir=%2%
+	set nodir=%nodir:\=%
+	copy %2 bob\%nodir%
 	cd bob\
 	docker build -t bob .
 	cd ..
 	rmdir bob\ /s/q
 	echo "bob built"
-	shift
-	docker run --net=host bob python3 -u TwoPartyComputation.py %_tail%
+	set _toshift=%_tail%
+	call set _newtail=%%_toshift:*%2=%%
+	docker run --net=host bob python3 -u TwoPartyComputation.py %nodir% %_newtail%
 	exit		
-
+	

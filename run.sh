@@ -125,7 +125,7 @@ bob () {
 
 
 ## Main
-fullpath = $2
+fullpath=$2
 case "$1" in
 	--server | -s)
 		shift

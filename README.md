@@ -150,7 +150,7 @@ result = mpc.output_determination()
 h.print_output(result)
 ````
 
-# Test
+# Testing
 In the ``tests/`` directory there are unittests for the whole protocol.
 To run the test you have to start the server with ``python3 Server.py`` from the
 root directory of this repository and then you can execute the tests with 

@@ -44,6 +44,8 @@ def print_output(proto):
         bin_out += str(tmp)
         dez_out += tmp * pow(2, i)
         i += 1
+        if i == 32:
+            break
 
     tmp = dez_out.to_bytes(4, byteorder='big')
     dez_out = int.from_bytes(tmp, byteorder='big', signed=True)

@@ -91,7 +91,11 @@ class Exchange(Process):
             readable_s, _, _ = select.select([self.conn1, self.conn2], [], [])
 
             for sock in readable_s:
-                data = sock.recv(self.BUFFER_SIZE)
+                try:
+                    data = sock.recv(self.BUFFER_SIZE)
+                except ConnectionResetError:
+                    run = False
+                    break
                 if data != b'\xfe':
                     if sock == self.conn1:
                         try:
@@ -161,10 +165,6 @@ class Connection(Process):
                 ser_auth_bits_b = self.fpre_server.create_auth_bits(data_A[1:])
                 self.send_data(self.conn2, b'\x02' + ser_auth_bits_b)
                 self.send_data(self.conn1, b'\x02')
-            elif data_A[0:1] == b'\xfd':
-                data_B = self.receive(self.conn2)
-                self.send_data(self.conn1, data_B[1:])
-                self.send_data(self.conn2, data_A[1:])
             elif data_A == b'\xfe':
                 self.conn1.shutdown(socket.SHUT_RDWR)
                 self.conn1.close()

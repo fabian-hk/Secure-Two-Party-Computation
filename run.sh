@@ -93,7 +93,7 @@ alice () {
 	cd .alice/
 	docker build -t alice .
 	cd ..
-	#rm -r .alice/
+	rm -r .alice/
 	clear
 	echo "Alice built"
     shift

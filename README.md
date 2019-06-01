@@ -150,6 +150,12 @@ result = mpc.output_determination()
 h.print_output(result)
 ````
 
+# Test
+In the ``tests/`` directory there are unittests for the whole protocol.
+To run the test you have to start the server with ``python3 Server.py`` from the
+root directory of this repository and then you can execute the tests with 
+``python3 -m unittest tests/test_circuit.py`` from a second terminal.
+
 # Information about the gate IDs
 The gate IDs must always end with a zero so that the gate wires can have 
 unique IDs. The input A has the id xxx0, the input B has the id xxx1 and
@@ -162,6 +168,6 @@ the output Y has the id xxx2.
 
 # Contributors
 - Fabian Hauck [GitHub](https://github.com/fabian-hk)
-- Marcel Galuschka
+- Marcel Galuschka [GitHub](https://github.com/MarcelGaluschka)
 - Simon Bihlmaier [GitHub](https://github.com/sibmr)
 - Julian Obst

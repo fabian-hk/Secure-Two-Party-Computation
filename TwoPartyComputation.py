@@ -7,30 +7,29 @@ from fpre.fpre import Fpre
 import cbmc_parser.create_circuit as cc
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Script for maliciously secure Two-Party Computation. '
-                                                 'You should start the script from the directory of this repository.',
-                                     epilog='Example usage:\n\tpython3 TwoPartyComputation.py add 45 '
-                                            '-cn bob.mpc -s 10.10.1.42 -p 4444\n\t'
-                                            'python3 TwoPartyComputation.py cbmc_parser/ansi_c_code/addition.c 52 '
-                                            '-cn bob.mpc -s 10.10.1.42 -p 4444',
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description='Script for maliciously secure Two-Party Computation. You should start the script from the '
+                    'directory of this repository.',
+        epilog='Example usage:\n\tpython3 TwoPartyComputation.py add 45 -cn bob.mpc -s 10.10.1.42 -p 4444\n\tpython3'
+               'TwoPartyComputation.py cbmc_parser/ansi_c_code/addition.c 52 -cn bob.mpc -s 10.10.1.42 -p 4444',
+        formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('circuit', type=str,
-                        help='Either one of the example circuits or a path to an parsable c-code file (ending .c). '
-                             'Path must be relativ to the location of this file.')
-    parser.add_argument('input', type=int, nargs='+', help='Own input to the circuit as an Integer.')
+                        help='either one of the example circuits or a path to an parsable c-code file (ending .c); '
+                             'path must be relativ to the location of this file')
+    parser.add_argument('input', type=int, nargs='+', help='own input to the circuit as integers')
     parser.add_argument('-cn', type=str, default=None,
-                        help='Common name of the partner you want to talk to.')
+                        help='common name of the partner you want to talk to')
     parser.add_argument('-c', '--certificate', type=str, default=None,
-                        help='Own certificate to authenticate your self to the other party '
-                             '(should be specified in the conf.py file).')
+                        help='own certificate to authenticate yourself to the other party '
+                             '(should be specified in the cert_conf.py file)')
     parser.add_argument('-n', '--noencryption', default=False, action='store_true',
-                        help="Specify this option if you don't care about security "
-                             "and want to use unencrypted communication")
+                        help="specify this option if you don't care about security and "
+                             "if you want to use unencrypted communication")
     parser.add_argument('-s', '--server', type=str, default='127.0.0.1',
-                        help='IP address for the server which provides Fpre and the '
-                             'communication between the clients.')
+                        help='IP address for the server which provides Fpre and the communication '
+                             'between the clients (default localhost)')
     parser.add_argument('-p', '--port', type=int, default=8448,
-                        help='The port of the server specified by -s (default 8448).')
+                        help='the port of the server specified by -s (default 8448)')
     args = parser.parse_args()
 
     # Initialize connection and determine who is A and who is B

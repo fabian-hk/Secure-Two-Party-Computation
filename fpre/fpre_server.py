@@ -44,6 +44,12 @@ class FpreServer:
         return auth_bits_B.SerializeToString()
 
     def create_and_triple(self, data_A, data_B):
+        """
+        Method was only used during development without the Fpre functions.
+        :param data_A:
+        :param data_B:
+        :return:
+        """
         and_triple_A = FunctionDependentPreprocessing_pb2.ANDTriple()
         and_triple_A.ParseFromString(data_A)
         and_triple_B = FunctionDependentPreprocessing_pb2.ANDTriple()

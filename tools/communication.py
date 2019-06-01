@@ -56,9 +56,19 @@ class Com:
                 context_s.verify_mode = ssl.CERT_REQUIRED
                 context_s.load_cert_chain(certificate, priv_key)
                 context_s.load_verify_locations(cert_conf.crt_storage + 'ca-root.pem')
-                self.ex_s = context_s.wrap_socket(ex_s, server_side=True)
+                try:
+                    self.ex_s = context_s.wrap_socket(ex_s, server_side=True)
+                except ssl.SSLError as e:
+                    self.send_data(b'\xfe')
+                    self.s.close()
+                    raise e
+
                 cn = self.get_common_name(self.ex_s.getpeercert())
                 if cn != partner:
+                    self.send_data(b'\xfe')
+                    self.s.close()
+                    self.ex_s.sendall(b'\xfe')
+                    self.ex_s.close()
                     raise CertificateError("hostname '" + partner + "' doesn't match '" + cn + "'")
             else:
                 context_c = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
@@ -66,7 +76,13 @@ class Com:
                 context_c.check_hostname = True
                 context_c.load_cert_chain(certificate, priv_key)
                 context_c.load_verify_locations(cert_conf.crt_storage + 'ca-root.pem')
-                self.ex_s = context_c.wrap_socket(ex_s, server_hostname=partner)
+                try:
+                    self.ex_s = context_c.wrap_socket(ex_s, server_hostname=partner)
+                except CertificateError as e:
+                    self.s.close()
+                    ex_s.close()
+                    raise e
+
             print("Connection to exchange successful - " + str(self.ex_s.version()))
         else:
             self.ex_s = ex_s
@@ -92,6 +108,8 @@ class Com:
         while len(data) < length:
             data += self.s.recv(self.BUFFER_SIZE)
         self.receive_buffer = data[length:]
+        if data[:length] == b'':
+            raise ConnectionAbortedError()
         return data[:length]
 
     def send_data(self, data):

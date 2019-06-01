@@ -73,6 +73,7 @@ class MPC:
         for out in self.outputs:
             self.gate_initialization_iterative(out, label_iter, bar)
 
+        bar.finish()
         print()
         print("Iterative Initialization finished")
 
@@ -360,6 +361,8 @@ class MPC:
         bar = ShadyBar("Progress: ", max=self.num_gates, suffix='%(percent)d%%')
         for out in self.outputs:
             self.circuit_evaluation_iterative(out, bar)
+
+        bar.finish()
         print()
         print("Auth bits verification passed")
 
